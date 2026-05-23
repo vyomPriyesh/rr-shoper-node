@@ -10,7 +10,7 @@ app.use(cors());
 app.use(express.json());
 
 app.use("/", (req, res) => {
-    return res.send("Hello world");
+    return res.send("Hello worl");
 })
 
 // app.post("/send-otp", async (req, res) => {
