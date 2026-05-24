@@ -3,15 +3,28 @@ import cors from "cors";
 import "dotenv/config";
 import axios from "axios";
 import https from "https";
+import connectDB from "./config/db.js";
 
 const app = express();
 const port = process.env.PORT || "8000";
 app.use(cors());
 app.use(express.json());
 
-app.use("/", (req, res) => {
-    return res.send("Hello worl");
-})
+app.get("/", async (req, res) => {
+    const db = await connectDB();
+
+    if (db.success) {
+        res.status(200).json({
+            success: true,
+            message: db.message,
+        });
+    } else {
+        res.status(500).json({
+            success: false,
+            message: db.message,
+        });
+    }
+});
 
 // app.post("/send-otp", async (req, res) => {
 //     try {
