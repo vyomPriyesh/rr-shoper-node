@@ -1,4 +1,4 @@
-import User from "../models/USer.js";
+import User from "../models/User.js";
 import { catchAsync } from "../utils/catchAsync.js";
 import { sendResponse } from "../utils/response.js";
 
