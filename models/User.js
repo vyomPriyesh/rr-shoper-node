@@ -29,10 +29,20 @@ const userSchema = new mongoose.Schema(
             default: "not-verified",
         },
 
-        status :{
+        status: {
             type: String,
             default: "unactive",
-        }
+        },
+
+        login_devices: [
+            {
+                token: String,
+                ip: String,
+                user_agent: String,
+                device_name: String,
+                login_time: Date
+            }
+        ],
     },
     {
         timestamps: true,
