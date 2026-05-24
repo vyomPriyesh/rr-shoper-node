@@ -4,11 +4,7 @@ import dotenv from "dotenv";
 
 const connectDB = async () => {
   try {
-    const conn = await mongoose.connect(process.env.MONGO_URI, {
-      tls: true,
-      tlsCAFile: path.join(process.cwd(), "global-bundle.pem"),
-      tlsAllowInvalidHostnames: true,
-    });
+    const conn = await mongoose.connect(process.env.MONGO_URI);
 
     return {
       success: true,
