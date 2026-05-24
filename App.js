@@ -1,43 +1,68 @@
 import express from "express";
 import cors from "cors";
 import "dotenv/config";
-import axios from "axios";
-import https from "https";
 import connectDB from "./config/db.js";
 import { sendResponse } from "./utils/response.js";
 import api from "./routes/api.js";
 
 const app = express();
-const port = process.env.PORT || "8000";
-app.use(
-    cors({
-        origin: [
-            "http://192.168.1.8:5174",
-            "http://localhost:5174",
-            "https://api.rrshoper.in"
-        ],
-        credentials: true,
-        methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-        allowedHeaders: ["Content-Type", "Authorization"],
-    })
-);  
+const port = process.env.PORT || 8000;
+
+// ✅ CORS (clean & correct)
+const corsOptions = {
+    origin: [
+        "http://192.168.1.8:5174",
+        "http://localhost:5174",
+    ],
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+};
+
+app.use(cors(corsOptions));
+
+app.use((req, res, next) => {
+    if (req.method === "OPTIONS") {
+        return cors(corsOptions)(req, res, next);
+    }
+    next();
+});
+
 app.use(express.json());
-connectDB();
 
-app.use("/api", api);
+// ✅ DB connection (IMPORTANT FIX)
+const startServer = async () => {
+    try {
+        await connectDB();
 
+        app.use("/api", api);
 
+        app.get("/", (req, res) => {
+            res.send("RR Shoper");
+        });
 
-app.get("/", async (req, res) => res.send('RR Shoper'));
+        // error handler should be LAST
+        app.use((err, req, res, next) => {
+            console.error(err);
+            return sendResponse(
+                res,
+                500,
+                {
+                    message: "Something went wrong.",
+                    error_message: err.message,
+                },
+                false
+            );
+        });
 
-app.use((err, req, res, next) => {
-    console.error(err); // log it
-    return sendResponse(res, 500, {
-        message: 'Something went wrong.',
-        error_message: err.message
-    }, false);
-});
+        app.listen(port, () => {
+            console.log(`server running on ${port}`);
+        });
 
-app.listen(port, () => {
-    console.log(`server listening at http://localhost:${port}`);
-});
+    } catch (error) {
+        console.log("DB connection failed:", error);
+        process.exit(1);
+    }
+};
+
+startServer();
