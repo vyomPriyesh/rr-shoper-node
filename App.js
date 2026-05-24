@@ -14,20 +14,12 @@ const corsOptions = {
         "http://192.168.1.8:5174",
         "http://localhost:5174",
     ],
-    credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
 };
 
 app.use(cors(corsOptions));
-
-app.use((req, res, next) => {
-    if (req.method === "OPTIONS") {
-        return cors(corsOptions)(req, res, next);
-    }
-    next();
-});
-
+// app.options("*", cors(corsOptions));
 app.use(express.json());
 
 // ✅ DB connection (IMPORTANT FIX)
