@@ -6,6 +6,7 @@ import https from "https";
 import connectDB from "./config/db.js";
 import { sendResponse } from "./utils/response.js";
 import api from "./routes/api.js";
+connectDB();
 
 const app = express();
 const port = process.env.PORT || "8000";
@@ -19,11 +20,11 @@ const corsOptions = {
     origin: function (origin, callback) {
         // allow Postman, mobile apps, curl
         if (!origin) return callback(null, true);
-
+        
         if (allowedOrigins.includes(origin)) {
             return callback(null, true);
         }
-
+        
         // IMPORTANT: do NOT throw error, just block silently
         return callback(null, false);
     },
@@ -34,11 +35,8 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 app.use(express.json());
-connectDB();
 
 app.use("/api", api);
-
-
 
 app.get("/", async (req, res) => res.send('RR Shoper'));
 
