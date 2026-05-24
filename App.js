@@ -9,9 +9,6 @@ const port = process.env.PORT || 8000;
 
 app.use(express.json());
 
-// routes
-app.use("/api", api);
-
 app.get("/", (req, res) => {
     res.send("RR Shoper");
 });
@@ -33,6 +30,9 @@ app.use((err, req, res, next) => {
 const startServer = async () => {
     try {
         await connectDB();
+
+        // ✅ ONLY after DB connected
+        app.use("/api", api);
 
         app.listen(port, () => {
             console.log(`server running on ${port}`);
