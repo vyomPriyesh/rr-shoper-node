@@ -14,10 +14,7 @@ app.get("/", async (req, res) => {
     const db = await connectDB();
 
     if (db.success) {
-        res.status(200).json({
-            success: true,
-            message: db.message,
-        });
+        res.send(db.message);
     } else {
         res.status(500).json({
             success: false,

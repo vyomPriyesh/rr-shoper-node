@@ -8,7 +8,7 @@ const connectDB = async () => {
 
     return {
       success: true,
-      message: "DocumentDB Connected",
+      message: "RR Shoper DB Connected",
       connection: conn,
     };
   } catch (err) {
