@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
-import { sendResponse } from '../Utils/response.js';
 import User from '../models/User.js';
+import { sendResponse } from '../utils/response.js';
 
 dotenv.config();
 
