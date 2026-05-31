@@ -1,6 +1,7 @@
 import User from "../models/User.js";
 import { catchAsync } from "../utils/catchAsync.js";
 import { generateToken } from "../utils/jwt.js";
+import bcryptjs from "bcryptjs";
 import { sendResponse } from "../utils/response.js";
 
 class LoginController {
@@ -61,6 +62,50 @@ class LoginController {
         }
 
         return sendResponse(res, 200, "OTP verified successfully", true, data);
+    })
+
+    static profile = catchAsync(async (req, res) => {
+
+        const userId = req.user.id;
+
+        const profileData = await User.findById(userId).select("-login_devices -otp -password")
+
+        return sendResponse(res, 200, "Profile found successfully", true, profileData);
+
+    })
+
+    static adminLogin = catchAsync(async (req, res) => {
+
+        const { mobile, password } = req.body || {}
+
+        const userData = await User.findOne({ mobile }).select("-login_devices")
+
+        const isMatch = await bcryptjs.compare(password, userData.password);
+
+        if (!isMatch) {
+            return sendResponse(res, 422, 'Invalid password', false)
+        }
+
+        const token = generateToken(userData);
+
+        const updatedUserData = await User.findByIdAndUpdate(
+            { _id: userData._id },
+            {
+                otp_status: "verified", status: "active",
+                $push: {
+                    login_devices: {
+                        token,
+                        login_time: new Date()
+                    }
+                }
+            },
+            { new: true },
+        ).select("-login_devices -password").lean();
+
+        updatedUserData.token = token
+
+        return sendResponse(res, 200, 'Login successful', true, updatedUserData);
+
     })
 
 }

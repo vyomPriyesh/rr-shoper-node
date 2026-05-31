@@ -8,6 +8,11 @@ const userSchema = new mongoose.Schema(
             default: null,
         },
 
+        password: {
+            type: String,
+            default: null
+        },
+
         email: {
             type: String,
             default: null,
@@ -19,7 +24,7 @@ const userSchema = new mongoose.Schema(
             unique: true,
         },
 
-        role:{
+        role: {
             type: String,
             default: "user",
         },
