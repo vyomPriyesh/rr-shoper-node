@@ -6,8 +6,10 @@ import https from "https";
 import connectDB from "./config/db.js";
 import { sendResponse } from "./utils/response.js";
 import api from "./routes/api.js";
+import { assetsUrl } from "./config/config.js";
+import path from "path";
 connectDB();
-
+global.__basedir = path.resolve();
 const app = express();
 const port = process.env.PORT || "8000";
 const allowedOrigins = [
@@ -39,9 +41,11 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(express.json());
 
-app.use("/api", api);
 
 app.get("/", async (req, res) => res.send('RR Shoper'));
+app.use("/assets", express.static(assetsUrl));
+app.use("/api", api);
+
 
 app.use((err, req, res, next) => {
     console.error(err); // log it
