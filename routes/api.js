@@ -6,6 +6,8 @@ import { catchAsync } from "../utils/catchAsync.js";
 import uploadFileMiddleware from "../Middleware/upload.js";
 import { sendResponse } from "../utils/response.js";
 import { folderName } from "../config/config.js";
+import PlatformController from "../controller/PlatformController.js";
+import Images from "../models/Images.js";
 
 const api = express.Router();
 
@@ -15,7 +17,17 @@ api.post('/images/upload', catchAsync(async (req, res) => {
         return sendResponse(res, 400, 'Please upload at least one file!', false);
     }
     const filenames = req.files.map(file => file.filename);
-    const formattedImages = filenames.map(filename => `/${folderName}/${filename}`);
+    const formattedImages = [];
+
+    for (const filename of filenames) {
+        const imagePath = `/${folderName}/${filename}`;
+
+        const image = await Images.create({
+            image: imagePath
+        });
+
+        formattedImages.push(image);
+    }
     return sendResponse(res, 200, 'Files uploaded successfully!', true, formattedImages);
 }));
 
@@ -23,6 +35,14 @@ api.post("/send-otp", LoginController.sendOtp);
 api.post("/verify-otp", LoginController.verifyOtp);
 api.get('/profile', verifyToken, LoginController.profile)
 api.post('/login', LoginController.adminLogin)
+
+api.post('/add-platform', verifyToken, PlatformController.addPlatform)
+api.post('/all-platforms', verifyToken, PlatformController.allPlatform)
+api.post('/platforms/update-platform/:id', verifyToken, PlatformController.updatePlatform) 
+api.get('/platforms/update-status/:id', verifyToken, PlatformController.updateStatus) 
+api.delete('/platforms/delete-platform/:id', verifyToken, PlatformController.deletePlatform)
+api.post('/customer-all-platforms', PlatformController.customerAllPlatform) // for customer side
+
 
 
 export default api;

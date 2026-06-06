@@ -1,22 +1,21 @@
 import express from "express";
-import cors from "cors";
 import "dotenv/config";
-import axios from "axios";
-import https from "https";
-import connectDB from "./config/db.js";
-import { sendResponse } from "./utils/response.js";
+import cors from "cors";
+import path from "path";
 import api from "./routes/api.js";
 import { assetsUrl } from "./config/config.js";
-import path from "path";
+import { sendResponse } from "./utils/response.js";
+import connectDB from "./config/db.js";
+
 connectDB();
-global.__basedir = path.resolve();
 const app = express();
 const port = process.env.PORT || "8000";
+global.__basedir = path.resolve();
+
 const allowedOrigins = [
-    "http://192.168.1.4:5173",
-    "http://192.168.1.4:5174",
-    "http://localhost:5173",
-    "http://localhost:5174",
+    "http://192.168.1.2:5175",
+    "http://192.168.1.2:5173",
+    "http://localhost:5175",
     "https://rrshoper.in",
     "https://admin.rrshoper.in",
 ];
@@ -24,11 +23,11 @@ const allowedOrigins = [
 const corsOptions = {
     origin: function (origin, callback) {
         // allow Postman, mobile apps, curl
-        return callback(null, true);
+        if (!origin) return callback(null, true);
 
-        // if (allowedOrigins.includes(origin)) {
-        //     return callback(null, true);
-        // }
+        if (allowedOrigins.includes(origin)) {
+            return callback(null, true);
+        }
 
         // IMPORTANT: do NOT throw error, just block silently
         return callback(null, false);
@@ -55,6 +54,6 @@ app.use((err, req, res, next) => {
     }, false);
 });
 
-app.listen(port, () => {
+app.listen(port, '0.0.0.0', () => {
     console.log(`server listening at http://localhost:${port}`);
 });

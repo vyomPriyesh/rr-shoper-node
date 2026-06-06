@@ -3,7 +3,7 @@ import MongooseDelete from "mongoose-delete";
 
 const ImagesSchema = new mongoose.Schema(
     {
-        url: {
+        image: {
             type: String,
             default: null,
         },

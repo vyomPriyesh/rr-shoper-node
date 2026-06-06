@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose, { Schema } from "mongoose";
 import MongooseDelete from "mongoose-delete";
 
 const PlatfomsSchema = new mongoose.Schema(
@@ -11,9 +11,13 @@ const PlatfomsSchema = new mongoose.Schema(
             type: String,
             default: null
         },
-        img: {
-            type: String,
-            default: null
+        status: {
+            type: Boolean,
+            default: false,
+        },
+        image: {
+            type:  Schema.Types.ObjectId,
+            ref: "Images"
         }
     },
     {
