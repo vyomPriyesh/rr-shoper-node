@@ -9,16 +9,28 @@ import "dotenv/config";
 
 class LoginController {
 
+    static findCustomer = catchAsync(async (req, res) => {
+
+        const { email } = req.params
+
+        const customer = await User.findOne({ email });
+        if (!customer) {
+            return sendResponse(res, 422, "Customer not found", false);
+        }
+        return sendResponse(res, 200, "Customer Found", true, customer, true);
+
+    })
+
     static sendOtp = catchAsync(async (req, res) => {
         const { mobile, email } = req.body;
 
-        const existingUser = await User.findOne({ mobile, email });
+        const existingUser = await User.findOne({ email });
         const otp = crypto.randomInt(100000, 999999);
 
         if (existingUser) {
-            await User.updateOne({ mobile }, { otp, otp_send_time: Date.now() });
+            await User.updateOne({ email }, { otp, otp_send_time: Date.now() });
         } else {
-            const newUser = await User.create({ mobile, email, otp });
+            const newUser = await User.create({ name: email?.split("@")[0], mobile, email, otp });
         }
 
         emailotpsending.sendMail({
@@ -50,15 +62,28 @@ class LoginController {
     })
 
     static verifyOtp = catchAsync(async (req, res) => {
+
         const { mobile, otp } = req.body;
         const user = await User.findOne({ mobile });
 
         if (!user) {
-            return sendResponse(res, 404, "User not found", false);
+            return sendResponse(res, 422, "User not found", false);
         }
         if (user.otp !== otp) {
             return sendResponse(res, 400, "Invalid OTP", false);
         }
+        const currentTime = Date.now();
+
+        const otpTime = new Date(user.otp_send_time).getTime();
+
+        const diff = currentTime - otpTime;
+
+        const fiveMinutes = 5 * 60 * 1000;
+
+        if (diff > fiveMinutes) {
+            return sendResponse(res, 400, "OTP expired", false);
+        }
+
 
         // OTP is valid, you can generate a token here if needed
         const token = generateToken(user);

@@ -36,6 +36,7 @@ api.post('/images/upload', catchAsync(async (req, res) => {
 api.post("/send-otp", LoginController.sendOtp);
 api.post("/verify-otp", LoginController.verifyOtp);
 api.get('/profile', verifyToken, LoginController.profile)
+api.get('/findCustomer/:email', LoginController.findCustomer)
 api.post('/login', LoginController.adminLogin)
 
 // .............for customer side..................................
