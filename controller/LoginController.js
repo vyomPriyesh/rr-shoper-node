@@ -23,6 +23,7 @@ class LoginController {
 
     static sendOtp = catchAsync(async (req, res) => {
         const { mobile, email } = req.body;
+        const name = email?.split("@")[0]
 
         const existingUser = await User.findOne({ email });
         const otp = crypto.randomInt(100000, 999999);
@@ -30,7 +31,7 @@ class LoginController {
         if (existingUser) {
             await User.updateOne({ email }, { otp, otp_send_time: Date.now() });
         } else {
-            const newUser = await User.create({ name: email?.split("@")[0], mobile, email, otp });
+            const newUser = await User.create({ name: name, mobile, email, otp });
         }
 
         emailotpsending.sendMail({
