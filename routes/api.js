@@ -8,6 +8,8 @@ import { sendResponse } from "../utils/response.js";
 import { folderName } from "../config/config.js";
 import PlatformController from "../controller/PlatformController.js";
 import Images from "../models/Images.js";
+import DropDownController from "../controller/DropDownController.js";
+import PackagesController from "../controller/PackagesController.js";
 
 const api = express.Router();
 
@@ -36,12 +38,23 @@ api.post("/verify-otp", LoginController.verifyOtp);
 api.get('/profile', verifyToken, LoginController.profile)
 api.post('/login', LoginController.adminLogin)
 
+// .............for customer side..................................
+api.post('/customer-all-platforms', PlatformController.customerAllPlatforms)
+api.post('/customer-all-packages', PackagesController.customerAllPackages)
+api.get('/all-options', DropDownController.allDropDowns)
+
+
 api.post('/add-platform', verifyToken, PlatformController.addPlatform)
-api.post('/all-platforms', verifyToken, PlatformController.allPlatform)
-api.post('/platforms/update-platform/:id', verifyToken, PlatformController.updatePlatform) 
-api.get('/platforms/update-status/:id', verifyToken, PlatformController.updateStatus) 
+api.post('/all-platforms', verifyToken, PlatformController.allPlatforms)
+api.post('/platforms/update-platform/:id', verifyToken, PlatformController.updatePlatform)
+api.get('/platforms/update-status/:id', verifyToken, PlatformController.updateStatus)
 api.delete('/platforms/delete-platform/:id', verifyToken, PlatformController.deletePlatform)
-api.post('/customer-all-platforms', PlatformController.customerAllPlatform) // for customer side
+
+api.post('/add-package', verifyToken, PackagesController.addPackage)
+api.post('/all-packages', verifyToken, PackagesController.allPackages)
+api.post('/packages/update-package/:id', verifyToken, PackagesController.updatePackage)
+api.get('/packages/update-status/:id', verifyToken, PackagesController.updatePackageStatus)
+api.delete('/packages/delete-package/:id', verifyToken, PackagesController.deletePackage)
 
 
 

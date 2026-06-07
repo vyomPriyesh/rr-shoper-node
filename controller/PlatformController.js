@@ -19,30 +19,30 @@ class PlatformController {
         const platforData = await Platfoms.create(payload)
         await Images.findByIdAndUpdate(image, { in_use: true }, { new: true })
 
-        return sendResponse(res, 200, 'Platform Add Successfully', true, platforData)
+        return sendResponse(res, 200, 'Platform Create Successfully', true, platforData)
 
     })
 
-    static allPlatform = catchAsync(async (req, res) => {
+    static allPlatforms = catchAsync(async (req, res) => {
 
         const { page, limit } = req.body || {}
         const populates = [
             'image'
         ]
-        const allPlatforms = await paginate(Platfoms, {}, page, limit, {}, populates)
+        const allPlatformsData = await paginate(Platfoms, {}, page, limit, {}, populates)
 
-        return sendResponse(res, 200, 'All Platforms', true, allPlatforms, true)
+        return sendResponse(res, 200, 'All Platforms', true, allPlatformsData, true)
     })
 
-    static customerAllPlatform = catchAsync(async (req, res) => {
+    static customerAllPlatforms = catchAsync(async (req, res) => {
 
         const { page, limit } = req.body || {}
         const populates = [
             'image'
         ]
-        const allPlatforms = await paginate(Platfoms, { status: true }, page, limit, {}, populates)
+        const allPlatformsData = await paginate(Platfoms, { status: true }, page, limit, {}, populates)
 
-        return sendResponse(res, 200, 'All Platforms', true, allPlatforms, true)
+        return sendResponse(res, 200, 'All Platforms', true, allPlatformsData, true)
     })
 
     static updatePlatform = catchAsync(async (req, res) => {

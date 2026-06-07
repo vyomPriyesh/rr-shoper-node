@@ -13,9 +13,8 @@ const port = process.env.PORT || "8000";
 global.__basedir = path.resolve();
 
 const allowedOrigins = [
-    "http://192.168.1.2:5175",
-    "http://192.168.1.2:5173",
-    "http://localhost:5175",
+    "http://192.168.1.6:5173",
+    "http://192.168.1.6:5174",
     "https://rrshoper.in",
     "https://admin.rrshoper.in",
 ];
