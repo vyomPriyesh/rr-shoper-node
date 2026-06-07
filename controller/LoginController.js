@@ -3,30 +3,50 @@ import { catchAsync } from "../utils/catchAsync.js";
 import { generateToken } from "../utils/jwt.js";
 import bcryptjs from "bcryptjs";
 import { sendResponse } from "../utils/response.js";
+import crypto from 'crypto'
+import emailotpsending from "../utils/emailotpsending.js";
+import "dotenv/config";
 
 class LoginController {
 
     static sendOtp = catchAsync(async (req, res) => {
-        const { mobile } = req.body;
+        const { mobile, email } = req.body;
 
-        const existingUser = await User.findOne({ mobile });
-        const otp = Math.floor(100000 + Math.random() * 900000).toString();
+        const existingUser = await User.findOne({ mobile, email });
+        const otp = crypto.randomInt(100000, 999999);
 
         if (existingUser) {
-
-            await User.updateOne({ mobile }, { otp });
-            return sendResponse(res, 200, "OTP sent successfully", true, {
-                mobile,
-                otp
-            });
-
+            await User.updateOne({ mobile }, { otp, otp_send_time: Date.now() });
         } else {
-            const newUser = User.create({ mobile, otp });
-            return sendResponse(res, 200, "OTP sent successfully", true, {
-                mobile,
-                otp
-            });
+            const newUser = await User.create({ mobile, email, otp });
         }
+
+        emailotpsending.sendMail({
+            from: `"RR Shoper" <${process.env.EMAIL_USER}>`,
+            to: email,
+            subject: "RR Shoper OTP Verification",
+            html: `
+                <div style="
+                    font-family: Arial;
+                    max-width: 500px;
+                    margin: auto;
+                    padding: 20px;
+                    border: 1px solid #ddd;
+                    border-radius: 10px;
+                ">
+                    <h2>RR Shoper Verification</h2>
+
+                    <p>Your OTP code is: <h3 style="
+                        letter-spacing: 5px;
+                        color: #B06A8D;
+                    ">
+                        ${otp}
+                    </h3>This OTP will expire in 5 minutes.Do not share this OTP with anyone.</p>
+                </div>
+            `
+        }).catch(err => console.log(err));
+
+        return sendResponse(res, 200, "OTP sent successfully", true);
     })
 
     static verifyOtp = catchAsync(async (req, res) => {

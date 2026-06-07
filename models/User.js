@@ -34,6 +34,11 @@ const userSchema = new mongoose.Schema(
             default: null,
         },
 
+        otp_send_time: {
+            type: Date,
+            default: Date.now()
+        },
+
         otp_status: {
             type: String,
             default: "not-verified",
