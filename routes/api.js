@@ -55,6 +55,7 @@ api.post('/all-packages', verifyToken, PackagesController.allPackages)
 api.post('/packages/update-package/:id', verifyToken, PackagesController.updatePackage)
 api.get('/packages/update-status/:id', verifyToken, PackagesController.updatePackageStatus)
 api.delete('/packages/delete-package/:id', verifyToken, PackagesController.deletePackage)
+api.get('/packages/update-popular-package/:id', verifyToken, PackagesController.updatePopularPackage)
 
 
 

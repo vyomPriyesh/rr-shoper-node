@@ -46,6 +46,28 @@ class PackagesController {
         return sendResponse(res, 200, 'Package Status Update Successfully', true, packageData)
     })
 
+    static updatePopularPackage = catchAsync(async (req, res) => {
+
+        const data = req.body || {}
+        const { id } = req.params
+
+        const findPackage = await Packages.findById(id).populate("platform")
+
+        if (!findPackage) {
+            return sendResponse(res, 422, 'Package not Found', false)
+        }
+
+        const havePopular = await Packages.findOne({ platform: findPackage.platform, popular: true }).lean()
+
+        if (havePopular && havePopular._id.toString() !== id.toString()) {
+            return sendResponse(res, 422, `Already have One Popular Package with ${findPackage.platform.name}`, false)
+        }
+
+        const packageData = await Packages.findByIdAndUpdate(id, { popular: !findPackage.popular }, { new: true })
+
+        return sendResponse(res, 200, 'Package Popular Update Successfully', true, packageData)
+    })
+
     static deletePackage = catchAsync(async (req, res) => {
 
         const { id } = req.params
