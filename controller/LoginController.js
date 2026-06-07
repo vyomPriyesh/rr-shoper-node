@@ -59,7 +59,7 @@ class LoginController {
             `
         }).catch(err => console.log(err));
 
-        return sendResponse(res, 200, "OTP sent successfully", true);
+        return sendResponse(res, 200, "OTP sent successfully on Email", true);
     })
 
     static verifyOtp = catchAsync(async (req, res) => {
