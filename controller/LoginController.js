@@ -32,7 +32,7 @@ class LoginController {
         if (existingUser) {
             await User.updateOne({ email }, { otp, otp_send_time: Date.now() });
         } else {
-            const newUser = await User.create({ name: name, mobile, email, otp, image: `https://ui-avatars.com/api/?background=B06A8D&color=fff&name=${name}` });
+            const newUser = await User.create({ name: name, mobile, email, otp });
         }
 
         if (!testUser) {
