@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose, { Schema } from "mongoose";
 import MongooseDelete from "mongoose-delete";
 
 const userSchema = new mongoose.Schema(
@@ -6,6 +6,10 @@ const userSchema = new mongoose.Schema(
         name: {
             type: String,
             default: null,
+        },
+        image: {
+            type:  Schema.Types.ObjectId,
+            ref: "Images"
         },
 
         password: {

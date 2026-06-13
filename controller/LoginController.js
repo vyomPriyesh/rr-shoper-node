@@ -25,8 +25,9 @@ class LoginController {
         const { mobile, email } = req.body;
         const name = email?.split("@")[0]
 
+        const testUser = email === 'rrshopertest@gmail.com'
         const existingUser = await User.findOne({ email });
-        const otp = crypto.randomInt(100000, 999999);
+        const otp = testUser ? 123456 : crypto.randomInt(100000, 999999);
 
         if (existingUser) {
             await User.updateOne({ email }, { otp, otp_send_time: Date.now() });
@@ -34,30 +35,33 @@ class LoginController {
             const newUser = await User.create({ name: name, mobile, email, otp });
         }
 
-        emailotpsending.sendMail({
-            from: `"RR Shoper" <${process.env.EMAIL_USER}>`,
-            to: email,
-            subject: "RR Shoper OTP Verification",
-            html: `
-                <div style="
-                    font-family: Arial;
-                    max-width: 500px;
-                    margin: auto;
-                    padding: 20px;
-                    border: 1px solid #ddd;
-                    border-radius: 10px;
-                ">
-                    <h2>RR Shoper Verification</h2>
-
-                    <p>Your OTP code is: <h3 style="
-                        letter-spacing: 5px;
-                        color: #B06A8D;
+        if (!testUser) {
+            emailotpsending.sendMail({
+                from: `"RR Shoper" <${process.env.EMAIL_USER}>`,
+                to: email,
+                subject: "RR Shoper OTP Verification",
+                html: `
+                    <div style="
+                        font-family: Arial;
+                        max-width: 500px;
+                        margin: auto;
+                        padding: 20px;
+                        border: 1px solid #ddd;
+                        border-radius: 10px;
                     ">
-                        ${otp}
-                    </h3>This OTP will expire in 5 minutes.Do not share this OTP with anyone.</p>
-                </div>
-            `
-        }).catch(err => console.log(err));
+                        <h2>RR Shoper Verification</h2>
+    
+                        <p>Your OTP code is: <h3 style="
+                            letter-spacing: 5px;
+                            color: #B06A8D;
+                        ">
+                            ${otp}
+                        </h3>This OTP will expire in 5 minutes.Do not share this OTP with anyone.</p>
+                    </div>
+                `
+            }).catch(err => console.log(err));
+        }
+
 
         return sendResponse(res, 200, "OTP sent successfully on Email", true);
     })
