@@ -11,6 +11,10 @@ const userSchema = new mongoose.Schema(
             type:  Schema.Types.ObjectId,
             ref: "Images"
         },
+        designation: {
+            type:  Schema.Types.ObjectId,
+            ref: "Designation"
+        },
 
         password: {
             type: String,

@@ -5,7 +5,7 @@ const PackagesSchema = new mongoose.Schema(
     {
         platform: {
             type: Schema.Types.ObjectId,
-            ref: "Platfoms"
+            ref: "Platforms"
         },
         name: {
             type: String,

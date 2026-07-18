@@ -118,7 +118,7 @@ class LoginController {
 
         const userId = req.user.id;
 
-        const profileData = await User.findById(userId).select("-login_devices -otp -password")
+        const profileData = await User.findById(userId).select("-login_devices -otp -password").populate("designation")
 
         return sendResponse(res, 200, "Profile found successfully", true, profileData);
 
@@ -130,10 +130,14 @@ class LoginController {
 
         const userData = await User.findOne({ mobile }).select("-login_devices")
 
+        if (userData.status == 'unactive') {
+            return sendResponse(res, 403, 'User Status is Unactive', false)
+        }
+
         const isMatch = await bcryptjs.compare(password, userData.password);
 
         if (!isMatch) {
-            return sendResponse(res, 422, 'Invalid password', false)
+            return sendResponse(res, 403, 'Invalid password', false)
         }
 
         const token = generateToken(userData);

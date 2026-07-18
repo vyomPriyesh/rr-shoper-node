@@ -1,7 +1,7 @@
 import mongoose, { Schema } from "mongoose";
 import MongooseDelete from "mongoose-delete";
 
-const PlatfomsSchema = new mongoose.Schema(
+const PlatformsSchema = new mongoose.Schema(
     {
         name: {
             type: String,
@@ -25,7 +25,7 @@ const PlatfomsSchema = new mongoose.Schema(
     }
 );
 
-PlatfomsSchema.plugin(MongooseDelete, { deletedAt: true, overrideMethods: 'all' });
-const Platfoms = mongoose.model("Platfoms", PlatfomsSchema);
+PlatformsSchema.plugin(MongooseDelete, { deletedAt: true, overrideMethods: 'all' });
+const Platforms = mongoose.model("Platforms", PlatformsSchema);
 
-export default Platfoms;
+export default Platforms;

@@ -1,5 +1,5 @@
 import Images from "../models/Images.js"
-import Platfoms from "../models/Platfoms.js"
+import Platforms from "../models/Platforms.js"
 import { catchAsync } from "../utils/catchAsync.js"
 import paginate from "../utils/pagination.js"
 import { sendResponse } from "../utils/response.js"
@@ -16,7 +16,7 @@ class PlatformController {
             name
         }
 
-        const platforData = await Platfoms.create(payload)
+        const platforData = await Platforms.create(payload)
         await Images.findByIdAndUpdate(image, { in_use: true }, { new: true })
 
         return sendResponse(res, 200, 'Platform Create Successfully', true, platforData)
@@ -29,7 +29,7 @@ class PlatformController {
         const populates = [
             'image'
         ]
-        const allPlatformsData = await paginate(Platfoms, {}, page, limit, {}, populates)
+        const allPlatformsData = await paginate(Platforms, {}, page, limit, {}, populates)
 
         return sendResponse(res, 200, 'All Platforms', true, allPlatformsData, true)
     })
@@ -40,7 +40,7 @@ class PlatformController {
         const populates = [
             'image'
         ]
-        const allPlatformsData = await paginate(Platfoms, { status: true }, page, limit, {}, populates)
+        const allPlatformsData = await paginate(Platforms, { status: true }, page, limit, {}, populates)
 
         return sendResponse(res, 200, 'All Platforms', true, allPlatformsData, true)
     })
@@ -49,24 +49,24 @@ class PlatformController {
 
         const { id } = req.params
         const data = req.body || {}
-        const findPlatform = await Platfoms.findById(id)
+        const findPlatform = await Platforms.findById(id)
         if (!findPlatform) {
             return sendResponse(res, 422, 'Platform Not Found', false)
         }
-        await Platfoms.findByIdAndUpdate(id, data)
+        await Platform.findByIdAndUpdate(id, data)
 
-        return sendResponse(res, 200, 'Platfom Update Successfully', true)
+        return sendResponse(res, 200, 'Platform Update Successfully', true)
     })
 
     static updateStatus = catchAsync(async (req, res) => {
 
         const { id } = req.params
 
-        const findPlatform = await Platfoms.findById(id)
+        const findPlatform = await Platforms.findById(id)
         if (!findPlatform) {
             return sendResponse(res, 422, 'Platform Not Found', false)
         }
-        await Platfoms.findByIdAndUpdate(id, { status: !findPlatform.status })
+        await Platforms.findByIdAndUpdate(id, { status: !findPlatform.status })
 
         return sendResponse(res, 200, 'Status Update Successfully', true)
     })
@@ -74,14 +74,14 @@ class PlatformController {
     static deletePlatform = catchAsync(async (req, res) => {
 
         const { id } = req.params
-        
-        const findPlatform = await Platfoms.findById(id)
+
+        const findPlatform = await Platforms.findById(id)
 
         if (!findPlatform) {
             return sendResponse(res, 422, 'Platform Not Found', false)
         }
 
-        await Platfoms.delete({ _id: id })
+        await Platforms.delete({ _id: id })
 
         return sendResponse(res, 200, 'Platform Delete Successfully', true)
     })

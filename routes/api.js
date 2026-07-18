@@ -10,6 +10,8 @@ import PlatformController from "../controller/PlatformController.js";
 import Images from "../models/Images.js";
 import DropDownController from "../controller/DropDownController.js";
 import PackagesController from "../controller/PackagesController.js";
+import UserController from "../controller/UserController.js";
+import DesignationController from "../controller/DesignationController.js";
 
 const api = express.Router();
 
@@ -44,6 +46,18 @@ api.post('/customer-all-platforms', PlatformController.customerAllPlatforms)
 api.post('/customer-all-packages', PackagesController.customerAllPackages)
 api.get('/all-options', DropDownController.allDropDowns)
 
+api.get('/admin-all-options', verifyToken, DropDownController.adminAllDropDowns)
+
+api.post('/allUsers', verifyToken, UserController.allUsers)
+api.get('/users/update-role/:id/:role', verifyToken, UserController.updateUserRole)
+api.get('/users/update-designation/:id/:designation', verifyToken, UserController.updateUserDesignation)
+api.get('/users/update-status/:id', verifyToken, UserController.updateUserStatus)
+
+api.post('/allDesignation', verifyToken, DesignationController.allDesignation)
+api.post('/designation/add-designation', verifyToken, DesignationController.addDesignation)
+api.post('/designation/update-designation/:id', verifyToken, DesignationController.updateDesignation)
+api.get('/designation/:id', verifyToken, DesignationController.getDesignation)
+api.get('/designation/update-status/:id', verifyToken, DesignationController.updateDesignationStatus)
 
 api.post('/add-platform', verifyToken, PlatformController.addPlatform)
 api.post('/all-platforms', verifyToken, PlatformController.allPlatforms)

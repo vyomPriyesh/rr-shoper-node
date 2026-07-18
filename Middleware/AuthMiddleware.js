@@ -23,8 +23,7 @@ const verifyToken = async (req, res, next) => {
 
     try {
       const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
-      let user = await User.findById({ _id: decoded.id, 'login_devices.token': token }).select("-password -login_devices")
-      
+      let user = await User.findOne({ _id: decoded.id, 'login_devices.token': token, status: 'active' }).select("-password -login_devices")
 
       if (!user) {
         return sendResponse(res, 401, {
