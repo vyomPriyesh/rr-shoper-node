@@ -12,6 +12,7 @@ import DropDownController from "../controller/DropDownController.js";
 import PackagesController from "../controller/PackagesController.js";
 import UserController from "../controller/UserController.js";
 import DesignationController from "../controller/DesignationController.js";
+import TicketsController from "../controller/TicketsController.js";
 
 const api = express.Router();
 
@@ -61,6 +62,20 @@ api.post('/designation/add-designation', verifyToken, DesignationController.addD
 api.post('/designation/update-designation/:id', verifyToken, DesignationController.updateDesignation)
 api.get('/designation/:id', verifyToken, DesignationController.getDesignation)
 api.get('/designation/update-status/:id', verifyToken, DesignationController.updateDesignationStatus)
+
+api.post('/allTicketsTitle', verifyToken, TicketsController.allTicketsTitle)
+api.post('/tickets-title/add-tickets-title', verifyToken, TicketsController.addTicketsTitle)
+api.post('/tickets-title/update-tickets-title/:id', verifyToken, TicketsController.updateTicketsTitle)
+api.delete('/tickets-title/delete-tickets-title/:id', verifyToken, TicketsController.deleteTicketsTitle)
+api.get('/tickets-title/update-status/:id', verifyToken, TicketsController.updateTicketsTitleStatus)
+
+api.post('/allTicketForm', verifyToken, TicketsController.allTicketForm)
+api.get('/ticket-form/:id', verifyToken, TicketsController.getTicketForm)
+api.get('/ticket-form/by-ticket-title/:id', verifyToken, TicketsController.getTicketFormByTicketTitle)
+api.post('/ticket-form/add-ticket-form', verifyToken, TicketsController.addTicketForm)
+api.post('/ticket-form/update-ticket-form/:id', verifyToken, TicketsController.updateTicketForm)
+api.get('/ticket-form/update-status/:id', verifyToken, TicketsController.updateTicketFormStatus)
+api.delete('/ticket-form/delete-ticket-form/:id', verifyToken, TicketsController.deleteTicketForm)
 
 api.post('/add-platform', verifyToken, PlatformController.addPlatform)
 api.post('/all-platforms', verifyToken, PlatformController.allPlatforms)
