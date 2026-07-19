@@ -11,6 +11,10 @@ const DesignationSchema = new mongoose.Schema(
             type: Boolean,
             default: false,
         },
+        platform: {
+            type: Schema.Types.ObjectId,
+            ref: "Platforms"
+        },  
         permissions: [
             {
                 module_name: { type: String, default: null },

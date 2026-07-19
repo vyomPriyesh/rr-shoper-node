@@ -33,11 +33,15 @@ class DropDownController {
         const allPlatforms = await Platforms.find({ status: true });
         const allUsers = await User.find({ status: 'active', role: 'user' });
         const allDesignations = await Designation.find({ status: true });
-
+        const roles = [
+            { label: 'User', value: 'user' },
+            { label: 'Customer', value: 'customer' },
+        ]
         const data = {
             platforms: getValusName(allPlatforms, 'name', '_id'),
             users: getValusName(allUsers, 'name', '_id'),
             designations: getValusName(allDesignations, 'name', '_id'),
+            roles: roles
         }
 
         return sendResponse(res, 200, 'All Drop Downs Options', true, data, true)
