@@ -22,6 +22,7 @@ class DropDownController {
         const allTicketsTitles = await TicketsTitle.find({ status: true });
 
         const data = {
+            testUser: true,
             platforms: getValusName(allPlatforms, 'name', '_id'),
             designations: getValusName(allDesignations, 'name', '_id'),
             ticketsTitles: getValusName(allTicketsTitles, 'title', '_id'),
@@ -33,10 +34,10 @@ class DropDownController {
 
     static adminAllDropDowns = catchAsync(async (req, res) => {
 
-        const allPlatforms = await Platforms.find({ status: true });
+        const allPlatforms = await Platforms.find();
         const allUsers = await User.find({ status: 'active', role: 'user' });
-        const allDesignations = await Designation.find({ status: true });
-        const allTicketsTitles = await TicketsTitle.find({ status: true });
+        const allDesignations = await Designation.find();
+        const allTicketsTitles = await TicketsTitle.find();
         const roles = [
             { label: 'User', value: 'user' },
             { label: 'Customer', value: 'customer' },
