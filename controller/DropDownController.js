@@ -13,21 +13,40 @@ const getValusName = (data, name, value, subkey) => {
     })) || []
 }
 
+const getOptionsListNames = (data) => {
+    return Object.keys(data).map(list => ({
+        label: list,
+        value: list,
+    }))
+}
+
+const ticketStatuses = [
+    { label: 'Not Started', value: 'not_started' },
+    { label: 'In Progress', value: 'in_progress' },
+    { label: 'Resolved', value: 'resolved' },
+]
+
 class DropDownController {
 
-    static allDropDowns = catchAsync(async (req, res) => {
+    static async getOptions() {
 
         const allPlatforms = await Platforms.find({ status: true });
         const allDesignations = await Designation.find({ status: true });
         const allTicketsTitles = await TicketsTitle.find({ status: true });
 
-        const data = {
-            testUser: true,
+
+        return {
             platforms: getValusName(allPlatforms, 'name', '_id'),
             designations: getValusName(allDesignations, 'name', '_id'),
             ticketsTitles: getValusName(allTicketsTitles, 'title', '_id'),
+            ticketStatuses
         }
+    }
 
+    static allDropDowns = catchAsync(async (req, res) => {
+
+        const data = await DropDownController.getOptions();
+        data.testUser = true
         return sendResponse(res, 200, 'All Drop Downs Options', true, data, true)
 
     })
@@ -42,13 +61,25 @@ class DropDownController {
             { label: 'User', value: 'user' },
             { label: 'Customer', value: 'customer' },
         ]
-        const data = {
+
+        const options = {
             platforms: getValusName(allPlatforms, 'name', '_id'),
             users: getValusName(allUsers, 'name', '_id'),
             designations: getValusName(allDesignations, 'name', '_id'),
             ticketsTitles: getValusName(allTicketsTitles, 'title', '_id'),
-            roles: roles
+            roles,
+            ticketStatuses
         }
+
+        const custSideOptions = await DropDownController.getOptions();
+
+        const data = {
+            ...options,
+            optionsLists: getOptionsListNames(custSideOptions)
+        }
+
+
+
 
         return sendResponse(res, 200, 'All Drop Downs Options', true, data, true)
 

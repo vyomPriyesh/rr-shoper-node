@@ -3,158 +3,53 @@ import TicketForm from "../models/TicketForm.js";
 import { catchAsync } from "../utils/catchAsync.js";
 import paginate from "../utils/pagination.js";
 import { sendResponse } from "../utils/response.js";
+import Tickets from "../models/Tickets.js";
+import mongoose from "mongoose";
 
 class TicketsController {
 
-    static allTicketsTitle = catchAsync(async (req, res) => {
-        const { page, limit } = req.body || {};
-        const data = await paginate(TicketsTitle, {}, page, limit);
+    static addTicket = catchAsync(async (req, res) => {
+        const payload = req.body || {}
+        payload.user = req.user._id
 
-        return sendResponse(res, 200, "Tickets Title Found", true, data, true);
-    });
+        const data = await Tickets.create(payload)
 
-    static addTicketsTitle = catchAsync(async (req, res) => {
-        const payload = req.body || {};
+        return sendResponse(res, 200, 'Ticket Submit Successfully', true, data)
 
-        const findTicketsTitle = await TicketsTitle.findOne({ title: payload.title });
+    })
 
-        if (findTicketsTitle) {
-            return sendResponse(res, 409, "Tickets Title Already Added", false);
-        }
+    static fetchUsersTikets = catchAsync(async (req, res) => {
 
-        const data = await TicketsTitle.create(payload);
+        const { page, limit, status } = req.body || {}
 
-        return sendResponse(res, 200, "Tickets Title Added Successfully", true, data, true);
-    });
+        const userId = req.user._id
 
-    static updateTicketsTitle = catchAsync(async (req, res) => {
-        const { id } = req.params;
-        const data = req.body || {};
-
-        const findTicketsTitle = await TicketsTitle.findById(id);
-        if (!findTicketsTitle) {
-            return sendResponse(res, 422, "Tickets Title Not Found", false);
-        }
-
-        await TicketsTitle.findByIdAndUpdate(id, data);
-
-        return sendResponse(res, 200, "Tickets Title Updated Successfully", true);
-    });
-
-    static updateTicketsTitleStatus = catchAsync(async (req, res) => {
-        const { id } = req.params;
-
-        const findTicketsTitle = await TicketsTitle.findById(id);
-        if (!findTicketsTitle) {
-            return sendResponse(res, 422, "Tickets Title Not Found", false);
-        }
-
-        await TicketsTitle.findByIdAndUpdate(id, { status: !findTicketsTitle.status });
-
-        return sendResponse(res, 200, "Tickets Title Status Updated Successfully", true);
-    });
-
-    static deleteTicketsTitle = catchAsync(async (req, res) => {
-        const { id } = req.params;
-
-        const findTicketsTitle = await TicketsTitle.findById(id);
-        if (!findTicketsTitle) {
-            return sendResponse(res, 422, "Tickets Title Not Found", false);
-        }
-
-        await TicketsTitle.delete({ _id: id });
-
-        return sendResponse(res, 200, "Tickets Title Deleted Successfully", true);
-    });
-
-    static allTicketForm = catchAsync(async (req, res) => {
-        const { page, limit } = req.body || {};
-        const populate = [
-            { path: 'ticketTitle', select: 'title' }
+        const populates = [
+            { path: 'user', select: 'image name' },
+            { path: 'title', select: 'title' },
+            { path: 'platform', select: 'name' },
         ]
-        const data = await paginate(TicketForm, {}, page, limit, {}, populate);
+        const data = await paginate(Tickets, { user: userId, status }, page, limit, {}, populates)
 
-        return sendResponse(res, 200, "Ticket Form Found", true, data, true);
-    });
 
-    static getTicketForm = catchAsync(async (req, res) => {
-        const { id } = req.params;
+        const statusCounts = await Tickets.aggregate([
+            {
+                $match: {
+                    user: new mongoose.Types.ObjectId(userId),
+                },
+            },
+            {
+                $group: {
+                    _id: "$status",
+                    count: { $sum: 1 },
+                },
+            },
+        ]);
 
-        const findTicketForm = await TicketForm.findById(id);
-        if (!findTicketForm) {
-            return sendResponse(res, 422, "Ticket Form Not Found", false);
-        }
+        return sendResponse(res, 200, 'Tickets Found', true, { ...data, statusCounts })
 
-        return sendResponse(res, 200, "Ticket Form Found Successfully", true, findTicketForm, true);
-    });
+    })
 
-    static getTicketFormByTicketTitle = catchAsync(async (req, res) => {
-        const { id } = req.params;
-
-        const findTicketForm = await TicketForm.findOne({ ticketTitle: id });
-        if (!findTicketForm) {
-            return sendResponse(res, 422, "Ticket Form Not Found", false);
-        }
-
-        return sendResponse(res, 200, "Ticket Form Found Successfully", true, findTicketForm, true);
-    });
-
-    static addTicketForm = catchAsync(async (req, res) => {
-        const payload = req.body || {};
-
-        if (!payload.ticketTitle) {
-            return sendResponse(res, 422, "Ticket Title Is Required", false);
-        }
-
-        const findTicketForm = await TicketForm.findOne({ ticketTitle: payload.ticketTitle });
-        if (findTicketForm) {
-            return sendResponse(res, 409, "Ticket Form Already Added", false);
-        }
-
-        const data = await TicketForm.create(payload);
-
-        return sendResponse(res, 200, "Ticket Form Added Successfully", true, data, true);
-    });
-
-    static updateTicketForm = catchAsync(async (req, res) => {
-        const { id } = req.params;
-        const data = req.body || {};
-
-        const findTicketForm = await TicketForm.findById(id);
-        if (!findTicketForm) {
-            return sendResponse(res, 422, "Ticket Form Not Found", false);
-        }
-
-        await TicketForm.findByIdAndUpdate(id, data);
-
-        return sendResponse(res, 200, "Ticket Form Updated Successfully", true);
-    });
-
-    static updateTicketFormStatus = catchAsync(async (req, res) => {
-        const { id } = req.params;
-
-        const findTicketForm = await TicketForm.findById(id);
-        if (!findTicketForm) {
-            return sendResponse(res, 422, "Ticket Form Not Found", false);
-        }
-
-        await TicketForm.findByIdAndUpdate(id, { status: !findTicketForm.status });
-
-        return sendResponse(res, 200, "Ticket Form Status Updated Successfully", true);
-    });
-
-    static deleteTicketForm = catchAsync(async (req, res) => {
-        const { id } = req.params;
-
-        const findTicketForm = await TicketForm.findById(id);
-        if (!findTicketForm) {
-            return sendResponse(res, 422, "Ticket Form Not Found", false);
-        }
-
-        await TicketForm.delete({ _id: id });
-
-        return sendResponse(res, 200, "Ticket Form Deleted Successfully", true);
-    });
 }
 
 export default TicketsController;

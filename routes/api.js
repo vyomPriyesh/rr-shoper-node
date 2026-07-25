@@ -13,6 +13,8 @@ import PackagesController from "../controller/PackagesController.js";
 import UserController from "../controller/UserController.js";
 import DesignationController from "../controller/DesignationController.js";
 import TicketsController from "../controller/TicketsController.js";
+import TicketFormController from "../controller/TicketFormController.js";
+import TicketsTitleController from "../controller/TicketsTitleController.js";
 
 const api = express.Router();
 
@@ -63,19 +65,22 @@ api.post('/designation/update-designation/:id', verifyToken, DesignationControll
 api.get('/designation/:id', verifyToken, DesignationController.getDesignation)
 api.get('/designation/update-status/:id', verifyToken, DesignationController.updateDesignationStatus)
 
-api.post('/allTicketsTitle', verifyToken, TicketsController.allTicketsTitle)
-api.post('/tickets-title/add-tickets-title', verifyToken, TicketsController.addTicketsTitle)
-api.post('/tickets-title/update-tickets-title/:id', verifyToken, TicketsController.updateTicketsTitle)
-api.delete('/tickets-title/delete-tickets-title/:id', verifyToken, TicketsController.deleteTicketsTitle)
-api.get('/tickets-title/update-status/:id', verifyToken, TicketsController.updateTicketsTitleStatus)
+api.post('/allTicketsTitle', verifyToken, TicketsTitleController.allTicketsTitle)
+api.post('/tickets-title/add-tickets-title', verifyToken, TicketsTitleController.addTicketsTitle)
+api.post('/tickets-title/update-tickets-title/:id', verifyToken, TicketsTitleController.updateTicketsTitle)
+api.delete('/tickets-title/delete-tickets-title/:id', verifyToken, TicketsTitleController.deleteTicketsTitle)
+api.get('/tickets-title/update-status/:id', verifyToken, TicketsTitleController.updateTicketsTitleStatus)
 
-api.post('/allTicketForm', verifyToken, TicketsController.allTicketForm)
-api.get('/ticket-form/:id', verifyToken, TicketsController.getTicketForm)
-api.get('/ticket-form/by-ticket-title/:id', verifyToken, TicketsController.getTicketFormByTicketTitle)
-api.post('/ticket-form/add-ticket-form', verifyToken, TicketsController.addTicketForm)
-api.post('/ticket-form/update-ticket-form/:id', verifyToken, TicketsController.updateTicketForm)
-api.get('/ticket-form/update-status/:id', verifyToken, TicketsController.updateTicketFormStatus)
-api.delete('/ticket-form/delete-ticket-form/:id', verifyToken, TicketsController.deleteTicketForm)
+api.post('/allTicketForm', verifyToken, TicketFormController.allTicketForm)
+api.get('/ticket-form/:id', verifyToken, TicketFormController.getTicketForm)
+api.get('/ticket-form/by-ticket-title/:id', verifyToken, TicketFormController.getTicketFormByTicketTitle)
+api.post('/ticket-form/add-ticket-form', verifyToken, TicketFormController.addTicketForm)
+api.post('/ticket-form/update-ticket-form/:id', verifyToken, TicketFormController.updateTicketForm)
+api.get('/ticket-form/update-status/:id', verifyToken, TicketFormController.updateTicketFormStatus)
+api.delete('/ticket-form/delete-ticket-form/:id', verifyToken, TicketFormController.deleteTicketForm)
+
+api.post('/ticket/add-ticket', verifyToken, TicketsController.addTicket)
+api.post('/allTicket', verifyToken, TicketsController.fetchUsersTikets)
 
 api.post('/add-platform', verifyToken, PlatformController.addPlatform)
 api.post('/all-platforms', verifyToken, PlatformController.allPlatforms)
