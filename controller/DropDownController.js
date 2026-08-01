@@ -1,4 +1,5 @@
 import Designation from "../models/Designation.js"
+import LeadTitles from "../models/LeadTitle.js"
 import Platforms from "../models/Platforms.js"
 import TicketsTitle from "../models/TicketsTitle.js"
 import User from "../models/User.js"
@@ -21,10 +22,25 @@ const getOptionsListNames = (data) => {
 }
 
 const ticketStatuses = [
-    { label: 'Not Started', value: 'not_started' },
-    { label: 'In Progress', value: 'in_progress' },
-    { label: 'Resolved', value: 'resolved' },
-]
+    {
+        label: "Not Started",
+        value: "not_started",
+        color: "#5E6C84",     // Jira Neutral text
+        bgColor: "#DFE1E6",   // Jira Neutral background
+    },
+    {
+        label: "In Progress",
+        value: "in_progress",
+        color: "#0052CC",     // Jira Blue
+        bgColor: "#DEEBFF",   // Jira Light Blue
+    },
+    {
+        label: "Resolved",
+        value: "resolved",
+        color: "#006644",     // Jira Green
+        bgColor: "#E3FCEF",   // Jira Light Green
+    },
+];
 
 class DropDownController {
 
@@ -57,6 +73,7 @@ class DropDownController {
         const allUsers = await User.find({ status: 'active', role: 'user' });
         const allDesignations = await Designation.find();
         const allTicketsTitles = await TicketsTitle.find();
+        const allLeadTitles = await LeadTitles.find();
         const roles = [
             { label: 'User', value: 'user' },
             { label: 'Customer', value: 'customer' },
@@ -67,6 +84,7 @@ class DropDownController {
             users: getValusName(allUsers, 'name', '_id'),
             designations: getValusName(allDesignations, 'name', '_id'),
             ticketsTitles: getValusName(allTicketsTitles, 'title', '_id'),
+            leadTitles: getValusName(allLeadTitles, 'title', '_id'),
             roles,
             ticketStatuses
         }
@@ -75,7 +93,10 @@ class DropDownController {
 
         const data = {
             ...options,
-            optionsLists: getOptionsListNames(custSideOptions)
+            optionsLists: [
+                ...getOptionsListNames(options),
+                ...getOptionsListNames(custSideOptions)
+            ]
         }
 
 

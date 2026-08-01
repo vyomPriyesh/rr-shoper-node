@@ -4,7 +4,7 @@ import { catchAsync } from "../utils/catchAsync.js";
 import paginate from "../utils/pagination.js";
 import { sendResponse } from "../utils/response.js";
 
-class TicketFormController {
+class TicketsFormController {
 
     static allTicketForm = catchAsync(async (req, res) => {
         const { page, limit } = req.body || {};
@@ -96,4 +96,4 @@ class TicketFormController {
     });
 }
 
-export default TicketFormController;
+export default TicketsFormController;

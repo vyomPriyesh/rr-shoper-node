@@ -4,6 +4,26 @@ import paginate from "../utils/pagination.js";
 import { sendResponse } from "../utils/response.js";
 import bcryptjs from "bcryptjs";
 
+export const AddUser = async (data) => {
+    const password = data?.name?.toLowerCase() + '@' + data.mobile
+    const hashedPassword = await bcryptjs.hash(password, 10);
+    const findUser = await User.findOne({ email: data?.email })
+    if (findUser) {
+        return {
+            success: false,
+            message: 'Email Already Exist'
+        }
+    }
+    const newUser = await User.create({ ...data, password: hashedPassword })
+    delete newUser.password
+    delete newUser.otp
+    delete newUser.otp_status
+    delete newUser.login_devices
+    return {
+        success: true,
+        newUser,
+    };
+}
 class UserController {
 
     static allUsers = catchAsync(async (req, res) => {
@@ -23,14 +43,21 @@ class UserController {
     static addUserCustomer = catchAsync(async (req, res) => {
 
         const data = req.body || {}
-        const password = data?.name?.toLowerCase() + '@' + data.mobile
-        const hashedPassword = await bcryptjs.hash(password, 10);
-        const findUser = await User.findOne({ email: data?.email })
-        if (findUser) {
-            return sendResponse(res, 422, 'Email Already Exist', false)
+        // const password = data?.name?.toLowerCase() + '@' + data.mobile
+        // const hashedPassword = await bcryptjs.hash(password, 10);
+        // const findUser = await User.findOne({ email: data?.email })
+        // if (findUser) {
+        //     return sendResponse(res, 422, 'Email Already Exist', false)
+        // }
+        // const newUser = await User.create({ ...data, password: hashedPassword })
+        
+        const result = await AddUser(data);
+        
+        if (!result.success) {
+            return sendResponse(res, 422, result.message, false);
         }
-        const newUser = await User.create({ ...data, password: hashedPassword })
-        return sendResponse(res, 200, `${newUser.role == 'user' ? 'User' : 'Customer'} Added Successfully`, true, newUser, true)
+
+        return sendResponse(res, 200, `${newUser.role == 'user' ? 'User' : 'Customer'} Added Successfully`, true, result, true)
 
     })
 

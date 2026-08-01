@@ -13,8 +13,11 @@ import PackagesController from "../controller/PackagesController.js";
 import UserController from "../controller/UserController.js";
 import DesignationController from "../controller/DesignationController.js";
 import TicketsController from "../controller/TicketsController.js";
-import TicketFormController from "../controller/TicketFormController.js";
+import TicketsFormController from "../controller/TicketsFormController.js";
 import TicketsTitleController from "../controller/TicketsTitleController.js";
+import LeadTitlesController from "../controller/LeadTitlesController.js";
+import LeadFormsController from "../controller/LeadsFormController.js";
+import LeadsController from "../controller/LeadsController.js";
 
 const api = express.Router();
 
@@ -41,7 +44,7 @@ api.post('/images/upload', catchAsync(async (req, res) => {
 api.post("/send-otp", LoginController.sendOtp);
 api.post("/verify-otp", LoginController.verifyOtp);
 api.get('/profile', verifyToken, LoginController.profile)
-api.get('/findCustomer/:email', LoginController.findCustomer)
+api.get('/findCustomer/:search', LoginController.findCustomer)
 api.post('/login', LoginController.adminLogin)
 
 // .............for customer side..................................
@@ -71,16 +74,35 @@ api.post('/tickets-title/update-tickets-title/:id', verifyToken, TicketsTitleCon
 api.delete('/tickets-title/delete-tickets-title/:id', verifyToken, TicketsTitleController.deleteTicketsTitle)
 api.get('/tickets-title/update-status/:id', verifyToken, TicketsTitleController.updateTicketsTitleStatus)
 
-api.post('/allTicketForm', verifyToken, TicketFormController.allTicketForm)
-api.get('/ticket-form/:id', verifyToken, TicketFormController.getTicketForm)
-api.get('/ticket-form/by-ticket-title/:id', verifyToken, TicketFormController.getTicketFormByTicketTitle)
-api.post('/ticket-form/add-ticket-form', verifyToken, TicketFormController.addTicketForm)
-api.post('/ticket-form/update-ticket-form/:id', verifyToken, TicketFormController.updateTicketForm)
-api.get('/ticket-form/update-status/:id', verifyToken, TicketFormController.updateTicketFormStatus)
-api.delete('/ticket-form/delete-ticket-form/:id', verifyToken, TicketFormController.deleteTicketForm)
+api.post('/allTicketForm', verifyToken, TicketsFormController.allTicketForm)
+api.get('/ticket-form/:id', verifyToken, TicketsFormController.getTicketForm)
+api.get('/ticket-form/by-ticket-title/:id', verifyToken, TicketsFormController.getTicketFormByTicketTitle)
+api.post('/ticket-form/add-ticket-form', verifyToken, TicketsFormController.addTicketForm)
+api.post('/ticket-form/update-ticket-form/:id', verifyToken, TicketsFormController.updateTicketForm)
+api.get('/ticket-form/update-status/:id', verifyToken, TicketsFormController.updateTicketFormStatus)
+api.delete('/ticket-form/delete-ticket-form/:id', verifyToken, TicketsFormController.deleteTicketForm)
+
+api.post('/allLeadTitles', verifyToken, LeadTitlesController.allLeadTitles)
+api.post('/lead-titles/add-lead-title', verifyToken, LeadTitlesController.addLeadTitle)
+api.post('/lead-titles/update-lead-title/:id', verifyToken, LeadTitlesController.updateLeadTitle)
+api.get('/lead-titles/update-lead-title-status/:id', verifyToken, LeadTitlesController.updateLeadTitleStatus)
+api.delete('/lead-titles/delete-lead-title/:id', verifyToken, LeadTitlesController.deleteLeadTitle)
+
+
+api.post('/allLeadForms', verifyToken, LeadFormsController.allLeadForms)
+api.post('/lead-forms/add-lead-form', verifyToken, LeadFormsController.addLeadForm)
+api.get('/lead-forms/:id', verifyToken, LeadFormsController.getLeadForm)
+api.post('/lead-forms/update-lead-form/:id', verifyToken, LeadFormsController.updateLeadForm)
+api.get('/lead-forms/update-lead-form-status/:id', verifyToken, LeadFormsController.updateLeadFormStatus)
+api.delete('/lead-forms/delete-lead-form/:id', verifyToken, LeadFormsController.deleteLeadForm)
+api.get('/lead-forms/by-lead-title/:id', verifyToken, LeadFormsController.getLeadFormByLeadTitle)
+
+api.post('/leads/findUser', verifyToken, LeadsController.findUser)
+api.post('/leads/add-lead', verifyToken,LeadsController.addLead)
 
 api.post('/ticket/add-ticket', verifyToken, TicketsController.addTicket)
 api.post('/allTicket', verifyToken, TicketsController.fetchUsersTikets)
+api.get('/ticket/:id', verifyToken, TicketsController.viewTicket)
 
 api.post('/add-platform', verifyToken, PlatformController.addPlatform)
 api.post('/all-platforms', verifyToken, PlatformController.allPlatforms)

@@ -11,9 +11,16 @@ class LoginController {
 
     static findCustomer = catchAsync(async (req, res) => {
 
-        const { email } = req.params
+        const { search } = req.params;
 
-        const customer = await User.findOne({ email });
+        const customer = await User.findOne({
+            $or: [
+                { email: search },
+                { mobile: search }
+            ]
+        }).select('name email mobile role status');
+
+
         if (!customer) {
             return sendResponse(res, 422, "Customer not found", false);
         }

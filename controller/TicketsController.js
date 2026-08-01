@@ -50,6 +50,20 @@ class TicketsController {
 
     })
 
+    static viewTicket = catchAsync(async (req, res) => {
+
+        const { id } = req.params
+
+        const data = await Tickets.findById(id).populate("user", "image name").populate("title", "title").populate("platform", "name")
+
+        if (!data) {
+            return sendResponse(res, 422, 'Ticket not Found', false)
+        }
+
+        return sendResponse(res, 200, 'Ticket Found', true, data)
+
+    })
+
 }
 
 export default TicketsController;
