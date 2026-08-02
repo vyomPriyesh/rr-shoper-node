@@ -99,6 +99,9 @@ api.get('/lead-forms/by-lead-title/:id', verifyToken, LeadFormsController.getLea
 
 api.post('/leads/findUser', verifyToken, LeadsController.findUser)
 api.post('/leads/add-lead', verifyToken,LeadsController.addLead)
+api.post('/allLeads', verifyToken,LeadsController.allLeads)
+api.get('/leads/:id', verifyToken,LeadsController.fetchLeadById)
+api.post('/leads/update-lead/:id', verifyToken,LeadsController.updateLead)
 
 api.post('/ticket/add-ticket', verifyToken, TicketsController.addTicket)
 api.post('/allTicket', verifyToken, TicketsController.fetchUsersTikets)

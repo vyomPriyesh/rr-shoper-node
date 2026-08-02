@@ -8,6 +8,15 @@ const LeadSchema = new mongoose.Schema(
             ref: "User",
             default: null,
         },
+        assign_user: {
+            type: Schema.Types.ObjectId,
+            ref: "User",
+            default: null,
+        },
+        status: {
+            type: String,
+            default: 'not_started'
+        },
         values: {
             type: Object,
             default: {},

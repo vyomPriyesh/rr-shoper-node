@@ -95,7 +95,7 @@ class DropDownController {
             ...options,
             optionsLists: [
                 ...getOptionsListNames(options),
-                ...getOptionsListNames(custSideOptions)
+                // ...getOptionsListNames(custSideOptions)
             ]
         }
 
