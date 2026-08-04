@@ -57,7 +57,7 @@ class UserController {
             return sendResponse(res, 422, result.message, false);
         }
 
-        return sendResponse(res, 200, `${newUser.role == 'user' ? 'User' : 'Customer'} Added Successfully`, true, result, true)
+        return sendResponse(res, 200, `${result.role == 'user' ? 'User' : 'Customer'} Added Successfully`, true, result, true)
 
     })
 
