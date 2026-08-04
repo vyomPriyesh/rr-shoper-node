@@ -36,7 +36,7 @@ class LeadsController {
                 name: data.name,
                 email: data.email,
                 mobile: data.mobile,
-                role: 'user'
+                role: 'customer'
             }
             user = await AddUser(payload)
         } else {
