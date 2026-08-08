@@ -37,7 +37,7 @@ class LoginController {
         const otp = testUser ? 123456 : crypto.randomInt(100000, 999999);
 
         if (existingUser) {
-            await User.updateOne({ email }, { otp, otp_send_time: Date.now() });
+            await User.updateOne({ email }, { otp, otp_send_time: new Date() });
         } else {
             const newUser = await User.create({ name: name, mobile, email, otp });
         }
