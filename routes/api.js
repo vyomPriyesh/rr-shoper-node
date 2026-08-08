@@ -18,6 +18,7 @@ import TicketsTitleController from "../controller/TicketsTitleController.js";
 import LeadTitlesController from "../controller/LeadTitlesController.js";
 import LeadFormsController from "../controller/LeadsFormController.js";
 import LeadsController from "../controller/LeadsController.js";
+import CustomerController from "../controller/CustomerController.js";
 
 const api = express.Router();
 
@@ -61,6 +62,12 @@ api.delete('/users/delete-user/:id', verifyToken, UserController.deleteUser)
 api.get('/users/update-role/:id/:role', verifyToken, UserController.updateUserRole)
 api.get('/users/update-designation/:id/:designation', verifyToken, UserController.updateUserDesignation)
 api.get('/users/update-status/:id', verifyToken, UserController.updateUserStatus)
+
+api.post('/allCustomers', verifyToken, CustomerController.allCustomers)
+api.post('/customers/add-customer', verifyToken, CustomerController.addCustomer)
+api.post('/customers/update-customer/:id', verifyToken, CustomerController.updateCustomer)
+api.delete('/customers/delete-customer/:id', verifyToken, CustomerController.deleteCustomer)
+api.get('/customers/update-status/:id', verifyToken, CustomerController.updateCustomerStatus)
 
 api.post('/allDesignation', verifyToken, DesignationController.allDesignation)
 api.post('/designation/add-designation', verifyToken, DesignationController.addDesignation)

@@ -32,7 +32,6 @@ class CustomerController {
         const { page, limit } = req.body || {}
 
         const populates = [
-            { path: 'designation', select: 'name' },
             { path: 'image' },
         ]
         const data = await paginate(Customer, {}, page, limit, {}, populates)
