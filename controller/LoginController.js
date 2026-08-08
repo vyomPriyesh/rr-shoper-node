@@ -125,8 +125,16 @@ class LoginController {
     static profile = catchAsync(async (req, res) => {
 
         const { id: userId, role } = req.user || {};
-        const Modal = role == 'customer' ? Customer : User
-        const profileData = await Modal.findById(userId).select("-login_devices -otp -password")
+        const Modal = role === "customer" ? Customer : User;
+
+        let query = Modal.findById(userId)
+            .select("-login_devices -otp -password");
+
+        if (role !== "customer") {
+            query = query.populate("designation");
+        }
+
+        const profileData = await query;
 
         return sendResponse(res, 200, "Profile found successfully", true, profileData);
 

@@ -15,14 +15,14 @@ export const AddCustomer = async (data) => {
             message: 'Email Already Exist'
         }
     }
-    const newUser = await Customer.create({ ...data, password: hashedPassword })
+    const newCustomer = await Customer.create({ ...data, password: hashedPassword })
     delete newCustomer.password
     delete newCustomer.otp
     delete newCustomer.otp_status
     delete newCustomer.login_devices
     return {
         success: true,
-        newUser,
+        newCustomer,
     };
 }
 class CustomerController {

@@ -97,7 +97,7 @@ api.get('/lead-forms/update-lead-form-status/:id', verifyToken, LeadFormsControl
 api.delete('/lead-forms/delete-lead-form/:id', verifyToken, LeadFormsController.deleteLeadForm)
 api.get('/lead-forms/by-lead-title/:id', verifyToken, LeadFormsController.getLeadFormByLeadTitle)
 
-api.post('/leads/findUser', verifyToken, LeadsController.findUser)
+api.post('/leads/findCustomer', verifyToken, LeadsController.findCustomer)
 api.post('/leads/add-lead', verifyToken,LeadsController.addLead)
 api.post('/allLeads', verifyToken,LeadsController.allLeads)
 api.get('/leads/:id', verifyToken,LeadsController.fetchLeadById)

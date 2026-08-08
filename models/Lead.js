@@ -3,7 +3,12 @@ import MongooseDelete from "mongoose-delete";
 
 const LeadSchema = new mongoose.Schema(
     {
-        user: {
+        customer: {
+            type: Schema.Types.ObjectId,
+            ref: "Customer",
+            default: null,
+        },
+        created_by: {
             type: Schema.Types.ObjectId,
             ref: "User",
             default: null,

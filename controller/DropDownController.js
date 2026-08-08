@@ -25,20 +25,20 @@ const ticketStatuses = [
     {
         label: "Not Started",
         value: "not_started",
-        color: "#5E6C84",     // Jira Neutral text
-        bgColor: "#DFE1E6",   // Jira Neutral background
+        color: "#5E6C84",
+        bgColor: "#ebecec",
     },
     {
         label: "In Progress",
         value: "in_progress",
-        color: "#0052CC",     // Jira Blue
-        bgColor: "#DEEBFF",   // Jira Light Blue
+        color: "#0052CC",
+        bgColor: "#DEEBFF",
     },
     {
         label: "Resolved",
         value: "resolved",
-        color: "#006644",     // Jira Green
-        bgColor: "#E3FCEF",   // Jira Light Green
+        color: "#006644",
+        bgColor: "#E3FCEF",
     },
 ];
 

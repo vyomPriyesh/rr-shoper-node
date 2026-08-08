@@ -28,11 +28,31 @@ const forManage = async (data) => {
             acc[field.type] = [];
         }
 
-        acc[field.type].push({
+        const fieldData = {
             name,
             value: values[key],
             ...(Array.isArray(values[key]) && { multiple: true }),
-        });
+        };
+
+        // Find extra fields for this particular field
+        const extraField = {};
+
+        const multipleKey = `add_mutiple_${name}_for_manage`;
+        const manuallyKey = `add_manully_${name}_for_manage`;
+
+        if (multipleKey in values) {
+            extraField.add_mutiple = values[multipleKey];
+        }
+
+        if (manuallyKey in values) {
+            extraField.add_manully = values[manuallyKey];
+        }
+
+        if (Object.keys(extraField).length) {
+            fieldData.extraField = extraField;
+        }
+
+        acc[field.type].push(fieldData);
 
         return acc;
     }, {});

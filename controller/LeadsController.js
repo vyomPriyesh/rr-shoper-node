@@ -1,3 +1,4 @@
+import Customer from "../models/Customer.js";
 import Lead from "../models/Lead.js";
 import User from "../models/User.js";
 import { catchAsync } from "../utils/catchAsync.js";
@@ -8,11 +9,11 @@ import { AddCustomer } from "./CustomerController.js";
 
 class LeadsController {
 
-    static findUser = catchAsync(async (req, res) => {
+    static findCustomer = catchAsync(async (req, res) => {
 
         const { search } = req.body;
 
-        const customer = await User.findOne({
+        const customer = await Customer.findOne({
             $or: [
                 { email: search },
                 { mobile: search }
@@ -30,28 +31,30 @@ class LeadsController {
     static addLead = catchAsync(async (req, res) => {
 
         const data = req.body || {}
-        let user;
-        if (!data?.user) {
+        let customer;
+        if (!data?.customer) {
             const payload = {
                 name: data.name,
                 email: data.email,
                 mobile: data.mobile,
                 role: 'customer'
             }
-            user = await AddCustomer(payload)
+            customer = await AddCustomer(payload)
         } else {
-            user = {
+            customer = {
                 success: true,
-                newUser: {
-                    _id: data.user,
+                newCustomer: {
+                    _id: data.customer,
                 }
             }
         }
 
-        if (!user.success) {
-            return sendResponse(res, 422, user.message, false);
+        if (!customer.success) {
+            return sendResponse(res, 422, customer.message, false);
         }
-        const formatedValue = await forManage({ user: user?.newUser?._id, assign_user: data.assign_user, values: data?.values })
+        const { id: userId } = req.user || {};
+        const formatedValue = await forManage({ customer: customer?.newCustomer?._id, assign_user: data.assign_user, created_by: userId, values: data?.values })
+
         await Lead.create(formatedValue)
 
         return sendResponse(res, 200, "Lead Create SuccessFully", true);
@@ -62,7 +65,7 @@ class LeadsController {
         const { id } = req.params || {}
         const data = req.body || {}
 
-        const formatedValue = await forManage({ user: data?.user, status: data?.status, assign_user: data?.assign_user, values: data?.values })
+        const formatedValue = await forManage({ customer: data?.customer, status: data?.status, assign_user: data?.assign_user, values: data?.values })
         await Lead.findByIdAndUpdate(id, formatedValue)
 
         return sendResponse(res, 200, "Lead Update SuccessFully", true);
@@ -78,14 +81,18 @@ class LeadsController {
         if (role !== 'admin') {
             query = {
                 ...query,
-                assign_user: id
+                $or: [
+                    { assign_user: id },
+                    { created_by: id },
+                ],
             }
         }
 
         const populate = [
-            { path: 'user', select: 'name' },
+            { path: 'customer', select: 'name' },
+            role === 'admin' && { path: 'created_by', select: 'name' },
             { path: 'assign_user', select: 'name' },
-        ]
+        ].filter(Boolean)
         const data = await paginate(Lead, query, page, limit, {}, populate);
         delete query.status
         const statusCounts = await Lead.aggregate([
@@ -107,7 +114,7 @@ class LeadsController {
     static fetchLeadById = catchAsync(async (req, res) => {
         const { id } = req.params || {}
 
-        const findLead = await Lead.findById(id).populate("user", "name email mobile").populate("assign_user", "name email mobile")
+        const findLead = await Lead.findById(id).populate("customer", "name email mobile createdAt status otp_status image").populate("assign_user", "name email mobile image").populate("created_by", "name email mobile image")
         if (!findLead) {
             return sendResponse(res, 422, "Lead not found", false);
         }
