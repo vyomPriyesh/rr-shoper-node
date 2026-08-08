@@ -50,9 +50,9 @@ class UserController {
         //     return sendResponse(res, 422, 'Email Already Exist', false)
         // }
         // const newUser = await User.create({ ...data, password: hashedPassword })
-        
+
         const result = await AddUserFunction(data);
-        
+
         if (!result.success) {
             return sendResponse(res, 422, result.message, false);
         }
@@ -65,6 +65,7 @@ class UserController {
 
         const { id } = req.params
         const data = req.body || {}
+        delete data.password
         const findUser = await User.findById(id)
         if (!findUser) {
             return sendResponse(res, 422, `User Not Found`, false)
@@ -72,6 +73,20 @@ class UserController {
         await User.findByIdAndUpdate(id, { ...data })
 
         return sendResponse(res, 200, `User Update Successfully`, true)
+
+    })
+
+    static updateUserPassword = catchAsync(async (req, res) => {
+
+        const { password, id } = req.params
+        const hashedPassword = await bcryptjs.hash(password, 10);
+        const findUser = await User.findById(id)
+        if (!findUser) {
+            return sendResponse(res, 422, `User Not Found`, false)
+        }
+        await User.findByIdAndUpdate(id, { password: hashedPassword })
+
+        return sendResponse(res, 200, `User Password Update Successfully`, true)
 
     })
 

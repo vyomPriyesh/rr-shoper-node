@@ -19,6 +19,8 @@ import LeadTitlesController from "../controller/LeadTitlesController.js";
 import LeadFormsController from "../controller/LeadsFormController.js";
 import LeadsController from "../controller/LeadsController.js";
 import CustomerController from "../controller/CustomerController.js";
+import verifyAdmin from "../Middleware/verifyAdmin.js";
+import verifyPermission from "../Middleware/verifyPermission.js";
 
 const api = express.Router();
 
@@ -55,13 +57,14 @@ api.get('/all-options', DropDownController.allDropDowns)
 
 api.get('/admin-all-options', verifyToken, DropDownController.adminAllDropDowns)
 
-api.post('/allUsers', verifyToken, UserController.allUsers)
-api.post('/users/add-user', verifyToken, UserController.addUser)
-api.post('/users/update-user/:id', verifyToken, UserController.updateUser)
-api.delete('/users/delete-user/:id', verifyToken, UserController.deleteUser)
-api.get('/users/update-role/:id/:role', verifyToken, UserController.updateUserRole)
-api.get('/users/update-designation/:id/:designation', verifyToken, UserController.updateUserDesignation)
-api.get('/users/update-status/:id', verifyToken, UserController.updateUserStatus)
+api.post('/allUsers', verifyToken, verifyPermission('Users', 'view'), UserController.allUsers)
+api.post('/users/add-user', verifyToken, verifyPermission('Users', 'add'), UserController.addUser)
+api.post('/users/update-user/:id', verifyToken, verifyPermission('Users', 'update'), UserController.updateUser)
+api.post('/users/update-user-password/:id/:password', verifyToken, verifyAdmin, UserController.updateUserPassword)
+api.get('/users/update-role/:id/:role', verifyToken, verifyPermission('Users', 'update'), UserController.updateUserRole)
+api.get('/users/update-designation/:id/:designation', verifyToken, verifyPermission('Users', 'update'), UserController.updateUserDesignation)
+api.get('/users/update-status/:id', verifyToken, verifyPermission('Users', 'update'), UserController.updateUserStatus)
+api.delete('/users/delete-user/:id', verifyToken, verifyPermission('Users', 'delete'), UserController.deleteUser)
 
 api.post('/allCustomers', verifyToken, CustomerController.allCustomers)
 api.post('/customers/add-customer', verifyToken, CustomerController.addCustomer)
@@ -105,10 +108,10 @@ api.delete('/lead-forms/delete-lead-form/:id', verifyToken, LeadFormsController.
 api.get('/lead-forms/by-lead-title/:id', verifyToken, LeadFormsController.getLeadFormByLeadTitle)
 
 api.post('/leads/findCustomer', verifyToken, LeadsController.findCustomer)
-api.post('/leads/add-lead', verifyToken,LeadsController.addLead)
-api.post('/allLeads', verifyToken,LeadsController.allLeads)
-api.get('/leads/:id', verifyToken,LeadsController.fetchLeadById)
-api.post('/leads/update-lead/:id', verifyToken,LeadsController.updateLead)
+api.post('/leads/add-lead', verifyToken, LeadsController.addLead)
+api.post('/allLeads', verifyToken, LeadsController.allLeads)
+api.get('/leads/:id', verifyToken, LeadsController.fetchLeadById)
+api.post('/leads/update-lead/:id', verifyToken, LeadsController.updateLead)
 
 api.post('/ticket/add-ticket', verifyToken, TicketsController.addTicket)
 api.post('/allTicket', verifyToken, TicketsController.fetchUsersTikets)

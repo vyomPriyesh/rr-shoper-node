@@ -26,7 +26,7 @@ const verifyToken = async (req, res, next) => {
       const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
       const Modal = decoded?.role == 'customer' ? Customer : User
      
-      let user = await Modal.findOne({ _id: decoded.id, 'login_devices.token': token, status: 'active' }).select("-password -login_devices")
+      let user = await Modal.findOne({ _id: decoded.id, 'login_devices.token': token, status: 'active' }).select("-password -login_devices").populate("designation")
 
       if (!user) {
         return sendResponse(res, 401, {
