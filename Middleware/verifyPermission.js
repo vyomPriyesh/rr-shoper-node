@@ -23,7 +23,10 @@ const verifyPermission = (module_name, action) => {
                     false
                 );
             }
-            if(req.user.role ==='admin') next()
+
+            if (req.user.role === "admin") {
+                return next();
+            }
             const permissions = req.user.designation.permissions || [];
             const modulePermission = permissions.find(
                 (permission) =>
@@ -52,7 +55,7 @@ const verifyPermission = (module_name, action) => {
                 );
             }
 
-            next();
+            return next();
         } else {
             return sendResponse(
                 res,
@@ -60,6 +63,7 @@ const verifyPermission = (module_name, action) => {
                 'Invalid token',
                 false
             );
+            return next();
         }
     }
 };
