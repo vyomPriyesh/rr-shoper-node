@@ -23,7 +23,7 @@ const verifyPermission = (module_name, action) => {
                     false
                 );
             }
-            if(req.user.role ==='admin') return
+            if(req.user.role ==='admin') next()
             const permissions = req.user.designation.permissions || [];
             const modulePermission = permissions.find(
                 (permission) =>
