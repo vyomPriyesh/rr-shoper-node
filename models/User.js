@@ -44,7 +44,7 @@ const userSchema = new mongoose.Schema(
 
         otp_send_time: {
             type: Date,
-            default: Date.now()
+            default: Date
         },
 
         otp_status: {

@@ -94,7 +94,7 @@ class LoginController {
         const fiveMinutes = 5 * 60 * 1000;
 
         if (diff > fiveMinutes) {
-            return sendResponse(res, 400, "OTP expired", false);
+            return sendResponse(res, 400, "OTP expired", false, { currentTime, otpTime });
         }
 
 
