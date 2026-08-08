@@ -6,6 +6,7 @@ import { sendResponse } from "../utils/response.js";
 import crypto from 'crypto'
 import emailotpsending from "../utils/emailotpsending.js";
 import "dotenv/config";
+import Customer from "../models/Customer.js";
 
 class LoginController {
 
@@ -13,7 +14,7 @@ class LoginController {
 
         const { search } = req.params;
 
-        const customer = await User.findOne({
+        const customer = await Customer.findOne({
             $or: [
                 { email: search },
                 { mobile: search }
@@ -32,17 +33,17 @@ class LoginController {
         const { mobile, email } = req.body;
         const name = email?.split("@")[0]
 
-        const testUser = email === 'rrshopertest@gmail.com'
-        const existingUser = await User.findOne({ email });
-        const otp = testUser ? 123456 : crypto.randomInt(100000, 999999);
+        const testCustomer = email === 'rrshopertest@gmail.com'
+        const existingUser = await Customer.findOne({ email });
+        const otp = testCustomer ? 123456 : crypto.randomInt(100000, 999999);
 
         if (existingUser) {
-            await User.updateOne({ email }, { otp, otp_send_time: new Date() });
+            await Customer.updateOne({ email }, { otp, otp_send_time: new Date() });
         } else {
-            const newUser = await User.create({ name: name, mobile, email, otp });
+            const newUser = await Customer.create({ name: name, mobile, email, otp });
         }
 
-        if (!testUser) {
+        if (!testCustomer) {
             emailotpsending.sendMail({
                 from: `"RR Shoper" <${process.env.EMAIL_USER}>`,
                 to: email,
@@ -76,32 +77,32 @@ class LoginController {
     static verifyOtp = catchAsync(async (req, res) => {
 
         const { mobile, otp } = req.body;
-        const user = await User.findOne({ mobile });
+        const customer = await Customer.findOne({ mobile });
 
-        if (!user) {
-            return sendResponse(res, 422, "User not found", false);
+        if (!customer) {
+            return sendResponse(res, 422, "customer not found", false);
         }
-        if (user.otp !== otp) {
+        if (customer.otp !== otp) {
             return sendResponse(res, 400, "Invalid OTP", false);
         }
         const currentTime = Date.now();
 
-        const otpTime = new Date(user.otp_send_time).getTime();
+        const otpTime = new Date(customer.otp_send_time).getTime();
 
         const diff = currentTime - otpTime;
 
         const fiveMinutes = 5 * 60 * 1000;
 
         if (diff > fiveMinutes) {
-            return sendResponse(res, 400, "OTP expired", false, { currentTime, otpTime });
+            return sendResponse(res, 400, "OTP expired", false);
         }
 
 
         // OTP is valid, you can generate a token here if needed
-        const token = generateToken(user);
+        const token = generateToken(customer);
 
-        const userData = await User.findByIdAndUpdate(
-            { _id: user._id },
+        const customerData = await Customer.findByIdAndUpdate(
+            { _id: customer._id },
             {
                 otp_status: "verified", status: "active",
                 $push: {
@@ -114,7 +115,7 @@ class LoginController {
             { new: true },
         ).select("-login_devices -password");
         const data = {
-            user: userData,
+            user: customerData,
             token,
         }
 
@@ -123,9 +124,9 @@ class LoginController {
 
     static profile = catchAsync(async (req, res) => {
 
-        const userId = req.user.id;
-
-        const profileData = await User.findById(userId).select("-login_devices -otp -password").populate("designation")
+        const { id: userId, role } = req.user || {};
+        const Modal = role == 'customer' ? Customer : User
+        const profileData = await Modal.findById(userId).select("-login_devices -otp -password")
 
         return sendResponse(res, 200, "Profile found successfully", true, profileData);
 

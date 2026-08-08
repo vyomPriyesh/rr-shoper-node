@@ -1,7 +1,7 @@
 import mongoose, { Schema } from "mongoose";
 import MongooseDelete from "mongoose-delete";
 
-const userSchema = new mongoose.Schema(
+const CustomerSchema = new mongoose.Schema(
     {
         name: {
             type: String,
@@ -11,11 +11,6 @@ const userSchema = new mongoose.Schema(
             type:  Schema.Types.ObjectId,
             ref: "Images"
         },
-        designation: {
-            type:  Schema.Types.ObjectId,
-            ref: "Designation"
-        },
-
         password: {
             type: String,
             default: null
@@ -34,7 +29,7 @@ const userSchema = new mongoose.Schema(
 
         role: {
             type: String,
-            default: "user",
+            default: "customer",
         },
 
         otp: {
@@ -61,7 +56,7 @@ const userSchema = new mongoose.Schema(
             {
                 token: String,
                 ip: String,
-                user_agent: String,
+                Customer_agent: String,
                 device_name: String,
                 login_time: Date
             }
@@ -72,7 +67,7 @@ const userSchema = new mongoose.Schema(
     }
 );
 
-userSchema.plugin(MongooseDelete, { deletedAt: true, overrideMethods: 'all' });
-const User = mongoose.model("User", userSchema);
+CustomerSchema.plugin(MongooseDelete, { deletedAt: true, overrideMethods: 'all' });
+const Customer = mongoose.model("Customer", CustomerSchema);
 
-export default User;
+export default Customer;

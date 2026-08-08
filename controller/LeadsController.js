@@ -4,7 +4,7 @@ import { catchAsync } from "../utils/catchAsync.js";
 import forManage from "../utils/HandleFormValues.js";
 import paginate from "../utils/pagination.js";
 import { sendResponse } from "../utils/response.js";
-import { AddUser } from "./UserController.js";
+import { AddCustomer } from "./CustomerController.js";
 
 class LeadsController {
 
@@ -38,7 +38,7 @@ class LeadsController {
                 mobile: data.mobile,
                 role: 'customer'
             }
-            user = await AddUser(payload)
+            user = await AddCustomer(payload)
         } else {
             user = {
                 success: true,

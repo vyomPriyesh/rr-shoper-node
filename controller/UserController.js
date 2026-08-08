@@ -4,9 +4,9 @@ import paginate from "../utils/pagination.js";
 import { sendResponse } from "../utils/response.js";
 import bcryptjs from "bcryptjs";
 
-export const AddUser = async (data) => {
-    const password = data?.name?.toLowerCase() + '@' + data.mobile
-    const hashedPassword = await bcryptjs.hash(password, 10);
+export const AddUserFunction = async (data) => {
+    // const password = data?.name?.toLowerCase() + '@' + data.mobile
+    const hashedPassword = await bcryptjs.hash(data.password, 10);
     const findUser = await User.findOne({ email: data?.email })
     if (findUser) {
         return {
@@ -40,7 +40,7 @@ class UserController {
 
     })
 
-    static addUserCustomer = catchAsync(async (req, res) => {
+    static addUser = catchAsync(async (req, res) => {
 
         const data = req.body || {}
         // const password = data?.name?.toLowerCase() + '@' + data.mobile
@@ -51,40 +51,40 @@ class UserController {
         // }
         // const newUser = await User.create({ ...data, password: hashedPassword })
         
-        const result = await AddUser(data);
+        const result = await AddUserFunction(data);
         
         if (!result.success) {
             return sendResponse(res, 422, result.message, false);
         }
 
-        return sendResponse(res, 200, `${result.role == 'user' ? 'User' : 'Customer'} Added Successfully`, true, result, true)
+        return sendResponse(res, 200, `User Added Successfully`, true, result, true)
 
     })
 
-    static updateUserCustomer = catchAsync(async (req, res) => {
+    static updateUser = catchAsync(async (req, res) => {
 
         const { id } = req.params
         const data = req.body || {}
         const findUser = await User.findById(id)
         if (!findUser) {
-            return sendResponse(res, 422, `${findUser.role == 'user' ? 'User' : 'Customer'} Not Found`, false)
+            return sendResponse(res, 422, `User Not Found`, false)
         }
         await User.findByIdAndUpdate(id, { ...data })
 
-        return sendResponse(res, 200, `${findUser.role == 'user' ? 'User' : 'Customer'} Update Successfully`, true)
+        return sendResponse(res, 200, `User Update Successfully`, true)
 
     })
 
-    static deleteUserCustomer = catchAsync(async (req, res) => {
+    static deleteUser = catchAsync(async (req, res) => {
 
         const { id } = req.params
         const findUser = await User.findById(id)
         if (!findUser) {
-            return sendResponse(res, 422, `${findUser.role == 'user' ? 'User' : 'Customer'} Not Found`, false)
+            return sendResponse(res, 422, `User Not Found`, false)
         }
         await User.delete({ _id: id })
 
-        return sendResponse(res, 200, `${findUser.role == 'user' ? 'User' : 'Customer'} Delete Successfully`, true)
+        return sendResponse(res, 200, `User Delete Successfully`, true)
 
     })
 
