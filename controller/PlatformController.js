@@ -53,7 +53,7 @@ class PlatformController {
         if (!findPlatform) {
             return sendResponse(res, 422, 'Platform Not Found', false)
         }
-        await Platforms.findByIdAndUpdate(id, { ...data, image: data.image.uid })
+        await Platforms.findByIdAndUpdate(id, { ...data, image: data.images.uid })
 
         return sendResponse(res, 200, 'Platform Update Successfully', true)
     })
