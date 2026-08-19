@@ -21,6 +21,7 @@ import LeadsController from "../controller/LeadsController.js";
 import CustomerController from "../controller/CustomerController.js";
 import verifyAdmin from "../Middleware/verifyAdmin.js";
 import verifyPermission from "../Middleware/verifyPermission.js";
+import ExportController from "../controller/ExportController.js";
 
 const api = express.Router();
 
@@ -54,6 +55,8 @@ api.post('/login', LoginController.adminLogin)
 api.post('/customer-all-platforms', PlatformController.customerAllPlatforms)
 api.post('/customer-all-packages', PackagesController.customerAllPackages)
 api.get('/all-options', DropDownController.allDropDowns)
+
+api.post('/export/:name', verifyToken, ExportController.exportExcel)
 
 api.get('/admin-all-options', verifyToken, DropDownController.adminAllDropDowns)
 

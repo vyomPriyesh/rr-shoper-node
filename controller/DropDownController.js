@@ -42,6 +42,48 @@ const ticketStatuses = [
     },
 ];
 
+export const getAdminDropdowns = async () => {
+    const [
+        allPlatforms,
+        allUsers,
+        allDesignations,
+        allTicketsTitles,
+        allLeadTitles,
+    ] = await Promise.all([
+        Platforms.find().lean(),
+        User.find({
+            status: "active",
+            role: "user",
+        }).lean(),
+        Designation.find().lean(),
+        TicketsTitle.find().lean(),
+        LeadTitles.find().lean(),
+    ]);
+
+    const roles = [
+        { label: 'User', value: 'user' },
+        { label: 'Customer', value: 'customer' },
+    ]
+
+    const options = {
+        platforms: getValusName(allPlatforms, 'name', '_id'),
+        users: getValusName(allUsers, 'name', '_id'),
+        designations: getValusName(allDesignations, 'name', '_id'),
+        ticketsTitles: getValusName(allTicketsTitles, 'title', '_id'),
+        leadTitles: getValusName(allLeadTitles, 'title', '_id'),
+        roles,
+        ticketStatuses
+    }
+
+    return {
+        ...options,
+
+        optionsLists: [
+            ...getOptionsListNames(options),
+        ],
+    };
+};
+
 class DropDownController {
 
     static async getOptions() {
@@ -69,38 +111,37 @@ class DropDownController {
 
     static adminAllDropDowns = catchAsync(async (req, res) => {
 
-        const allPlatforms = await Platforms.find();
-        const allUsers = await User.find({ status: 'active', role: 'user' });
-        const allDesignations = await Designation.find();
-        const allTicketsTitles = await TicketsTitle.find();
-        const allLeadTitles = await LeadTitles.find();
-        const roles = [
-            { label: 'User', value: 'user' },
-            { label: 'Customer', value: 'customer' },
-        ]
+        // const allPlatforms = await Platforms.find();
+        // const allUsers = await User.find({ status: 'active', role: 'user' });
+        // const allDesignations = await Designation.find();
+        // const allTicketsTitles = await TicketsTitle.find();
+        // const allLeadTitles = await LeadTitles.find();
+        // const roles = [
+        //     { label: 'User', value: 'user' },
+        //     { label: 'Customer', value: 'customer' },
+        // ]
 
-        const options = {
-            platforms: getValusName(allPlatforms, 'name', '_id'),
-            users: getValusName(allUsers, 'name', '_id'),
-            designations: getValusName(allDesignations, 'name', '_id'),
-            ticketsTitles: getValusName(allTicketsTitles, 'title', '_id'),
-            leadTitles: getValusName(allLeadTitles, 'title', '_id'),
-            roles,
-            ticketStatuses
-        }
+        // const options = {
+        //     platforms: getValusName(allPlatforms, 'name', '_id'),
+        //     users: getValusName(allUsers, 'name', '_id'),
+        //     designations: getValusName(allDesignations, 'name', '_id'),
+        //     ticketsTitles: getValusName(allTicketsTitles, 'title', '_id'),
+        //     leadTitles: getValusName(allLeadTitles, 'title', '_id'),
+        //     roles,
+        //     ticketStatuses
+        // }
 
-        const custSideOptions = await DropDownController.getOptions();
+        // const custSideOptions = await DropDownController.getOptions();
 
-        const data = {
-            ...options,
-            optionsLists: [
-                ...getOptionsListNames(options),
-                // ...getOptionsListNames(custSideOptions)
-            ]
-        }
+        // const data = {
+        //     ...options,
+        //     optionsLists: [
+        //         ...getOptionsListNames(options),
+        //         // ...getOptionsListNames(custSideOptions)
+        //     ]
+        // }
 
-
-
+        const data = await getAdminDropdowns();
 
         return sendResponse(res, 200, 'All Drop Downs Options', true, data, true)
 
