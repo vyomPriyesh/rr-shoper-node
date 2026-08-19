@@ -52,7 +52,7 @@ const getModalData = (name, sample) => {
     }
 }
 
-const key = (key) => {
+const keyValue = (key) => {
     return key.trim()
         .toLowerCase()
         .replace(/\s+/g, "_");
@@ -60,7 +60,7 @@ const key = (key) => {
 
 const valuesDataWithRow = (data, options) => {
     return data.reduce((acc, item) => {
-        const key = key(item.name)
+        const key = keyValue(item.name)
         // .trim()
         // .toLowerCase()
         // .replace(/\s+/g, "_");
