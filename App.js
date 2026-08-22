@@ -29,7 +29,7 @@ const corsOptions = {
         // }
     
         // IMPORTANT: do NOT throw error, just block silently
-        return callback(null, false);
+        return callback(null, true);
     },
     // origin: true,
     credentials: true,
