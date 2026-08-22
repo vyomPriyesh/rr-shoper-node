@@ -6,7 +6,7 @@ import Payment from "../models/Payment.js";
 import Customer from "../models/Customer.js";
 
 const expireDate = Math.floor(
-    (Date.now() + 5 * 60 * 1000) / 1000
+    (Date.now() + 3 * 60 * 1000) / 1000
 );
 // const expireDate = Math.floor(
 //     new Date(
