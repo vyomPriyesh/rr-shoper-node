@@ -20,6 +20,10 @@ const CustomerSchema = new mongoose.Schema(
             ref: "Packages",
             default: null,
         },
+        package_expire: {
+            type: Number,
+            default: null
+        },
         email: {
             type: String,
             default: null,

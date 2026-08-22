@@ -134,6 +134,10 @@ class LoginController {
             query = query.populate("designation");
         }
 
+        if (role == "customer") {
+            query = query.populate("package_id", "name");
+        }
+
         const profileData = await query;
 
         return sendResponse(res, 200, "Profile found successfully", true, profileData);

@@ -64,10 +64,15 @@ class PaymentControler {
 
         const paymentStatus = await phonepeClient.getOrderStatus(id);
         const paymentData = await Payment.findByIdAndUpdate(id, { payment_status: paymentStatus?.state }).select('-phonepeResponse')
-        if (paymentData?.state === 'COMPLETED') {
-            await Customer.findByIdAndUpdate(paymentData?.customer_id, { package_id: paymentData?.package_id })
+        if (paymentStatus?.state === 'COMPLETED') {
+            const createdAt = new Date(paymentData?.createdAt);
+
+            const expireDate = new Date(createdAt);
+            expireDate.setMonth(expireDate.getMonth() + 1);
+
+            await Customer.findByIdAndUpdate(paymentData?.customer_id, { package_id: paymentData?.package_id, package_expire: expireDate })
         }
-        
+
         return sendResponse(res, 200, "Payment status fetched", true, paymentData);
 
     })
