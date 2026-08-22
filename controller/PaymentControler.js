@@ -29,6 +29,8 @@ const paymentDataUpdate = async (payload, phonepeResponse) => {
             const expiredPackageIndex = customer.package.findIndex(
                 (item) => item.package_expire_status === true
             );
+            console.log(customer.package)
+            console.log(expiredPackageIndex)
 
             if (expiredPackageIndex !== -1) {
 
