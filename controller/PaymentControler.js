@@ -71,9 +71,9 @@ class PaymentControler {
 
         const { id } = req.params;
 
-        const paymentStatus = await phonepeClient.getOrderStatus(id);
-        const paymentData = await Payment.findByIdAndUpdate(id, { payment_status: paymentStatus?.state }).select('-phonepeResponse')
-        if (paymentStatus?.state == 'COMPLETED') {
+        const paymentStatusData = await phonepeClient.getOrderStatus(id);
+        const paymentData = await Payment.findByIdAndUpdate(id, { payment_status: paymentStatusData?.state }).select('-phonepeResponse')
+        if (paymentStatusData?.state == 'COMPLETED') {
             await Customer.findByIdAndUpdate(
                 paymentData?.customer_id,
                 {
