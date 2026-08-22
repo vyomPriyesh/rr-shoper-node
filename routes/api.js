@@ -75,13 +75,14 @@ api.post('/customers/add-customer', verifyToken, verifyPermission('Customers', '
 api.post('/customers/update-customer/:id', verifyToken, verifyPermission('Customers', 'update'), CustomerController.updateCustomer)
 api.delete('/customers/delete-customer/:id', verifyToken, verifyPermission('Customers', 'delete'), CustomerController.deleteCustomer)
 api.get('/customers/update-status/:id', verifyToken, verifyPermission('Customers', 'update'), CustomerController.updateCustomerStatus)
+api.get('/customers/detailes/:id', verifyToken, CustomerController.customerDetails)
 
 api.post('/allDesignation', verifyToken, verifyPermission('Designation', 'view'), DesignationController.allDesignation)
 api.post('/designation/add-designation', verifyToken, verifyPermission('Designation', 'add'), DesignationController.addDesignation)
 api.post('/designation/update-designation/:id', verifyToken, verifyPermission('Designation', 'update'), DesignationController.updateDesignation)
 api.get('/designation/update-status/:id', verifyToken, verifyPermission('Designation', 'update'), DesignationController.updateDesignationStatus)
 api.delete('/designation/delete/:id', verifyToken, verifyPermission('Designation', 'delete'), DesignationController.deleteDesignation)
-api.get('/designation/:id', verifyToken, verifyPermission('Designation', 'view'), DesignationController.getDesignation)
+api.get('/designation/:id', verifyToken, DesignationController.getDesignation)
 
 api.post('/allTicketsTitle', verifyToken, verifyPermission('Tickets Title', 'view'), TicketsTitleController.allTicketsTitle)
 api.post('/tickets-title/add-tickets-title', verifyToken, verifyPermission('Tickets Title', 'add'), TicketsTitleController.addTicketsTitle)
@@ -94,8 +95,8 @@ api.post('/ticket-form/add-ticket-form', verifyToken, verifyPermission('Tickets 
 api.post('/ticket-form/update-ticket-form/:id', verifyToken, verifyPermission('Tickets Forms', 'update'), TicketsFormController.updateTicketForm)
 api.get('/ticket-form/update-status/:id', verifyToken, verifyPermission('Tickets Forms', 'update'), TicketsFormController.updateTicketFormStatus)
 api.delete('/ticket-form/delete-ticket-form/:id', verifyToken, verifyPermission('Tickets Forms', 'delete'), TicketsFormController.deleteTicketForm)
-api.get('/ticket-form/by-ticket-title/:id', verifyToken, verifyPermission('Tickets Forms', 'view'), TicketsFormController.getTicketFormByTicketTitle)
-api.get('/ticket-form/:id', verifyToken, verifyPermission('Tickets Forms', 'view'), TicketsFormController.getTicketForm)
+api.get('/ticket-form/by-ticket-title/:id', verifyToken, TicketsFormController.getTicketFormByTicketTitle)
+api.get('/ticket-form/:id', verifyToken, TicketsFormController.getTicketForm)
 
 // api.post('/allLeadTitles', verifyToken, verifyPermission('Lead Titles', 'view'), LeadTitlesController.allLeadTitles)
 // api.post('/lead-titles/add-lead-title', verifyToken, verifyPermission('Lead Titles', 'add'), LeadTitlesController.addLeadTitle)
@@ -130,7 +131,7 @@ api.post('/leads/findCustomer', verifyToken, verifyPermission('Leads', 'view'), 
 api.post('/leads/add-lead', verifyToken, verifyPermission('Leads', 'add'), LeadsController.addLead)
 api.post('/leads/update-lead/:id', verifyToken, verifyPermission('Leads', 'update'), LeadsController.updateLead)
 api.delete('/leads/delete-lead/:id', verifyToken, verifyPermission('Leads', 'delete'), LeadsController.deleteLead)
-api.get('/leads/:id', verifyToken, verifyPermission('Leads', 'view'), LeadsController.fetchLeadById)
+api.get('/leads/:id', verifyToken, LeadsController.fetchLeadById)
 
 api.post('/allTicket', verifyToken, TicketsController.fetchUsersTikets)
 api.post('/ticket/add-ticket', verifyToken, TicketsController.addTicket)

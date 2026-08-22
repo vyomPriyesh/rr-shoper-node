@@ -125,7 +125,39 @@ class LoginController {
     static profile = catchAsync(async (req, res) => {
 
         const { id: userId, role } = req.user || {};
+
+        if (role == "customer") {
+
+            const customerData = await Customer.findById(userId)
+
+            if (!customerData) {
+                return sendResponse(res, 500, 'Customer not found', false)
+            }
+
+            const currentTime = Math.floor(Date.now() / 1000);
+
+            const updatedPackages = customerData.package.map((item) => {
+
+                if (
+                    item.package_expire &&
+                    item.package_expire <= currentTime
+                ) {
+                    item.package_expire_status = true;
+                } else {
+                    item.package_expire_status = false;
+                }
+
+                return item;
+            });
+            
+            customerData.package = updatedPackages;
+
+            await customerData.save();
+
+        }
+
         const Modal = role === "customer" ? Customer : User;
+
 
         let query = Modal.findById(userId)
             .select("-login_devices -otp -password");
@@ -133,10 +165,6 @@ class LoginController {
         if (role !== "customer") {
             query = query.populate("designation");
         }
-
-        // if (role == "customer") {
-        //     query = query.populate("package_id", "name");
-        // }
 
         const profileData = await query;
 

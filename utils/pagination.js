@@ -14,7 +14,7 @@ const paginate = async (model, query = {}, page = 1, limit = 10, projection = {}
         .skip(skip)
         .limit(limit)
         .select("-password -login_devices")
-        .sort({ created_at: -1 });
+        .sort({ createdAt: -1 });
 
     if (populate.length > 0) {
         populate.forEach((item) => {
