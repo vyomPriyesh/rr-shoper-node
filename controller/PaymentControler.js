@@ -20,41 +20,44 @@ const paymentDataUpdate = async (payload, phonepeResponse) => {
 
     if (paymentData) {
         if (paymentData.payment_status !== "COMPLETED" && payload?.state == 'COMPLETED') {
-            await Payment.findByIdAndUpdate(payload?.merchantOrderId, { payment_status: payload?.state, phonepeResponse })
+
+            const customer = await Customer.findById(paymentData?.customer_id)
+
+            if (!customer) {
+                return sendResponse(res, 500, 'Customer Not found', false)
+            }
+            const expiredPackageIndex = customer.package.findIndex(
+                (item) => item.package_expire_status === true
+            );
+
+            if (expiredPackageIndex !== -1) {
+
+                // Existing expired package → renew it
+                customer.package[expiredPackageIndex].package_id =
+                    paymentData?.package_id;
+
+                customer.package[expiredPackageIndex].package_expire =
+                    expireDate;
+
+                customer.package[expiredPackageIndex].package_expire_status =
+                    false;
+
+            } else {
+
+                // No expired package → create new package
+                customer.package.push({
+                    package_id: paymentData?.package_id,
+                    package_expire: expireDate,
+                    package_expire_status: false,
+                });
+            }
+
+            await customer.save();
+
+            return await Payment.findByIdAndUpdate(payload?.merchantOrderId, { payment_status: payload?.state, phonepeResponse }, { new: true })
+
         }
-
-        const customer = await Customer.findById(paymentData?.customer_id)
-
-        if (!customer) {
-            return sendResponse(res, 500, 'Customer Not found', false)
-        }
-        const expiredPackageIndex = customer.package.findIndex(
-            (item) => item.package_expire_status === true
-        );
-
-        if (expiredPackageIndex !== -1) {
-
-            // Existing expired package → renew it
-            customer.package[expiredPackageIndex].package_id =
-                paymentData?.package_id;
-
-            customer.package[expiredPackageIndex].package_expire =
-                expireDate;
-
-            customer.package[expiredPackageIndex].package_expire_status =
-                false;
-
-        } else {
-
-            // No expired package → create new package
-            customer.package.push({
-                package_id: paymentData?.package_id,
-                package_expire: expireDate,
-                package_expire_status: false,
-            });
-        }
-
-        await customer.save();
+        return paymentData
     }
 }
 class PaymentControler {
@@ -115,7 +118,7 @@ class PaymentControler {
         const { id } = req.params;
 
         const paymentStatusData = await phonepeClient.getOrderStatus(id);
-        const paymentData = await paymentDataUpdate(paymentStatusData, null);
+        const paymentData = await paymentDataUpdate({ merchantOrderId: id, state: paymentStatusData?.state }, null);
 
         return sendResponse(res, 200, "Payment status fetched", true, paymentData);
 
