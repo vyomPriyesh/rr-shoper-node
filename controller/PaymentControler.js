@@ -73,7 +73,7 @@ class PaymentControler {
 
         const paymentStatusData = await phonepeClient.getOrderStatus(id);
         const paymentData = await Payment.findByIdAndUpdate(id, { payment_status: paymentStatusData?.state }).select('-phonepeResponse')
-        if (paymentStatusData?.state == 'COMPLETED') {
+        if (payment.payment_status !== "COMPLETED" && paymentStatusData?.state == 'COMPLETED') {
             await Customer.findByIdAndUpdate(
                 paymentData?.customer_id,
                 {
@@ -97,7 +97,7 @@ class PaymentControler {
         const { payload } = req.body || {}
 
         const paymentData = await Payment.findByIdAndUpdate(payload?.merchantOrderId, { payment_status: payload?.state, phonepeResponse: req.body }).select('-phonepeResponse')
-        if (payload?.state == 'COMPLETED') {
+        if (paymentData.payment_status !== "COMPLETED" && payload?.state == 'COMPLETED') {
             await Customer.findByIdAndUpdate(
                 paymentData?.customer_id,
                 {
