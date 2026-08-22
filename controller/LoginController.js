@@ -134,9 +134,9 @@ class LoginController {
             query = query.populate("designation");
         }
 
-        if (role == "customer") {
-            query = query.populate("package_id", "name");
-        }
+        // if (role == "customer") {
+        //     query = query.populate("package_id", "name");
+        // }
 
         const profileData = await query;
 

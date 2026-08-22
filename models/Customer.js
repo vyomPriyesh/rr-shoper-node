@@ -15,15 +15,23 @@ const CustomerSchema = new mongoose.Schema(
             type: String,
             default: null
         },
-        package_id: {
-            type: Schema.Types.ObjectId,
-            ref: "Packages",
-            default: null,
-        },
-        package_expire: {
-            type: Number,
-            default: null
-        },
+        package: [
+            {
+                package_id: {
+                    type: Schema.Types.ObjectId,
+                    ref: "Packages",
+                    default: null,
+                },
+                package_expire: {
+                    type: Number,
+                    default: null
+                },
+                package_expire_status: {
+                    type: Boolean,
+                    default: false
+                }
+            }
+        ],
         email: {
             type: String,
             default: null,

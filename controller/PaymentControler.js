@@ -5,6 +5,15 @@ import { phonepeClient } from "../config/phonepe.js";
 import Payment from "../models/Payment.js";
 import Customer from "../models/Customer.js";
 
+const expireDate = Math.floor(
+    (Date.now() + 5 * 60 * 1000) / 1000
+);
+// const expireDate = Math.floor(
+//     new Date(
+//         new Date().setMonth(new Date().getMonth() + 1)
+//     ).getTime() / 1000
+// );
+
 class PaymentControler {
 
     static initiatePhonePePayment = catchAsync(async (req, res) => {
@@ -65,12 +74,18 @@ class PaymentControler {
         const paymentStatus = await phonepeClient.getOrderStatus(id);
         const paymentData = await Payment.findByIdAndUpdate(id, { payment_status: paymentStatus?.state }).select('-phonepeResponse')
         if (paymentStatus?.state === 'COMPLETED') {
-            const createdAt = new Date(paymentData?.createdAt);
-
-            const expireDate = new Date(createdAt);
-            expireDate.setMonth(expireDate.getMonth() + 1);
-
-            await Customer.findByIdAndUpdate(paymentData?.customer_id, { package_id: paymentData?.package_id, package_expire: expireDate })
+            await Customer.findByIdAndUpdate(
+                paymentData?.customer_id,
+                {
+                    $push: {
+                        package: {
+                            package_id: paymentData?.package_id,
+                            package_expire: expireDate
+                        },
+                    },
+                },
+                { new: true }
+            );
         }
 
         return sendResponse(res, 200, "Payment status fetched", true, paymentData);
@@ -83,7 +98,18 @@ class PaymentControler {
 
         const paymentData = await Payment.findByIdAndUpdate(payload?.merchantOrderId, { payment_status: payload?.state, phonepeResponse: req.body }).select('-phonepeResponse')
         if (payload?.state === 'COMPLETED') {
-            await Customer.findByIdAndUpdate(paymentData?.customer_id, { package_id: paymentData?.package_id })
+            await Customer.findByIdAndUpdate(
+                paymentData?.customer_id,
+                {
+                    $push: {
+                        package: {
+                            package_id: paymentData?.package_id,
+                            package_expire: expireDate
+                        },
+                    },
+                },
+                { new: true }
+            );
         }
 
         return sendResponse(res, 200, "Payment status fetched", true, paymentData);
