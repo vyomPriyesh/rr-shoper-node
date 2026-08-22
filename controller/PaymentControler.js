@@ -63,11 +63,11 @@ class PaymentControler {
         const { id } = req.params;
 
         const paymentStatus = await phonepeClient.getOrderStatus(id);
-        const paymentData = await Payment.findByIdAndUpdate(id, { payment_status: paymentStatus?.state })
+        const paymentData = await Payment.findByIdAndUpdate(id, { payment_status: paymentStatus?.state }).select('-phonepeResponse')
         if (paymentData?.state === 'COMPLETED') {
             await Customer.findByIdAndUpdate(paymentData?.customer_id, { package_id: paymentData?.package_id })
         }
-        delete paymentData?.phonepeResponse
+        
         return sendResponse(res, 200, "Payment status fetched", true, paymentData);
 
     })
@@ -76,12 +76,12 @@ class PaymentControler {
 
         const { payload } = req.body || {}
 
-        const paymentData = await Payment.findByIdAndUpdate(payload?.merchantOrderId, { payment_status: payload?.state })
+        const paymentData = await Payment.findByIdAndUpdate(payload?.merchantOrderId, { payment_status: payload?.state, phonepeResponse: req.body }).select('-phonepeResponse')
         if (payload?.state === 'COMPLETED') {
             await Customer.findByIdAndUpdate(paymentData?.customer_id, { package_id: paymentData?.package_id })
         }
-        delete paymentData?.phonepeResponse
-        return sendResponse(res, 200, "Payment status fetched", true, req.body);
+
+        return sendResponse(res, 200, "Payment status fetched", true, paymentData);
     })
 
 }
