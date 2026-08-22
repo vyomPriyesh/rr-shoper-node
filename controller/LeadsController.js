@@ -65,6 +65,11 @@ class LeadsController {
         const { id } = req.params || {}
         const data = req.body || {}
 
+        const findLead = await Lead.findById(id)
+        if (!findLead) {
+            return sendResponse(res, 422, "Lead not found", false);
+        }
+
         const formatedValue = await forManage({ customer: data?.customer, status: data?.status, assign_user: data?.assign_user, values: data?.values })
         await Lead.findByIdAndUpdate(id, formatedValue)
 
@@ -119,6 +124,22 @@ class LeadsController {
             return sendResponse(res, 422, "Lead not found", false);
         }
         return sendResponse(res, 200, "Lead Found", true, findLead, true);
+
+    })
+
+    static deleteLead = catchAsync(async (req, res) => {
+
+        const { id } = req.params || {}
+        const data = req.body || {}
+
+        const findLead = await Lead.findById(id)
+        if (!findLead) {
+            return sendResponse(res, 422, "Lead not found", false);
+        }
+
+        await Lead.delete({ _id: id })
+
+        return sendResponse(res, 200, "Lead Delete SuccessFully", true);
 
     })
 
