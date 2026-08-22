@@ -53,13 +53,16 @@ const paymentDataUpdate = async (payload, phonepeResponse) => {
                     package_expire_status: false,
                 });
             }
+            console.log(customer.package)
 
             await customer.save();
 
             return await Payment.findByIdAndUpdate(payload?.merchantOrderId, { payment_status: payload?.state, phonepeResponse }, { new: true })
 
+        } else {
+            return paymentData
         }
-        return paymentData
+
     }
 }
 class PaymentControler {
