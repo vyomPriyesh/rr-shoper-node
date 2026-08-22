@@ -19,18 +19,18 @@ const allowedOrigins = [
     "https://admin.rrshoper.in",
 ];
 
+// origin: function (origin, callback) {
+//     // allow Postman, mobile apps, curl
+//     if (!origin) return callback(null, true);
+
+//     if (allowedOrigins.includes(origin)) {
+//         return callback(null, true);
+//     }
+
+//     // IMPORTANT: do NOT throw error, just block silently
+//     return callback(null, false);
+// },
 const corsOptions = {
-    // origin: function (origin, callback) {
-    //     // allow Postman, mobile apps, curl
-    //     if (!origin) return callback(null, true);
-
-    //     if (allowedOrigins.includes(origin)) {
-    //         return callback(null, true);
-    //     }
-
-    //     // IMPORTANT: do NOT throw error, just block silently
-    //     return callback(null, false);
-    // },
     origin: true,
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
@@ -45,6 +45,7 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
+app.options("*", cors(corsOptions));
 app.use(express.json());
 
 
