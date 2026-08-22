@@ -22,6 +22,7 @@ import CustomerController from "../controller/CustomerController.js";
 import verifyAdmin from "../Middleware/verifyAdmin.js";
 import verifyPermission from "../Middleware/verifyPermission.js";
 import ExportController from "../controller/ExportController.js";
+import PaymentControler from "../controller/PaymentControler.js";
 
 const api = express.Router();
 
@@ -133,6 +134,10 @@ api.post('/packages/update-package/:id', verifyToken, verifyPermission('Packages
 api.get('/packages/update-status/:id', verifyToken, verifyPermission('Packages', 'update'), PackagesController.updatePackageStatus)
 api.delete('/packages/delete-package/:id', verifyToken, verifyPermission('Packages', 'delete'), PackagesController.deletePackage)
 api.get('/packages/update-popular-package/:id', verifyToken, verifyPermission('Packages', 'update'), PackagesController.updatePopularPackage)
+
+api.post('/payment/initiate', verifyToken, PaymentControler.initiatePhonePePayment)
+api.get('/payment/status/:id', verifyToken, PaymentControler.paymentStatus)
+api.post('/payment/webhook', verifyToken, PaymentControler.paymentWebhook)
 
 
 
