@@ -137,7 +137,7 @@ api.get('/packages/update-popular-package/:id', verifyToken, verifyPermission('P
 
 api.post('/payment/initiate', verifyToken, PaymentControler.initiatePhonePePayment)
 api.get('/payment/status/:id', verifyToken, PaymentControler.paymentStatus)
-api.post('/payment/webhook', verifyToken, PaymentControler.paymentWebhook)
+api.post('/payment/webhook', PaymentControler.paymentWebhook)
 
 
 
