@@ -1,7 +1,6 @@
 import { MetaInfo, PrefillUserLoginDetails, StandardCheckoutPayRequest } from "@phonepe-pg/pg-sdk-node";
 import { catchAsync } from "../utils/catchAsync.js"
 import { sendResponse } from "../utils/response.js";
-import { randomUUID } from "crypto";
 import { phonepeClient } from "../config/phonepe.js";
 import Payment from "../models/Payment.js";
 
@@ -20,7 +19,7 @@ class PaymentControler {
 
         const paymentInitiate = await Payment.create({ customer_id: customerId, package_id })
 
-        const merchantOrderId = randomUUID();
+        const merchantOrderId = paymentInitiate?._id;
 
         const prefillUserLoginDetails =
             PrefillUserLoginDetails.builder()
@@ -67,7 +66,7 @@ class PaymentControler {
         );
 
     })
-    
+
     static paymentWebhook = catchAsync(async (req, res) => {
 
         await Payment.create({ phonepeResponse: req.body })
