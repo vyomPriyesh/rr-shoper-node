@@ -3,6 +3,7 @@ import { catchAsync } from "../utils/catchAsync.js"
 import { sendResponse } from "../utils/response.js";
 import { phonepeClient } from "../config/phonepe.js";
 import Payment from "../models/Payment.js";
+import Customer from "../models/Customer.js";
 
 class PaymentControler {
 
@@ -15,9 +16,15 @@ class PaymentControler {
             return sendResponse(res, 500, 'Invalid amount', false)
         }
 
+        const customer = await Customer.findById(customerId)
+
+        if (!customer) {
+            return sendResponse(res, 500, 'Customer Not found', false)
+        }
+
         const amountInPaise = Math.round(Number(amount) * 100);
 
-        const paymentInitiate = await Payment.create({ customer_id: customerId, package_id })
+        const paymentInitiate = await Payment.create({ customer_id: customerId, package_id, amount })
 
         const merchantOrderId = paymentInitiate?._id;
 
@@ -43,7 +50,7 @@ class PaymentControler {
             .metaInfo(metaInfo)
             .redirectUrl(redirectUrl)
             .expireAfter(3600)
-            .message("RR Shoper payment")
+            .message("RR Shoper")
             .build();
 
         const response = await phonepeClient.pay(request);
@@ -56,20 +63,24 @@ class PaymentControler {
         const { id } = req.params;
 
         const paymentStatus = await phonepeClient.getOrderStatus(id);
-
-        return sendResponse(res, 200, "Payment status fetched", true,
-            {
-                id,
-                paymentStatus:
-                    paymentStatus
-            }
-        );
+        const paymentData = await Payment.findByIdAndUpdate(id, { payment_status: paymentStatus?.state })
+        if (paymentData?.state === 'COMPLETED') {
+            await Customer.findByIdAndUpdate(paymentData?.customer_id, { package_id: paymentData?.package_id })
+        }
+        delete paymentData?.phonepeResponse
+        return sendResponse(res, 200, "Payment status fetched", true, paymentData);
 
     })
 
     static paymentWebhook = catchAsync(async (req, res) => {
 
-        await Payment.create({ phonepeResponse: req.body })
+        const { payload } = req.body || {}
+
+        const paymentData = await Payment.findByIdAndUpdate(payload?.merchantOrderId, { payment_status: payload?.state })
+        if (payload?.state === 'COMPLETED') {
+            await Customer.findByIdAndUpdate(paymentData?.customer_id, { package_id: paymentData?.package_id })
+        }
+        delete paymentData?.phonepeResponse
         return sendResponse(res, 200, "Payment status fetched", true, req.body);
     })
 

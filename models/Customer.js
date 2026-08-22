@@ -8,14 +8,18 @@ const CustomerSchema = new mongoose.Schema(
             default: null,
         },
         image: {
-            type:  Schema.Types.ObjectId,
+            type: Schema.Types.ObjectId,
             ref: "Images"
         },
         password: {
             type: String,
             default: null
         },
-
+        package_id: {
+            type: Schema.Types.ObjectId,
+            ref: "Packages",
+            default: null,
+        },
         email: {
             type: String,
             default: null,

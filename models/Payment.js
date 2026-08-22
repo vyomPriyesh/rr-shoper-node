@@ -17,10 +17,18 @@ const PaymentSchema = new mongoose.Schema(
             type: String,
             default: 'PENDING'
         },
+        payableCurrency: {
+            type: String,
+            default: 'INR'
+        },
+        amount: {
+            type: Number,
+            default: 0
+        },
         phonepeResponse: {
             type: mongoose.Schema.Types.Mixed,
             default: null
-        }
+        },
     },
     {
         timestamps: true,
