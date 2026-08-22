@@ -74,18 +74,38 @@ class PaymentControler {
         const paymentStatusData = await phonepeClient.getOrderStatus(id);
         const paymentData = await Payment.findByIdAndUpdate(id, { payment_status: paymentStatusData?.state }).select('-phonepeResponse')
         if (paymentData.payment_status !== "COMPLETED" && paymentStatusData?.state == 'COMPLETED') {
-            await Customer.findByIdAndUpdate(
-                paymentData?.customer_id,
-                {
-                    $push: {
-                        package: {
-                            package_id: paymentData?.package_id,
-                            package_expire: expireDate
-                        },
-                    },
-                },
-                { new: true }
+            const customer = await Customer.findById(paymentData?.customer_id)
+
+            if (!customer) {
+                return sendResponse(res, 500, 'Customer Not found', false)
+            }
+            const expiredPackageIndex = customer.package.findIndex(
+                (item) => item.package_expire_status === true
             );
+
+            if (expiredPackageIndex !== -1) {
+
+                // Existing expired package → renew it
+                customer.package[expiredPackageIndex].package_id =
+                    paymentData?.package_id;
+
+                customer.package[expiredPackageIndex].package_expire =
+                    expireDate;
+
+                customer.package[expiredPackageIndex].package_expire_status =
+                    false;
+
+            } else {
+
+                // No expired package → create new package
+                customer.package.push({
+                    package_id: paymentData?.package_id,
+                    package_expire: expireDate,
+                    package_expire_status: false,
+                });
+            }
+
+            await customer.save();
         }
 
         return sendResponse(res, 200, "Payment status fetched", true, paymentData);
