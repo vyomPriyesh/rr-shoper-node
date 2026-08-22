@@ -88,7 +88,7 @@ class PaymentControler {
             );
         }
 
-        return sendResponse(res, 200, "Payment status fetched", true, paymentStatusData);
+        return sendResponse(res, 200, "Payment status fetched", true, paymentData);
 
     })
 
