@@ -5,14 +5,6 @@ import { phonepeClient } from "../config/phonepe.js";
 import Payment from "../models/Payment.js";
 import Customer from "../models/Customer.js";
 
-const expireDate = Math.floor(
-    (Date.now() + 3 * 60 * 1000) / 1000
-);
-// const expireDate = Math.floor(
-//     new Date(
-//         new Date().setMonth(new Date().getMonth() + 1)
-//     ).getTime() / 1000
-// );
 
 const paymentDataUpdate = async (payload, phonepeResponse) => {
 
@@ -20,6 +12,15 @@ const paymentDataUpdate = async (payload, phonepeResponse) => {
 
     if (paymentData) {
         if (paymentData.payment_status !== "COMPLETED" && payload?.state == 'COMPLETED') {
+
+            const expireDate = Math.floor(
+                (Date.now() + 3 * 60 * 1000) / 1000
+            );
+            // const expireDate = Math.floor(
+            //     new Date(
+            //         new Date().setMonth(new Date().getMonth() + 1)
+            //     ).getTime() / 1000
+            // );
 
             const customer = await Customer.findById(paymentData?.customer_id)
 
@@ -51,7 +52,7 @@ const paymentDataUpdate = async (payload, phonepeResponse) => {
                     package_expire_status: false,
                 });
             }
-            console.log(customer.package)
+            console.log(customer.package, expireDate)
 
             await customer.save();
 
