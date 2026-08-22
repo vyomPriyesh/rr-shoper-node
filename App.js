@@ -20,18 +20,18 @@ const allowedOrigins = [
 ];
 
 const corsOptions = {
-    // origin: function (origin, callback) {
-    //     // allow Postman, mobile apps, curl
-    //     if (!origin) return callback(null, true);
+    origin: function (origin, callback) {
+        // allow Postman, mobile apps, curl
+        if (!origin) return callback(null, true);
 
-    //     if (allowedOrigins.includes(origin)) {
-    //         return callback(null, true);
-    //     }
+        if (allowedOrigins.includes(origin)) {
+            return callback(null, true);
+        }
 
-    //     // IMPORTANT: do NOT throw error, just block silently
-    //     return callback(null, false);
-    // },
-    origin: true,
+        // IMPORTANT: do NOT throw error, just block silently
+        return callback(null, false);
+    },
+    // origin: true,
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
     allowedHeaders: [
