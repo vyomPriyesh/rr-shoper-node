@@ -109,7 +109,7 @@ class PaymentControler {
             .metaInfo(metaInfo)
             .redirectUrl(redirectUrl)
             .expireAfter(3600)
-            .message("RR Shoper")
+            .message(`Payment for RR Shoper - ${merchantOrderId}`)
             .build();
 
         const response = await phonepeClient.pay(request);
