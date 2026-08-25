@@ -42,6 +42,21 @@ const ticketStatuses = [
     },
 ];
 
+const userAccountStatuses = [
+    {
+        label: "Un Active",
+        value: "unactive",
+        color: "#f05a5a",
+        bgColor: "#ebecec",
+    },
+    {
+        label: "Active",
+        value: "active",
+        color: "#006644",
+        bgColor: "#E3FCEF",
+    },
+]
+
 export const getAdminDropdowns = async () => {
     const [
         allPlatforms,
@@ -72,7 +87,8 @@ export const getAdminDropdowns = async () => {
         ticketsTitles: getValusName(allTicketsTitles, 'title', '_id'),
         leadTitles: getValusName(allLeadTitles, 'title', '_id'),
         roles,
-        ticketStatuses
+        ticketStatuses,
+        userAccountStatuses
     }
 
     return {
@@ -97,7 +113,8 @@ class DropDownController {
             platforms: getValusName(allPlatforms, 'name', '_id'),
             designations: getValusName(allDesignations, 'name', '_id'),
             ticketsTitles: getValusName(allTicketsTitles, 'title', '_id'),
-            ticketStatuses
+            ticketStatuses,
+            userAccountStatuses
         }
     }
 
@@ -128,7 +145,8 @@ class DropDownController {
         //     ticketsTitles: getValusName(allTicketsTitles, 'title', '_id'),
         //     leadTitles: getValusName(allLeadTitles, 'title', '_id'),
         //     roles,
-        //     ticketStatuses
+        //     ticketStatuses,
+        //     userAccountStatuses
         // }
 
         // const custSideOptions = await DropDownController.getOptions();

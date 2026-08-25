@@ -115,7 +115,7 @@ class ExportController {
         if (sample) {
             const leadForm = await otherColumnModel?.model.findOne(otherColumnModel?.query(lead_form_id))
             const otherColumns = leadForm?.fields?.filter(item => item.type !== 'upload')?.map(list => {
-                return { header: `${key(list.label)}_${list.type}`, key: key(list.label), width: 40 }
+                return { header: `${keyValue(list.label)}_${list.type}`, key: keyValue(list.label), width: 40 }
             })
 
             const buffer = await generateExcel({

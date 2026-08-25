@@ -102,6 +102,19 @@ class CustomerController {
 
     })
 
+    static customerDetails = catchAsync(async (req, res) => {
+
+        const { id } = req.params
+
+        const findCustomer = await Customer.findById(id).select("-password -login_devices")
+        if (!findCustomer) {
+            return sendResponse(res, 422, 'Customer Not Found', false)
+        }
+
+        return sendResponse(res, 200, 'Customer Found Successfully', true, findCustomer)
+
+    })
+
 }
 
 export default CustomerController
