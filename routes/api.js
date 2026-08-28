@@ -24,6 +24,9 @@ import verifyPermission from "../Middleware/verifyPermission.js";
 import ExportController from "../controller/ExportController.js";
 import PaymentControler from "../controller/PaymentControler.js";
 
+import optionalVerifyToken from "../Middleware/optionalVerifyToken.js";
+import InquiryController from "../controller/InquiryController.js";
+
 const api = express.Router();
 
 api.post('/images/upload', catchAsync(async (req, res) => {
@@ -56,6 +59,8 @@ api.post('/login', LoginController.adminLogin)
 api.post('/customer-all-platforms', PlatformController.customerAllPlatforms)
 api.post('/customer-all-packages', PackagesController.customerAllPackages)
 api.get('/all-options', DropDownController.allDropDowns)
+
+api.post('/raise-inquiry', optionalVerifyToken, InquiryController.raiseIInquiry)
 
 api.post('/export/:name', verifyToken, ExportController.exportExcel)
 
