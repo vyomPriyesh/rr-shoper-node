@@ -18,7 +18,7 @@ const allowedOrigins = [
     "https://rrshoper.in",
     "https://admin.rrshoper.in",
 ];
-
+ 
 const corsOptions = {
     origin: function (origin, callback) {
         // allow Postman, mobile apps, curl

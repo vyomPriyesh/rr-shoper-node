@@ -133,3 +133,7 @@ dist
 package-lock.json
 *.zip
 assets/cardlogin/*
+
+# credentials
+credentials/
+
