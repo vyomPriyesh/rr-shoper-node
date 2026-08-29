@@ -54,7 +54,7 @@ api.post("/verify-otp", LoginController.verifyOtp);
 api.get('/profile', verifyToken, LoginController.profile)
 api.get('/findCustomer/:search', LoginController.findCustomer)
 api.post('/login', LoginController.adminLogin)
-api.post('/profile/update', verifyToken, LoginController.updateProfile)
+api.post('/profile/update', verifyToken, LoginController.updateProfile);
 
 // .............for customer side..................................
 api.post('/customer-all-platforms', PlatformController.customerAllPlatforms)

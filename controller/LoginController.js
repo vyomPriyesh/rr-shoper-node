@@ -173,7 +173,7 @@ class LoginController {
 
     static updateProfile = catchAsync(async (req, res) => {
 
-        const data = req.body || {}
+        const data = req.body || {};
         const { role, _id: id } = req.user || {}
         const Modal = role === "customer" ? Customer : User;
         await Modal.findByIdAndUpdate(id, data)
