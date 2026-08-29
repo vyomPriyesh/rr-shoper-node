@@ -158,7 +158,6 @@ class LoginController {
 
         const Modal = role === "customer" ? Customer : User;
 
-
         let query = Modal.findById(userId)
             .select("-login_devices -otp -password");
 
