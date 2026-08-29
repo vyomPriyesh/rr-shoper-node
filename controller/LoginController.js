@@ -149,7 +149,7 @@ class LoginController {
 
                 return item;
             });
-            
+
             customerData.package = updatedPackages;
 
             await customerData.save();
@@ -158,7 +158,6 @@ class LoginController {
 
         const Modal = role === "customer" ? Customer : User;
 
-
         let query = Modal.findById(userId)
             .select("-login_devices -otp -password");
 
@@ -166,9 +165,19 @@ class LoginController {
             query = query.populate("designation");
         }
 
-        const profileData = await query;
+        const profileData = await query.populate("image", "image");
 
         return sendResponse(res, 200, "Profile found successfully", true, profileData);
+
+    })
+
+    static updateProfile = catchAsync(async (req, res) => {
+
+        const data = req.body || {}
+        const { role, _id: id } = req.user || {}
+        const Modal = role === "customer" ? Customer : User;
+        await Modal.findByIdAndUpdate(id, data)
+        return sendResponse(res, 200, "Profile Update successfully", true);
 
     })
 
