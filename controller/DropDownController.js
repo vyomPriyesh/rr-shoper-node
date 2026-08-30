@@ -42,6 +42,27 @@ const ticketStatuses = [
     },
 ];
 
+const downgradeStatuses = [
+    {
+        label: "Pending",
+        value: "pending",
+        color: "#5E6C84",
+        bgColor: "#ebecec",
+    },
+    {
+        label: "Resolved",
+        value: "resolved",
+        color: "#006644",
+        bgColor: "#E3FCEF",
+    },
+    {
+        label: "Declined",
+        value: "declined",
+        color: "#f05a5a",
+        bgColor: "#ebecec",
+    },
+];
+
 const userAccountStatuses = [
     {
         label: "Un Active",
@@ -56,6 +77,14 @@ const userAccountStatuses = [
         bgColor: "#E3FCEF",
     },
 ]
+
+const packageOrders = [
+    { label: 'Starter', value: '1' },
+    { label: 'Hot', value: '2' },
+    { label: 'Premium', value: '3' },
+    // { label: 'Business', value: '4' },
+]
+
 
 export const getAdminDropdowns = async () => {
     const [
@@ -88,7 +117,8 @@ export const getAdminDropdowns = async () => {
         leadTitles: getValusName(allLeadTitles, 'title', '_id'),
         roles,
         ticketStatuses,
-        userAccountStatuses
+        userAccountStatuses,
+        packageOrders
     }
 
     return {
@@ -114,7 +144,8 @@ class DropDownController {
             designations: getValusName(allDesignations, 'name', '_id'),
             ticketsTitles: getValusName(allTicketsTitles, 'title', '_id'),
             ticketStatuses,
-            userAccountStatuses
+            userAccountStatuses,
+            packageOrders
         }
     }
 

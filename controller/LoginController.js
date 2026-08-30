@@ -7,6 +7,7 @@ import crypto from 'crypto'
 import emailotpsending from "../utils/emailotpsending.js";
 import "dotenv/config";
 import Customer from "../models/Customer.js";
+// import DownGradePackage from "../models/DownGradePackage.js";
 
 class LoginController {
 
@@ -165,8 +166,16 @@ class LoginController {
             query = query.populate("designation");
         }
 
+        if (role == "customer") {
+            query = query.populate([{ path: "package.package_id", populate: "platform" }]);
+        }
+
         const profileData = await query.populate("image", "image");
 
+        // if (role == "customer") {
+        //     const downgradeRequests = await DownGradePackage.find({ customer_id: profileData?._id, status: 'pending' })
+        //     profileData.downgradeRequests = downgradeRequests
+        // }
         return sendResponse(res, 200, "Profile found successfully", true, profileData);
 
     })

@@ -91,6 +91,7 @@ const paymentDataUpdate = async (payload, phonepeResponse) => {
 
             await customer.save();
 
+            await DownGradePackage.findOneAndUpdate({ customer_id: paymentData?.customer_id, requested_package_id: paymentData?.request_package_id, status: "pending" }, { status: "resolved" })
             await Payment.findByIdAndUpdate(payload?.merchantOrderId, { payment_status: payload?.state, phonepeResponse })
             return Payment.findById(payload?.merchantOrderId).select('-phonepeResponse')
 
@@ -104,7 +105,7 @@ class PaymentControler {
 
     static initiatePhonePePayment = catchAsync(async (req, res) => {
 
-        const { amount, phoneNumber, package_id, gst_number, all_policies_checked } = req.body || 0;
+        const { amount, phoneNumber, package_id, gst_number, request_package_id } = req.body || 0;
         const { _id: customerId } = req.user || {}
 
         if (!amount || amount <= 0) {
@@ -119,7 +120,7 @@ class PaymentControler {
 
         const amountInPaise = Math.round(Number(amount) * 100);
 
-        const paymentInitiate = await Payment.create({ customer_id: customerId, package_id, amount, gst_number, all_policies_checked })
+        const paymentInitiate = await Payment.create({ customer_id: customerId, package_id, amount, gst_number, request_package_id })
 
         const merchantOrderId = paymentInitiate?._id;
 

@@ -13,6 +13,16 @@ const PaymentSchema = new mongoose.Schema(
             ref: "Packages",
             default: null,
         },
+        // request_package_id: {
+        //     type: Schema.Types.ObjectId,
+        //     ref: "Packages",
+        //     default: null,
+        // },
+        all_policies_checked: {
+            type: Boolean,
+            default: null
+        },
+        
         payment_status: {
             type: String,
             default: 'PENDING'
@@ -20,6 +30,10 @@ const PaymentSchema = new mongoose.Schema(
         payableCurrency: {
             type: String,
             default: 'INR'
+        },
+        gst_number: {
+            type: String,
+            default: null
         },
         amount: {
             type: Number,

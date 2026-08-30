@@ -26,6 +26,7 @@ import PaymentControler from "../controller/PaymentControler.js";
 
 import optionalVerifyToken from "../Middleware/optionalVerifyToken.js";
 import InquiryController from "../controller/InquiryController.js";
+import DownGradePackageController from "../controller/DownGradePackageController.js";
 
 const api = express.Router();
 
@@ -159,6 +160,8 @@ api.get('/packages/update-popular-package/:id', verifyToken, verifyPermission('P
 api.post('/payment/initiate', verifyToken, PaymentControler.initiatePhonePePayment)
 api.get('/payment/status/:id', verifyToken, PaymentControler.paymentStatus)
 api.post('/payment/webhook', PaymentControler.paymentWebhook)
+
+api.post('/requestDowngrade/add-request', verifyToken, DownGradePackageController.addRequest)
 
 
 
