@@ -1,6 +1,29 @@
 import mongoose, { Schema } from "mongoose";
 import MongooseDelete from "mongoose-delete";
 
+const PackageSchema = new mongoose.Schema(
+    {
+        package_id: {
+            type: Schema.Types.ObjectId,
+            ref: "Packages",
+            default: null,
+        },
+
+        package_expire: {
+            type: Number,
+            default: null,
+        },
+
+        package_expire_status: {
+            type: Boolean,
+            default: false,
+        },
+    },
+    {
+        timestamps: true,
+    }
+);
+
 const CustomerSchema = new mongoose.Schema(
     {
         name: {
@@ -15,23 +38,10 @@ const CustomerSchema = new mongoose.Schema(
             type: String,
             default: null
         },
-        package: [
-            {
-                package_id: {
-                    type: Schema.Types.ObjectId,
-                    ref: "Packages",
-                    default: null,
-                },
-                package_expire: {
-                    type: Number,
-                    default: null
-                },
-                package_expire_status: {
-                    type: Boolean,
-                    default: false
-                }
-            }
-        ],
+        package: {
+            type: [PackageSchema],
+            default: [],
+        },
         email: {
             type: String,
             default: null,
