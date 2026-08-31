@@ -15,14 +15,14 @@ const paymentDataUpdate = async (payload, phonepeResponse) => {
     if (paymentData) {
         if (paymentData.payment_status !== "COMPLETED" && payload?.state == 'COMPLETED') {
 
-            const expireDate = Math.floor(
-                (Date.now() + 10 * 60 * 1000) / 1000
-            );
             // const expireDate = Math.floor(
-            //     new Date(
-            //         new Date().setMonth(new Date().getMonth() + 1)
-            //     ).getTime() / 1000
+            //     (Date.now() + 2 * 60 * 1000) / 1000
             // );
+            const expireDate = Math.floor(
+                new Date(
+                    new Date().setMonth(new Date().getMonth() + 1)
+                ).getTime() / 1000
+            );
 
             const customer = await Customer.findById(paymentData?.customer_id)
                 .populate([
@@ -120,6 +120,7 @@ class PaymentControler {
         const amountInPaise = Math.round(Number(amount) * 100);
 
         const paymentInitiate = await Payment.create({ customer_id: customerId, package_id, amount, gst_number, all_policies_checked })
+        await Customer.findByIdAndUpdate(customerId, { gst_number })
 
         const merchantOrderId = paymentInitiate?._id;
 
@@ -130,8 +131,9 @@ class PaymentControler {
 
 
         const metaInfo = MetaInfo.builder()
-            .udf1(String(customerId))
-            .udf2(merchantOrderId)
+            .udf1(`Customer ID : ${customerId}`)
+            .udf2(`Order ID : ${merchantOrderId}`)
+            .udf3(`Customer GST : ${gst_number}`)
             .build();
 
 
@@ -158,7 +160,7 @@ class PaymentControler {
         const { id } = req.params;
 
         const paymentStatusData = await phonepeClient.getOrderStatus(id);
-        const paymentData = await paymentDataUpdate({ merchantOrderId: id, state: paymentStatusData?.state }, null);
+        const paymentData = await paymentDataUpdate({ merchantOrderId: id, state: paymentStatusData?.state }, paymentStatusData);
 
         return sendResponse(res, 200, "Payment status fetched", true, paymentData);
 

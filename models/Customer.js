@@ -30,6 +30,10 @@ const CustomerSchema = new mongoose.Schema(
             type: String,
             default: null,
         },
+        gst_number: {
+            type: String,
+            default: null,
+        },
         image: {
             type: Schema.Types.ObjectId,
             ref: "Images"
