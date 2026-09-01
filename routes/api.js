@@ -160,7 +160,7 @@ api.get('/packages/update-popular-package/:id', verifyToken, verifyPermission('P
 api.post('/payment/initiate', verifyToken, PaymentControler.initiatePhonePePayment)
 api.get('/payment/status/:id', verifyToken, PaymentControler.paymentStatus)
 api.post('/payment/customer-orders', verifyToken, PaymentControler.customerOrders)
-api.post('/payment/customer-order-counts', verifyToken, PaymentControler.customerOrderCounts)
+api.get('/payment/customer-order-counts', verifyToken, PaymentControler.customerOrderCounts)
 api.post('/payment/webhook', PaymentControler.paymentWebhook)
 
 api.post('/requestDowngrade/add-request', verifyToken, DownGradePackageController.addRequest)
