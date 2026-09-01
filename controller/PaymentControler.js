@@ -228,7 +228,7 @@ class PaymentControler {
         //     }
         // }
 
-        let query = { customer_id: customerId }
+        let query = { customer_id: customerId, payment_status: { $ne: 'PENDING' } }
 
         // const [activePackages] = await Customer.aggregate([queryAggregate(false)]);
         // const [expiredPackages] = await Customer.aggregate([queryAggregate(true)]);
@@ -245,7 +245,7 @@ class PaymentControler {
         }
 
         const populates = [
-            { path: 'package_id', select:'platform, name price', populate: { path: 'platform', select: 'name' } },
+            { path: 'package_id', select: 'platform, name price', populate: { path: 'platform', select: 'name' } },
         ]
 
         const data = await paginate(Payment, query, page, limit, "-phonepeResponse", populates)
@@ -254,45 +254,47 @@ class PaymentControler {
             {
                 $match: {
                     customer_id: customerId,
-                },
-            },
-            {
-                $group: {
-                    _id: "$payment_status",
-                    count: {
-                        $sum: 1,
+
+                    payment_status: {
+                        $in: ["COMPLETED", "FAILED"],
                     },
                 },
             },
             {
                 $group: {
                     _id: null,
-                    statuses: {
-                        $push: {
-                            k: {
-                                $toLower: "$_id",
-                            },
-                            v: "$count",
+
+                    completed: {
+                        $sum: {
+                            $cond: [
+                                { $eq: ["$payment_status", "COMPLETED"] },
+                                1,
+                                0,
+                            ],
                         },
+                    },
+
+                    failed: {
+                        $sum: {
+                            $cond: [
+                                { $eq: ["$payment_status", "FAILED"] },
+                                1,
+                                0,
+                            ],
+                        },
+                    },
+
+                    total: {
+                        $sum: 1,
                     },
                 },
             },
             {
                 $project: {
                     _id: 0,
-
-                    statusCounts: {
-                        $mergeObjects: [
-                            {
-                                completed: 0,
-                                // pending: 0,
-                                failed: 0,
-                            },
-                            {
-                                $arrayToObject: "$statuses",
-                            },
-                        ],
-                    },
+                    completed: 1,
+                    failed: 1,
+                    total: 1,
                 },
             },
         ]);
