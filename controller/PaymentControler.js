@@ -299,7 +299,7 @@ class PaymentControler {
             },
         ]);
 
-        return sendResponse(res, 200, "Customer orders fetched", true, { ...data, ...statusCounts });
+        return sendResponse(res, 200, "Customer orders fetched", true, { ...data, statusCounts });
     })
 
 }
