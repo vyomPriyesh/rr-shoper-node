@@ -5,7 +5,8 @@ import { phonepeClient } from "../config/phonepe.js";
 import Payment from "../models/Payment.js";
 import Customer from "../models/Customer.js";
 import Packages from "../models/Packages.js";
-import DownGradePackage from "../models/DownGradePackage.js";
+import paginate from "../utils/pagination.js";
+import mongoose from "mongoose";
 
 
 const paymentDataUpdate = async (payload, phonepeResponse) => {
@@ -94,6 +95,11 @@ const paymentDataUpdate = async (payload, phonepeResponse) => {
             await Payment.findByIdAndUpdate(payload?.merchantOrderId, { payment_status: payload?.state, phonepeResponse })
             return Payment.findById(payload?.merchantOrderId).select('-phonepeResponse')
 
+        } else if (paymentData.payment_status !== "COMPLETED" && payload?.state == 'FAILED') {
+
+            await Payment.findByIdAndUpdate(payload?.merchantOrderId, { payment_status: payload?.state, phonepeResponse })
+            return Payment.findById(payload?.merchantOrderId).select('-phonepeResponse')
+
         } else {
             return paymentData
         }
@@ -104,12 +110,10 @@ class PaymentControler {
 
     static initiatePhonePePayment = catchAsync(async (req, res) => {
 
-        const { amount, phoneNumber, package_id, gst_number, all_policies_checked } = req.body || 0;
+        const { phoneNumber, package_id, gst_number, all_policies_checked } = req.body || 0;
         const { _id: customerId } = req.user || {}
 
-        if (!amount || amount <= 0) {
-            return sendResponse(res, 500, 'Invalid amount', false)
-        }
+        const packageData = await Packages.findById(package_id)
 
         const customer = await Customer.findById(customerId)
 
@@ -117,9 +121,9 @@ class PaymentControler {
             return sendResponse(res, 500, 'Customer Not found', false)
         }
 
-        const amountInPaise = Math.round(Number(amount) * 100);
+        const amountInPaise = Math.round(Number(packageData?.price) * 100);
 
-        const paymentInitiate = await Payment.create({ customer_id: customerId, package_id, amount, gst_number, all_policies_checked })
+        const paymentInitiate = await Payment.create({ customer_id: customerId, package_id, amount: packageData?.price, gst_number, all_policies_checked })
         await Customer.findByIdAndUpdate(customerId, { gst_number })
 
         const merchantOrderId = paymentInitiate?._id;
@@ -173,6 +177,127 @@ class PaymentControler {
         const paymentData = await paymentDataUpdate(payload, req.body);
 
         return sendResponse(res, 200, "Payment status fetched", true, paymentData);
+    })
+
+    static customerOrders = catchAsync(async (req, res) => {
+
+        const { _id: customerId } = req.user || {};
+        const { page, limit, payment_status } = req.body || {};
+
+        // const queryAggregate = (status) => {
+        //     return {
+        //         $match: {
+        //             _id: new mongoose.Types.ObjectId(customerId),
+        //         },
+        //     },
+        //     {
+        //         $project: {
+        //             package: {
+        //                 $filter: {
+        //                     input: "$package",
+        //                     as: "item",
+        //                     cond: {
+        //                         $eq: ["$$item.package_expire_status", status],
+        //                     },
+        //                 },
+        //             },
+        //         },
+        //     },
+        //     {
+        //         $project: {
+        //             _id: 0,
+        //             package_id: {
+        //                 $map: {
+        //                     input: {
+        //                         $filter: {
+        //                             input: "$package",
+        //                             as: "item",
+        //                             cond: {
+        //                                 $eq: [
+        //                                     "$$item.package_expire_status",
+        //                                     status,
+        //                                 ],
+        //                             },
+        //                         },
+        //                     },
+        //                     as: "item",
+        //                     in: "$$item.package_id",
+        //                 },
+        //             },
+        //         },
+        //     }
+        // }
+
+        let query = { customer_id: customerId }
+
+        // const [activePackages] = await Customer.aggregate([queryAggregate(false)]);
+        // const [expiredPackages] = await Customer.aggregate([queryAggregate(true)]);
+
+        // const allCounts = {
+        //     active: activePackages?.package_id?.length || 0,
+        //     expired: expiredPackages?.package_id?.length || 0,
+        // }
+
+        if (payment_status !== 'all') {
+
+            query = { ...query, payment_status: payment_status }
+
+        }
+
+        const populates = [
+            { path: 'package_id', select:'platform, name price', populate: { path: 'platform', select: 'name' } },
+        ]
+
+        const data = await paginate(Payment, query, page, limit, "-phonepeResponse", populates)
+
+        const [statusCounts] = await Payment.aggregate([
+            {
+                $match: {
+                    customer_id: customerId,
+                },
+            },
+            {
+                $group: {
+                    _id: "$payment_status",
+                    count: {
+                        $sum: 1,
+                    },
+                },
+            },
+            {
+                $group: {
+                    _id: null,
+                    statuses: {
+                        $push: {
+                            k: {
+                                $toLower: "$_id",
+                            },
+                            v: "$count",
+                        },
+                    },
+                },
+            },
+            {
+                $project: {
+                    _id: 0,
+
+                    statusCounts: {
+                        $mergeObjects: [
+                            {
+                                completed: 0,
+                                // pending: 0,
+                                failed: 0,
+                            },
+                            {
+                                $arrayToObject: "$statuses",
+                            },
+                        ],
+                    },
+                },
+            },
+        ]);
+
+        return sendResponse(res, 200, "Customer orders fetched", true, { ...data, ...statusCounts });
     })
 
 }
