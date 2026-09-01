@@ -250,6 +250,13 @@ class PaymentControler {
 
         const data = await paginate(Payment, query, page, limit, "-phonepeResponse", populates)
 
+
+        return sendResponse(res, 200, "Customer orders fetched", true, data);
+    })
+
+    static customerOrderCounts = catchAsync(async (req, res) => {
+        const { _id: customerId } = req.user || {};
+
         const [statusCounts] = await Payment.aggregate([
             {
                 $match: {
@@ -299,7 +306,7 @@ class PaymentControler {
             },
         ]);
 
-        return sendResponse(res, 200, "Customer orders fetched", true, { ...data, statusCounts });
+        return sendResponse(res, 200, "Customer order counts fetched", true, statusCounts);
     })
 
 }
