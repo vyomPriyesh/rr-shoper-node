@@ -85,6 +85,14 @@ class PlatformController {
 
         return sendResponse(res, 200, 'Platform Delete Successfully', true)
     })
+
+    static indexUpdate = catchAsync(async (req, res) => {
+        const data = req.body || {}
+
+        console.log(data)
+
+        return sendResponse(res, 200, 'Platform Order Update Successfully', true)
+    })
 }
 
 export default PlatformController
