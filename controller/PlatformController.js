@@ -102,7 +102,7 @@ class PlatformController {
     }));
 
     // Perform bulk write in a single DB round-trip
-    await Platform.bulkWrite(bulkOps);
+    await Platforms.bulkWrite(bulkOps);
 
     return sendResponse(res, 200, 'Platform Order Updated Successfully', true);
 });
