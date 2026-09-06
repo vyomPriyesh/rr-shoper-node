@@ -87,12 +87,26 @@ class PlatformController {
     })
 
     static indexUpdate = catchAsync(async (req, res) => {
-        const data = req.body || {}
+    const data = req.body || []; // Expecting array: [{ id: "...", index: 0 }, ...]
 
-        console.log(data)
+    if (!Array.isArray(data) || data.length === 0) {
+        return sendResponse(res, 400, 'Invalid or empty payload', false);
+    }
 
-        return sendResponse(res, 200, 'Platform Order Update Successfully', true)
-    })
+    // Build bulk operations array
+    const bulkOps = data.map((item) => ({
+        updateOne: {
+            filter: { _id: item.id },
+            update: { $set: { index: item.index } }
+        }
+    }));
+
+    // Perform bulk write in a single DB round-trip
+    await Platform.bulkWrite(bulkOps);
+
+    return sendResponse(res, 200, 'Platform Order Updated Successfully', true);
+});
+
 }
 
 export default PlatformController
