@@ -149,6 +149,7 @@ api.post('/add-platform', verifyToken, verifyPermission('Platforms', 'add'), Pla
 api.post('/platforms/update-platform/:id', verifyToken, verifyPermission('Platforms', 'update'), PlatformController.updatePlatform)
 api.get('/platforms/update-status/:id', verifyToken, verifyPermission('Platforms', 'update'), PlatformController.updateStatus)
 api.delete('/platforms/delete-platform/:id', verifyToken, verifyPermission('Platforms', 'delete'), PlatformController.deletePlatform)
+api.post('/platforms/update-index', verifyToken, verifyPermission('Platforms', 'view'), PlatformController.indexUpdate)
 
 api.post('/all-packages', verifyToken, verifyPermission('Packages', 'view'), PackagesController.allPackages)
 api.post('/add-package', verifyToken, verifyPermission('Packages', 'add'), PackagesController.addPackage)
