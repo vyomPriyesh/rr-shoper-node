@@ -5,6 +5,7 @@ import paginate from "../utils/pagination.js";
 import { sendResponse } from "../utils/response.js";
 import Tickets from "../models/Tickets.js";
 import mongoose from "mongoose";
+import forManage from "../utils/HandleFormValues.js";
 
 class TicketsController {
 
@@ -12,9 +13,11 @@ class TicketsController {
         const payload = req.body || {}
         payload.user = req.user._id
 
-        const data = await Tickets.create(payload)
+        const formatedValue = await forManage({ title: payload.title, platform: payload.platform, user: payload.user, values: payload?.values })
 
-        return sendResponse(res, 200, 'Ticket Submit Successfully', true, data)
+        await Tickets.create(formatedValue)
+
+        return sendResponse(res, 200, 'Ticket Submit Successfully', true)
 
     })
 
