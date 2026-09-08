@@ -4,9 +4,9 @@ import crypto from 'crypto'
 const verifyPhonePeWebhook = (req, res, next) => {
 
     try {
-        const authHeader = req.headers.authorization;
-        console.log("PhonePe webhook received", authHeader);
-        if (!authHeader) {
+        const authorization = req.headers.authorization;
+        console.log("PhonePe webhook received", authorization);
+        if (!authorization) {
             return sendResponse(res, 401, "Unauthorized", false);
         }
         const username = 'Pankaj';
