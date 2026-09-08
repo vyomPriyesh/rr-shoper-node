@@ -2,7 +2,6 @@ import { sendResponse } from "../utils/response.js";
 
 const verifyPhonePeWebhook = (req, res, next) => {
     const authHeader = req.headers.authorization;
-    console.log(authHeader)
     if (!authHeader || !authHeader.startsWith("Basic ")) {
         return sendResponse(res, 401, "Unauthorized", false);
     }
@@ -19,7 +18,8 @@ const verifyPhonePeWebhook = (req, res, next) => {
         console.log(error)
         return sendResponse(res, 401, "Invalid authorization", false);
     }
-
+    
+    console.log(credentials)
     const [username, password] = credentials.split(":");
 
     if (
