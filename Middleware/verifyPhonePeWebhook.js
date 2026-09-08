@@ -6,7 +6,7 @@ const verifyPhonePeWebhook = (req, res, next) => {
     try {
         const authHeader = req.headers.authorization;
         console.log("PhonePe webhook received", authHeader);
-        if (!authHeader || !authHeader.startsWith("Basic ")) {
+        if (!authHeader) {
             return sendResponse(res, 401, "Unauthorized", false);
         }
         const username = 'Pankaj';
