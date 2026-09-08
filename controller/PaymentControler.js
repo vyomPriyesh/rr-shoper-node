@@ -14,7 +14,7 @@ const paymentDataUpdate = async (payload, phonepeResponse) => {
     const paymentData = await Payment.findById(payload?.merchantOrderId).select('-phonepeResponse')
 
     if (paymentData) {
-        if (paymentData.payment_status !== "COMPLETED" && payload?.state == 'COMPLETED') {
+        if (paymentData.payment_status !== "PENDING" && payload?.state == 'COMPLETED') {
 
             // const expireDate = Math.floor(
             //     (Date.now() + 2 * 60 * 1000) / 1000
@@ -162,6 +162,7 @@ class PaymentControler {
     static paymentStatus = catchAsync(async (req, res) => {
 
         const { id } = req.params;
+        console.log('object order')
 
         const paymentStatusData = await phonepeClient.getOrderStatus(id);
         const paymentData = await paymentDataUpdate({ merchantOrderId: id, state: paymentStatusData?.state }, paymentStatusData);
@@ -181,7 +182,6 @@ class PaymentControler {
     })
 
     static customerOrders = catchAsync(async (req, res) => {
-        console.log('object order')
 
         const { _id: customerId } = req.user || {};
         const { page, limit, payment_status } = req.body || {};
