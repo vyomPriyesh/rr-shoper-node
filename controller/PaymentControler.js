@@ -181,6 +181,7 @@ class PaymentControler {
     })
 
     static customerOrders = catchAsync(async (req, res) => {
+        console.log('object order')
 
         const { _id: customerId } = req.user || {};
         const { page, limit, payment_status } = req.body || {};
