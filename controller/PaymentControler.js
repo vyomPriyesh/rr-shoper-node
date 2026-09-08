@@ -14,7 +14,7 @@ const paymentDataUpdate = async (payload, phonepeResponse) => {
     const paymentData = await Payment.findById(payload?.merchantOrderId).select('-phonepeResponse')
 
     if (paymentData) {
-        if (paymentData.payment_status !== "PENDING" && payload?.state == 'COMPLETED') {
+        if (paymentData.payment_status == "PENDING" && payload?.state == 'COMPLETED') {
 
             // const expireDate = Math.floor(
             //     (Date.now() + 2 * 60 * 1000) / 1000
