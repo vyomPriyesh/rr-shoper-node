@@ -9,14 +9,14 @@ const verifyPhonePeWebhook = (req, res, next) => {
         }
         const username = 'Pankaj';
         const password = 'PankajAgravat302302';
+        console.log("PhonePe webhook received", authHeader);
 
         const expectedAuthorization = crypto
             .createHash("sha256")
             .update(`${username}:${password}`)
             .digest("hex");
 
-        console.log("PhonePe webhook received");
-        console.log("Authorization exists:", !!authorization);
+        console.log("Expected authorization:", expectedAuthorization);
 
         if (authorization !== expectedAuthorization) {
             console.log("Invalid PhonePe webhook authorization");
