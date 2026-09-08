@@ -27,6 +27,7 @@ import PaymentControler from "../controller/PaymentControler.js";
 import optionalVerifyToken from "../Middleware/optionalVerifyToken.js";
 import InquiryController from "../controller/InquiryController.js";
 import DownGradePackageController from "../controller/DownGradePackageController.js";
+import verifyPhonePeWebhook from "../Middleware/verifyPhonePeWebhook.js";
 
 const api = express.Router();
 
@@ -162,7 +163,7 @@ api.post('/payment/initiate', verifyToken, PaymentControler.initiatePhonePePayme
 api.get('/payment/status/:id', verifyToken, PaymentControler.paymentStatus)
 api.post('/payment/customer-orders', verifyToken, PaymentControler.customerOrders)
 api.get('/payment/customer-order-counts', verifyToken, PaymentControler.customerOrderCounts)
-api.post('/payment/webhook', verifyToken, PaymentControler.paymentWebhook)
+api.post('/payment/webhook', verifyPhonePeWebhook, PaymentControler.paymentWebhook)
 
 api.post('/requestDowngrade/add-request', verifyToken, DownGradePackageController.addRequest)
 
