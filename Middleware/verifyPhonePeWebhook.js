@@ -1,25 +1,38 @@
 import { sendResponse } from "../utils/response.js";
 
 const verifyPhonePeWebhook = (req, res, next) => {
-    const authHeader = req.headers.authorization;
-    if (!authHeader || !authHeader.startsWith("Basic ")) {
-        return sendResponse(res, 401, "Unauthorized", false);
-    }
-
-    const base64Credentials = authHeader.split(" ")[1];
-
-    let credentials;
 
     try {
-        credentials = Buffer
-            .from(base64Credentials, "base64")
-            .toString("utf8");
+        const authHeader = req.headers.authorization;
+        if (!authHeader || !authHeader.startsWith("Basic ")) {
+            return sendResponse(res, 401, "Unauthorized", false);
+        }
+        const username = 'Pankaj';
+        const password = 'PankajAgravat302302';
+
+        const expectedAuthorization = crypto
+            .createHash("sha256")
+            .update(`${username}:${password}`)
+            .digest("hex");
+
+        console.log("PhonePe webhook received");
+        console.log("Authorization exists:", !!authorization);
+
+        if (authorization !== expectedAuthorization) {
+            console.log("Invalid PhonePe webhook authorization");
+
+            return sendResponse(res, 401, "Invalid authorization", false);
+        }
+
+        console.log("PhonePe webhook verified");
+
+        next();
+
     } catch (error) {
         console.log(error)
         return sendResponse(res, 401, "Invalid authorization", false);
     }
-    
-    console.log(credentials)
+
     const [username, password] = credentials.split(":");
 
     if (
