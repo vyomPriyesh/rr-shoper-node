@@ -156,7 +156,7 @@ class PaymentControler {
 
         const response = await phonepeClient.pay(request);
 
-        return sendResponse(res, 200, '', true, { merchantOrderId, redirectUrl: response.redirectUrl })
+        return sendResponse(res, 200, '', true, { redirectUrl: response.redirectUrl })
     })
 
     static paymentStatus = catchAsync(async (req, res) => {
@@ -173,6 +173,7 @@ class PaymentControler {
     static paymentWebhook = catchAsync(async (req, res) => {
 
         const { payload } = req.body || {}
+        console.log('object')
 
         const paymentData = await paymentDataUpdate(payload, req.body);
 
