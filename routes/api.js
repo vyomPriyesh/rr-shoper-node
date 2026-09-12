@@ -28,6 +28,7 @@ import optionalVerifyToken from "../Middleware/optionalVerifyToken.js";
 import InquiryController from "../controller/InquiryController.js";
 import DownGradePackageController from "../controller/DownGradePackageController.js";
 import verifyPhonePeWebhook from "../Middleware/verifyPhonePeWebhook.js";
+import TicketCommentsController from "../controller/TicketCommentsController.js";
 
 const api = express.Router();
 
@@ -144,6 +145,8 @@ api.get('/leads/:id', verifyToken, LeadsController.fetchLeadById)
 api.post('/allTicket', verifyToken, TicketsController.fetchUsersTikets)
 api.post('/ticket/add-ticket', verifyToken, TicketsController.addTicket)
 api.get('/ticket/:id', verifyToken, TicketsController.viewTicket)
+
+api.post('/ticket/comments/:ticketId', verifyToken, TicketCommentsController.allComments)
 
 api.post('/all-platforms', verifyToken, verifyPermission('Platforms', 'view'), PlatformController.allPlatforms)
 api.post('/add-platform', verifyToken, verifyPermission('Platforms', 'add'), PlatformController.addPlatform)

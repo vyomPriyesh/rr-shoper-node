@@ -18,16 +18,16 @@
 //     "https://rrshoper.in",
 //     "https://admin.rrshoper.in",
 // ];
- 
+
 // const corsOptions = {
 //     origin: function (origin, callback) {
 //         // allow Postman, mobile apps, curl
 //         // if (!origin) return callback(null, true);
-    
+
 //         // if (allowedOrigins.includes(origin)) {
 //         //     return callback(null, true);
 //         // }
-    
+
 //         // IMPORTANT: do NOT throw error, just block silently
 //         return callback(null, true);
 //     },
@@ -73,6 +73,14 @@ import api from "./routes/api.js";
 import { assetsUrl } from "./config/config.js";
 import { sendResponse } from "./utils/response.js";
 import connectDB from "./config/db.js";
+import http from "http";
+import { Server } from "socket.io";
+import jwt from "jsonwebtoken";
+
+import Customer from "./models/Customer.js";
+import User from "./models/User.js";
+
+import socketRoute from "./routes/socketRoute.js";
 
 connectDB();
 
@@ -81,34 +89,154 @@ const port = process.env.PORT || 8000;
 
 global.__basedir = path.resolve();
 
-app.use(cors({
-    origin: true,
-    credentials: true,
-}));
+// ========================================
+// Express CORS
+// ========================================
+
+app.use(
+    cors({
+        origin: true,
+        credentials: true,
+    })
+);
 
 app.use(express.json());
 
-app.get("/", (req, res) => {
-    res.status(200).send("RR Shoper API is running 🚀");
+// ========================================
+// HTTP SERVER
+// ========================================
+
+const server = http.createServer(app);
+
+// ========================================
+// SOCKET.IO
+// ========================================
+
+const io = new Server(server, {
+    cors: {
+        origin: true,
+        credentials: true,
+    },
+
+    transports: ["websocket"],
 });
 
-app.use("/assets", express.static(assetsUrl));
-app.use("/api", api);
+// ========================================
+// SOCKET AUTHENTICATION
+// ========================================
 
-app.use((err, req, res, next) => {
-    console.error(err);
+io.use(async (socket, next) => {
+    try {
+        const {
+            token,
+            auth_id,
+            role,
+        } = socket.handshake.auth || {};
 
-    return sendResponse(
-        res,
-        500,
-        {
-            message: "Something went wrong.",
-            error_message: err.message,
-        },
-        false
+        if (!auth_id) {
+            return next(
+                new Error("Socket authentication required")
+            );
+        }
+
+        // --------------------------------
+        // Select model
+        // --------------------------------
+
+        const Modal =
+            role === "customer"
+                ? Customer
+                : User;
+
+        // --------------------------------
+        // Find authenticated user
+        // --------------------------------
+
+        const authData = await Modal.findOne({
+            _id: auth_id,
+        }).select(
+            "-password -login_devices -otp"
+        );
+
+        if (!authData) {
+            return next(
+                new Error("User not found")
+            );
+        }
+
+        // --------------------------------
+        // Attach authenticated user
+        // --------------------------------
+
+        socket.authData = authData;
+
+        next();
+
+    } catch (error) {
+        console.error(
+            "❌ Socket authentication error:",
+            error
+        );
+
+        next(
+            new Error(
+                "Socket authentication failed"
+            )
+        );
+    }
+});
+
+// ========================================
+// SOCKET ROUTES
+// ========================================
+
+socketRoute(io);
+
+// ========================================
+// API
+// ========================================
+
+app.get("/", (req, res) => {
+    res.status(200).send(
+        "RR Shoper API is running 🚀"
     );
 });
 
-app.listen(port, "0.0.0.0", () => {
-    console.log(`Server listening on port ${port}`);
+app.use(
+    "/assets",
+    express.static(assetsUrl)
+);
+
+app.use("/api", api);
+
+// ========================================
+// ERROR HANDLER
+// ========================================
+
+app.use(
+    (err, req, res, next) => {
+        console.error(err);
+
+        return sendResponse(
+            res,
+            500,
+            {
+                message:
+                    "Something went wrong.",
+                error_message:
+                    err.message,
+            },
+            false
+        );
+    }
+);
+
+// ========================================
+// START SERVER
+// ========================================
+
+server.listen(port, () => {
+    console.log(
+        `Server listening on port ${port}`
+    );
 });
