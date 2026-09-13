@@ -19,7 +19,7 @@ class TicketsController {
         const designation = await Designation.findOne({ platform: payload.platform });
 
         const designationUsers = await User.find({
-            designation: { $in: designation }
+            designation: { $in: designation }, status: 'active'
         }).select("_id");
 
         if (!designationUsers.length) {
