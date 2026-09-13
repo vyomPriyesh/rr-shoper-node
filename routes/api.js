@@ -142,9 +142,11 @@ api.post('/leads/update-lead/:id', verifyToken, verifyPermission('Leads', 'updat
 api.delete('/leads/delete-lead/:id', verifyToken, verifyPermission('Leads', 'delete'), LeadsController.deleteLead)
 api.get('/leads/:id', verifyToken, LeadsController.fetchLeadById)
 
-api.post('/allTicket', verifyToken, TicketsController.fetchUsersTikets)
+api.post('/allTickets', verifyToken, TicketsController.fetchCustomerTikets)
+api.post('/user/allTickets', verifyToken, TicketsController.fetchUsersTikets)
 api.post('/ticket/add-ticket', verifyToken, TicketsController.addTicket)
 api.get('/ticket/:id', verifyToken, TicketsController.viewTicket)
+api.get('/ticket/updateTicketStatus/:status/:id', verifyToken, TicketsController.updateStatus)
 
 api.post('/ticket/comments/:ticketId', verifyToken, TicketCommentsController.allComments)
 

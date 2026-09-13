@@ -170,7 +170,7 @@ class LoginController {
             query = query.populate([{ path: "package.package_id", populate: "platform" }]);
         }
 
-        const profileData = await query.populate("image", "image");
+        const profileData = await query.populate("image");
 
         // if (role == "customer") {
         //     const downgradeRequests = await DownGradePackage.find({ customer_id: profileData?._id, status: 'pending' })

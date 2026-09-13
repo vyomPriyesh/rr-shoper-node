@@ -29,12 +29,18 @@ export const addComment = async (io, socket, data) => {
         return;
     }
 
-    const customerID = socket.authData?._id;
+    const auth_id = socket.authData?._id;
+    const role = socket.authData?.role;
 
     const commentData = {
         ticketId,
         comment,
-        reply_by_customer: customerID
+    }
+
+    if (role == 'customer') {
+        commentData.reply_by_customer = auth_id
+    } else {
+        commentData.reply_by_user = auth_id
     }
 
     await Comment.create(commentData)
@@ -51,13 +57,19 @@ export const addReplay = async (io, socket, data) => {
         return;
     }
 
-    const customerID = socket.authData?._id;
+    const auth_id = socket.authData?._id;
+    const role = socket.authData?.role;
 
     const commentData = {
         ticketId,
         comment,
-        reply_by_customer: customerID,
         parentCommentId: parentId
+    }
+
+    if (role == 'customer') {
+        commentData.reply_by_customer = auth_id
+    } else {
+        commentData.reply_by_user = auth_id
     }
 
     await Comment.create(commentData)

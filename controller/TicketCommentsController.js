@@ -68,6 +68,9 @@ class TicketCommentsController {
                 },
             },
 
+            // ============================================================
+            // SORT ALL REPLIES
+            // ============================================================
             {
                 $set: {
                     allReplies: {
@@ -91,9 +94,32 @@ class TicketCommentsController {
                     foreignField: "_id",
                     pipeline: [
                         {
+                            $lookup: {
+                                from: "images",
+                                localField: "image",
+                                foreignField: "_id",
+                                as: "imageData",
+                            },
+                        },
+
+                        {
+                            $set: {
+                                image: {
+                                    $ifNull: [
+                                        {
+                                            $arrayElemAt: ["$imageData.image", 0],
+                                        },
+                                        null,
+                                    ],
+                                },
+                            },
+                        },
+
+                        {
                             $project: {
                                 _id: 1,
                                 name: 1,
+                                image: 1,
                             },
                         },
                     ],
@@ -104,7 +130,12 @@ class TicketCommentsController {
             {
                 $set: {
                     reply_by_customer: {
-                        $arrayElemAt: ["$customer", 0],
+                        $ifNull: [
+                            {
+                                $arrayElemAt: ["$customer", 0],
+                            },
+                            null,
+                        ],
                     },
                 },
             },
@@ -119,9 +150,32 @@ class TicketCommentsController {
                     foreignField: "_id",
                     pipeline: [
                         {
+                            $lookup: {
+                                from: "images",
+                                localField: "image",
+                                foreignField: "_id",
+                                as: "imageData",
+                            },
+                        },
+
+                        {
+                            $set: {
+                                image: {
+                                    $ifNull: [
+                                        {
+                                            $arrayElemAt: ["$imageData.image", 0],
+                                        },
+                                        null,
+                                    ],
+                                },
+                            },
+                        },
+
+                        {
                             $project: {
                                 _id: 1,
                                 name: 1,
+                                image: 1,
                             },
                         },
                     ],
@@ -132,7 +186,12 @@ class TicketCommentsController {
             {
                 $set: {
                     reply_by_user: {
-                        $arrayElemAt: ["$user", 0],
+                        $ifNull: [
+                            {
+                                $arrayElemAt: ["$user", 0],
+                            },
+                            null,
+                        ],
                     },
                 },
             },
@@ -143,13 +202,31 @@ class TicketCommentsController {
             {
                 $lookup: {
                     from: "customers",
-                    localField: "allReplies.reply_by_customer",
-                    foreignField: "_id",
+                    let: {
+                        customerIds: "$allReplies.reply_by_customer",
+                    },
                     pipeline: [
+                        {
+                            $match: {
+                                $expr: {
+                                    $in: [
+                                        "$_id",
+                                        {
+                                            $ifNull: [
+                                                "$$customerIds",
+                                                [],
+                                            ],
+                                        },
+                                    ],
+                                },
+                            },
+                        },
+
                         {
                             $project: {
                                 _id: 1,
                                 name: 1,
+                                image: 1,
                             },
                         },
                     ],
@@ -163,13 +240,53 @@ class TicketCommentsController {
             {
                 $lookup: {
                     from: "users",
-                    localField: "allReplies.reply_by_user",
-                    foreignField: "_id",
+                    let: {
+                        userIds: "$allReplies.reply_by_user",
+                    },
                     pipeline: [
+                        {
+                            $match: {
+                                $expr: {
+                                    $in: [
+                                        "$_id",
+                                        {
+                                            $ifNull: [
+                                                "$$userIds",
+                                                [],
+                                            ],
+                                        },
+                                    ],
+                                },
+                            },
+                        },
+
+                        {
+                            $lookup: {
+                                from: "images",
+                                localField: "image",
+                                foreignField: "_id",
+                                as: "imageData",
+                            },
+                        },
+
+                        {
+                            $set: {
+                                image: {
+                                    $ifNull: [
+                                        {
+                                            $arrayElemAt: ["$imageData", 0],
+                                        },
+                                        null,
+                                    ],
+                                },
+                            },
+                        },
+
                         {
                             $project: {
                                 _id: 1,
                                 name: 1,
+                                image: 1,
                             },
                         },
                     ],
@@ -192,39 +309,57 @@ class TicketCommentsController {
                                     "$$reply",
 
                                     {
+                                        // ================================================
+                                        // REPLY CUSTOMER
+                                        // ================================================
                                         reply_by_customer: {
-                                            $arrayElemAt: [
+                                            $ifNull: [
                                                 {
-                                                    $filter: {
-                                                        input: "$replyCustomers",
-                                                        as: "customer",
-                                                        cond: {
-                                                            $eq: [
-                                                                "$$customer._id",
-                                                                "$$reply.reply_by_customer",
-                                                            ],
+                                                    $arrayElemAt: [
+                                                        {
+                                                            $filter: {
+                                                                input: "$replyCustomers",
+                                                                as: "customer",
+
+                                                                cond: {
+                                                                    $eq: [
+                                                                        "$$customer._id",
+                                                                        "$$reply.reply_by_customer",
+                                                                    ],
+                                                                },
+                                                            },
                                                         },
-                                                    },
+                                                        0,
+                                                    ],
                                                 },
-                                                0,
+                                                null,
                                             ],
                                         },
 
+                                        // ================================================
+                                        // REPLY USER
+                                        // ================================================
                                         reply_by_user: {
-                                            $arrayElemAt: [
+                                            $ifNull: [
                                                 {
-                                                    $filter: {
-                                                        input: "$replyUsers",
-                                                        as: "user",
-                                                        cond: {
-                                                            $eq: [
-                                                                "$$user._id",
-                                                                "$$reply.reply_by_user",
-                                                            ],
+                                                    $arrayElemAt: [
+                                                        {
+                                                            $filter: {
+                                                                input: "$replyUsers",
+                                                                as: "user",
+
+                                                                cond: {
+                                                                    $eq: [
+                                                                        "$$user._id",
+                                                                        "$$reply.reply_by_user",
+                                                                    ],
+                                                                },
+                                                            },
                                                         },
-                                                    },
+                                                        0,
+                                                    ],
                                                 },
-                                                0,
+                                                null,
                                             ],
                                         },
                                     },
@@ -236,7 +371,7 @@ class TicketCommentsController {
             },
 
             // ============================================================
-            // REMOVE TEMP FIELDS
+            // REMOVE TEMPORARY FIELDS
             // ============================================================
             {
                 $unset: [
@@ -249,12 +384,14 @@ class TicketCommentsController {
         ]);
 
         // ================================================================
-        // BUILD NESTED TREE
+        // BUILD NESTED REPLY TREE
         // ================================================================
         const formattedData = data.map((comment) => {
             const replyMap = new Map();
 
-            // Create reply map
+            // ============================================================
+            // CREATE REPLY MAP
+            // ============================================================
             comment.allReplies.forEach((reply) => {
                 replyMap.set(reply._id.toString(), {
                     ...reply,
@@ -264,7 +401,9 @@ class TicketCommentsController {
 
             const replies = [];
 
-            // Build hierarchy
+            // ============================================================
+            // BUILD HIERARCHY
+            // ============================================================
             comment.allReplies.forEach((reply) => {
                 const current = replyMap.get(
                     reply._id.toString()
@@ -273,12 +412,18 @@ class TicketCommentsController {
                 const parentId =
                     reply.parentCommentId?.toString();
 
-                // Direct reply
-                if (parentId === comment._id.toString()) {
+                // ========================================================
+                // DIRECT REPLY
+                // ========================================================
+                if (
+                    parentId === comment._id.toString()
+                ) {
                     replies.push(current);
                 }
 
-                // Nested reply
+                // ========================================================
+                // NESTED REPLY
+                // ========================================================
                 else {
                     const parent = replyMap.get(parentId);
 
@@ -295,12 +440,17 @@ class TicketCommentsController {
             };
         });
 
+        // ================================================================
+        // RESPONSE
+        // ================================================================
         return sendResponse(
             res,
             200,
             "Comments found",
             true,
-            { data: formattedData }
+            {
+                data: formattedData,
+            }
         );
     });
 
