@@ -6,25 +6,17 @@ import { sendResponse } from "../utils/response.js";
 
 class TicketCommentsController {
 
-    // static allComments = catchAsync(async (req, res) => {
-    //     const { page, limit, } = req.body || {};
-    //     const { ticketId } = req.params;
-
-    //     const populate = [
-    //         { path: "reply_by_customer", select: "name" }
-    //     ]
-    //     const data = await paginate(Comment, { ticketId }, page, limit, {}, populate)
-
-    //     return sendResponse(res, 200, 'Comments found', true, data)
-    // })
-
     static allComments = catchAsync(async (req, res) => {
         const { page = 1, limit = 10 } = req.body || {};
         const { ticketId } = req.params;
 
-        const pageNumber = Number(page);
-        const limitNumber = Number(limit);
-        const skip = (pageNumber - 1) * limitNumber;
+        if (!mongoose.isValidObjectId(ticketId)) {
+            return sendResponse(res, 400, "Invalid ticket ID", false);
+        }
+
+        // const pageNumber = Math.max(Number(page) || 1, 1);
+        // const limitNumber = Math.min(Math.max(Number(limit) || 10, 1), 100);
+        // const skip = (pageNumber - 1) * limitNumber;
 
         const data = await Comment.aggregate([
             // ============================================================
@@ -46,13 +38,13 @@ class TicketCommentsController {
                 },
             },
 
-            {
-                $skip: skip,
-            },
+            // {
+            //     $skip: skip,
+            // },
 
-            {
-                $limit: limitNumber,
-            },
+            // {
+            //     $limit: limitNumber,
+            // },
 
             // ============================================================
             // GET ALL NESTED REPLIES
@@ -105,12 +97,16 @@ class TicketCommentsController {
                         {
                             $set: {
                                 image: {
-                                    $ifNull: [
-                                        {
-                                            $arrayElemAt: ["$imageData.image", 0],
+                                    $let: {
+                                        vars: {
+                                            imageDocument: {
+                                                $arrayElemAt: ["$imageData", 0],
+                                            },
                                         },
-                                        null,
-                                    ],
+                                        in: {
+                                            $ifNull: ["$$imageDocument.image", null],
+                                        },
+                                    },
                                 },
                             },
                         },
@@ -161,12 +157,16 @@ class TicketCommentsController {
                         {
                             $set: {
                                 image: {
-                                    $ifNull: [
-                                        {
-                                            $arrayElemAt: ["$imageData.image", 0],
+                                    $let: {
+                                        vars: {
+                                            imageDocument: {
+                                                $arrayElemAt: ["$imageData", 0],
+                                            },
                                         },
-                                        null,
-                                    ],
+                                        in: {
+                                            $ifNull: ["$$imageDocument.image", null],
+                                        },
+                                    },
                                 },
                             },
                         },
@@ -223,6 +223,32 @@ class TicketCommentsController {
                         },
 
                         {
+                            $lookup: {
+                                from: "images",
+                                localField: "image",
+                                foreignField: "_id",
+                                as: "imageData",
+                            },
+                        },
+
+                        {
+                            $set: {
+                                image: {
+                                    $let: {
+                                        vars: {
+                                            imageDocument: {
+                                                $arrayElemAt: ["$imageData", 0],
+                                            },
+                                        },
+                                        in: {
+                                            $ifNull: ["$$imageDocument.image", null],
+                                        },
+                                    },
+                                },
+                            },
+                        },
+
+                        {
                             $project: {
                                 _id: 1,
                                 name: 1,
@@ -272,12 +298,16 @@ class TicketCommentsController {
                         {
                             $set: {
                                 image: {
-                                    $ifNull: [
-                                        {
-                                            $arrayElemAt: ["$imageData", 0],
+                                    $let: {
+                                        vars: {
+                                            imageDocument: {
+                                                $arrayElemAt: ["$imageData", 0],
+                                            },
                                         },
-                                        null,
-                                    ],
+                                        in: {
+                                            $ifNull: ["$$imageDocument.image", null],
+                                        },
+                                    },
                                 },
                             },
                         },
@@ -382,6 +412,59 @@ class TicketCommentsController {
                 ],
             },
         ]);
+
+        // Normalize image references from both main comments and nested replies.
+        // This also handles records created before image population was added.
+        const imageIds = new Set();
+        const addImageReference = (author) => {
+            if (!author?.image) return;
+
+            const imageId = author.image?._id || author.image;
+            if (mongoose.isValidObjectId(imageId)) {
+                imageIds.add(imageId.toString());
+            }
+        };
+
+        data.forEach((comment) => {
+            addImageReference(comment.reply_by_customer);
+            addImageReference(comment.reply_by_user);
+
+            comment.allReplies.forEach((reply) => {
+                addImageReference(reply.reply_by_customer);
+                addImageReference(reply.reply_by_user);
+            });
+        });
+
+        if (imageIds.size > 0) {
+            const images = await Images.find({
+                _id: { $in: [...imageIds] },
+            })
+                .select("image")
+                .lean();
+
+            const imageMap = new Map(
+                images.map((image) => [image._id.toString(), image.image])
+            );
+
+            const replaceImageReference = (author) => {
+                if (!author?.image) return;
+
+                const imageId = (author.image?._id || author.image).toString();
+                if (imageMap.has(imageId)) {
+                    author.image = imageMap.get(imageId);
+                }
+            };
+
+            data.forEach((comment) => {
+                replaceImageReference(comment.reply_by_customer);
+                replaceImageReference(comment.reply_by_user);
+
+                comment.allReplies.forEach((reply) => {
+                    replaceImageReference(reply.reply_by_customer);
+                    replaceImageReference(reply.reply_by_user);
+                });
+            });
+        }
 
         // ================================================================
         // BUILD NESTED REPLY TREE
