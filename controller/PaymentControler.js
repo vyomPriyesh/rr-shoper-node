@@ -7,6 +7,13 @@ import Customer from "../models/Customer.js";
 import Packages from "../models/Packages.js";
 import paginate from "../utils/pagination.js";
 import mongoose from "mongoose";
+import ejs from 'ejs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import puppeteer from 'puppeteer';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 
 const paymentDataUpdate = async (payload, phonepeResponse) => {
@@ -309,7 +316,105 @@ class PaymentControler {
         ]);
 
         return sendResponse(res, 200, "Customer order counts fetched", true, statusCounts);
-    })
+    });
+
+    static paymentInvoice = catchAsync(async (req, res) => {
+        const invoiceData = {
+            vendor: {
+                name: 'R R SHOPER',
+                subtext: 'E-COMMERCE SERVICES',
+                addressLine1: '3rd Floor, Shop No. 334, Times Trade Center',
+                addressLine2: 'Surat, Gujarat, 395010, India',
+                email: 'support@rrshoper.com',
+                phone: '+91 98765 43210',
+                gstin: '24AAAAA0000A1Z5',
+                pan: 'AAAAA0000A',
+                city: 'Surat',
+                state: 'Gujarat',
+                signatoryName: 'PANKAJKUMAR R AGRAVAT',
+                signatoryTitle: 'Partner / Authorized Signatory'
+            },
+            customer: {
+                name: 'APEX E-COMMERCE SOLUTIONS',
+                addressLine1: '102, Business Hub, Ring Road',
+                addressLine2: 'Surat, Gujarat, 395002, India',
+                contactPerson: 'Rajesh Sharma',
+                phone: '+91 91234 56789',
+                gstin: '24ABCDF1234H1ZP',
+                stateCode: '24 (Gujarat)'
+            },
+            invoice: {
+                number: 'RRS/2026-27/0891',
+                date: '06 Aug 2026',
+                placeOfSupply: '24 - Gujarat',
+                paymentTerms: 'Immediate / Prepaid'
+            },
+            items: [
+                {
+                    name: 'Starter Package Subscription',
+                    description: 'Comprehensive seller onboarding and account management package.',
+                    hsnSac: '998314',
+                    rate: 1999.00,
+                    qty: 1,
+                    features: [
+                        'New Account Created',
+                        'Keyword Listing',
+                        'Brand Reg Assistance',
+                        '50 SKU Listing & Training',
+                        'Customer Support'
+                    ]
+                }
+            ],
+            bank: {
+                name: 'HDFC Bank Ltd',
+                accountName: 'R R SHOPER',
+                accountNo: '50200012345678',
+                ifsc: 'HDFC0001234',
+                branch: 'Ring Road, Surat'
+            },
+            totals: {
+                taxableAmount: 1999.00,
+                cgstRate: 9,
+                cgstAmount: 179.91,
+                sgstRate: 9,
+                sgstAmount: 179.91,
+                igstRate: 0,
+                igstAmount: 0.00,
+                grandTotal: 2358.82,
+                amountInWords: 'Two Thousand Three Hundred Fifty-Eight Rupees and Eighty-Two Paise Only.'
+            }
+        };
+
+        // 1. Render EJS template to HTML string
+        const templatePath = path.join(__dirname, '../views/invoice.ejs');
+        const html = await ejs.renderFile(templatePath, invoiceData);
+
+        // 2. Launch Puppeteer browser
+        const browser = await puppeteer.launch({
+            headless: 'new',
+            args: ['--no-sandbox', '--disable-setuid-sandbox']
+        });
+        const page = await browser.newPage();
+
+        // 3. Set content and compile to PDF buffer
+        await page.setContent(html, { waitUntil: 'networkidle0' });
+        const pdfBuffer = await page.pdf({
+            format: 'A4',
+            printBackground: true,
+            margin: { top: '0px', right: '0px', bottom: '0px', left: '0px' }
+        });
+
+        await browser.close();
+
+        // 4. Send PDF Buffer back to the client
+        res.set({
+            'Content-Type': 'application/pdf',
+            'Content-Disposition': 'inline; filename=tax-invoice.pdf',
+            'Content-Length': pdfBuffer.length
+        });
+
+        return res.end(pdfBuffer);
+    });
 
 }
 
