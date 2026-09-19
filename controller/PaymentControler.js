@@ -391,7 +391,16 @@ class PaymentControler {
     // 2. Configure html-pdf options
     const options = {
     format: 'A4',
-    border: '0', // Let CSS control padding to prevent overflow onto page 2
+    orientation: 'portrait',
+    border: {
+        top: '10mm',
+        right: '10mm',
+        bottom: '10mm',
+        left: '10mm'
+    },
+    footer: {
+        height: '28mm'
+    },
     type: 'pdf'
 };
     // 3. Create PDF buffer using Promisify to keep async/await flow intact
