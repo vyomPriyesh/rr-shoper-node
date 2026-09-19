@@ -4,48 +4,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>Tax Invoice - <%= invoice.number %></title>
 
     <style>
-        :root {
-            --primary: #B06A8D;
-            --primary-dark: #9A5A7C;
-            --secondary: #C89AB5;
-            --background: #F8F1F5;
-            --border: #E8DDE3;
-            --heading: #1E1E1E;
-            --paragraph: #5F6673;
-            --white: #FFFFFF;
-        }
-
         * {
             box-sizing: border-box;
         }
 
-        html,
-        body {
+        html, body {
             margin: 0;
             padding: 0;
-            background: #eeeeee;
-            color: var(--paragraph);
+            background: #FFFFFF;
+            color: #5F6673;
             font-family: Arial, Helvetica, sans-serif;
             font-size: 13px;
-        }
-
-        body {
-            padding: 20px 0;
         }
 
         .invoice-page {
             position: relative;
             width: 210mm;
             height: 297mm;
-            min-height: 297mm;
             margin: 0 auto;
             padding: 0 10mm;
-            overflow: hidden;
-            background: var(--white);
+            background: #FFFFFF;
         }
 
         .top-accent {
@@ -54,7 +35,7 @@
             left: 0;
             width: 100%;
             height: 5px;
-            background: var(--primary);
+            background-color: #B06A8D;
         }
 
         .header {
@@ -62,28 +43,26 @@
             width: 100%;
             padding-top: 18px;
             padding-bottom: 14px;
-            border-bottom: 1px solid var(--border);
+            border-bottom: 1px solid #E8DDE3;
             table-layout: fixed;
         }
 
-        .header-left,
-        .header-right {
+        .header-left {
             display: table-cell;
+            width: 60%;
             vertical-align: middle;
         }
 
-        .header-left {
-            width: 60%;
-        }
-
         .header-right {
+            display: table-cell;
             width: 40%;
             text-align: right;
+            vertical-align: middle;
         }
 
         .brand-name {
             margin: 0;
-            color: var(--primary);
+            color: #B06A8D;
             font-size: 24px;
             font-weight: 800;
             letter-spacing: 0.4px;
@@ -91,13 +70,13 @@
 
         .brand-subtext {
             margin-top: 5px;
-            color: var(--paragraph);
+            color: #5F6673;
             font-size: 12px;
         }
 
         .invoice-heading {
             margin: 0;
-            color: var(--heading);
+            color: #1E1E1E;
             font-size: 24px;
             font-weight: 800;
             letter-spacing: 0.8px;
@@ -105,7 +84,7 @@
 
         .invoice-label {
             margin-top: 5px;
-            color: var(--primary);
+            color: #B06A8D;
             font-size: 12px;
             font-weight: 700;
             text-transform: uppercase;
@@ -115,10 +94,9 @@
         .invoice-meta {
             width: 100%;
             margin-top: 12px;
-            border: 1px solid var(--border);
+            border: 1px solid #E8DDE3;
             border-radius: 7px;
-            background: var(--background);
-            overflow: hidden;
+            background-color: #F8F1F5;
         }
 
         .invoice-meta-table {
@@ -130,7 +108,7 @@
         .invoice-meta-table td {
             width: 25%;
             padding: 10px 12px;
-            border-right: 1px solid var(--border);
+            border-right: 1px solid #E8DDE3;
             vertical-align: top;
         }
 
@@ -140,7 +118,7 @@
 
         .meta-label {
             margin-bottom: 5px;
-            color: var(--paragraph);
+            color: #5F6673;
             font-size: 10px;
             font-weight: 700;
             text-transform: uppercase;
@@ -148,7 +126,7 @@
         }
 
         .meta-value {
-            color: var(--heading);
+            color: #1E1E1E;
             font-size: 12px;
             font-weight: 700;
         }
@@ -160,14 +138,8 @@
             table-layout: fixed;
         }
 
-        .party-table > tbody > tr {
-            height: 178px;
-        }
-
         .party-table > tbody > tr > td {
             width: 50%;
-            height: 178px;
-            padding: 0;
             vertical-align: top;
         }
 
@@ -180,62 +152,64 @@
         }
 
         .party-card {
-            display: flex;
-            flex-direction: column;
             width: 100%;
             height: 178px;
-            min-height: 178px;
             padding: 15px 16px;
-            border: 1px solid var(--border);
+            border: 1px solid #E8DDE3;
             border-radius: 9px;
-            background: var(--white);
+            background-color: #FFFFFF;
         }
 
         .vendor-card {
-            border-top: 3px solid var(--primary);
+            border-top: 3px solid #B06A8D;
         }
 
         .customer-card {
-            border-top: 3px solid var(--secondary);
+            border-top: 3px solid #C89AB5;
+        }
+
+        .party-inner-table {
+            width: 100%;
+            height: 100%;
+            border-collapse: collapse;
         }
 
         .party-title {
-            margin-bottom: 8px;
-            color: var(--primary);
+            color: #B06A8D;
             font-size: 11px;
             font-weight: 800;
             text-transform: uppercase;
             letter-spacing: 0.5px;
+            padding-bottom: 6px;
         }
 
         .customer-card .party-title {
-            color: var(--secondary);
+            color: #C89AB5;
         }
 
         .party-name {
-            margin-bottom: 6px;
-            color: var(--heading);
+            color: #1E1E1E;
             font-size: 15px;
             font-weight: 700;
+            padding-bottom: 6px;
         }
 
         .party-line {
-            margin-bottom: 5px;
-            color: var(--paragraph);
+            color: #5F6673;
             font-size: 12px;
             line-height: 1.5;
+            padding-bottom: 4px;
         }
 
         .party-line strong {
-            color: var(--heading);
+            color: #1E1E1E;
             font-weight: 700;
         }
 
         .gst-row {
-            margin-top: auto;
-            padding-top: 10px;
-            border-top: 1px dashed var(--border);
-            color: var(--primary);
+            padding-top: 8px;
+            border-top: 1px dashed #E8DDE3;
+            color: #B06A8D;
             font-size: 12px;
             font-weight: 700;
             line-height: 1.4;
@@ -243,22 +217,21 @@
         }
 
         .customer-card .gst-row {
-            color: var(--primary-dark);
+            color: #9A5A7C;
         }
 
         .items-table {
             width: 100%;
             border-collapse: collapse;
             table-layout: fixed;
-            border: 1px solid var(--border);
+            border: 1px solid #E8DDE3;
             border-radius: 7px;
-            overflow: hidden;
         }
 
         .items-table thead th {
             padding: 10px 8px;
-            background: var(--primary);
-            color: var(--white);
+            background-color: #B06A8D;
+            color: #FFFFFF;
             font-size: 10px;
             font-weight: 700;
             text-align: left;
@@ -273,11 +246,11 @@
 
         .items-table tbody td {
             padding: 10px 8px;
-            color: var(--paragraph);
+            color: #5F6673;
             font-size: 11.5px;
             line-height: 1.45;
-            border-top: 1px solid var(--border);
-            border-right: 1px solid var(--border);
+            border-top: 1px solid #E8DDE3;
+            border-right: 1px solid #E8DDE3;
             vertical-align: top;
         }
 
@@ -286,53 +259,31 @@
         }
 
         .items-table tbody tr:nth-child(even) td {
-            background: #FCF9FB;
+            background-color: #FCF9FB;
         }
 
         .item-name {
-            color: var(--heading);
+            color: #1E1E1E;
             font-size: 12px;
             font-weight: 700;
         }
 
         .item-description {
             margin-top: 3px;
-            color: var(--paragraph);
+            color: #5F6673;
             font-size: 10px;
             line-height: 1.45;
         }
 
-        .text-center {
-            text-align: center !important;
-        }
+        .text-center { text-align: center !important; }
+        .text-right { text-align: right !important; }
 
-        .text-right {
-            text-align: right !important;
-        }
-
-        .col-no {
-            width: 5%;
-        }
-
-        .col-item {
-            width: 37%;
-        }
-
-        .col-hsn {
-            width: 12%;
-        }
-
-        .col-rate {
-            width: 13%;
-        }
-
-        .col-qty {
-            width: 8%;
-        }
-
-        .col-total {
-            width: 25%;
-        }
+        .col-no { width: 5%; }
+        .col-item { width: 37%; }
+        .col-hsn { width: 12%; }
+        .col-rate { width: 13%; }
+        .col-qty { width: 8%; }
+        .col-total { width: 25%; }
 
         .total-section {
             display: table;
@@ -358,14 +309,14 @@
         .amount-words {
             min-height: 86px;
             padding: 13px 14px;
-            border: 1px solid var(--border);
+            border: 1px solid #E8DDE3;
             border-radius: 8px;
-            background: var(--background);
+            background-color: #F8F1F5;
         }
 
         .section-label {
             margin-bottom: 7px;
-            color: var(--primary);
+            color: #B06A8D;
             font-size: 10px;
             font-weight: 800;
             text-transform: uppercase;
@@ -373,7 +324,7 @@
         }
 
         .amount-value {
-            color: var(--heading);
+            color: #1E1E1E;
             font-size: 12px;
             font-weight: 600;
             line-height: 1.5;
@@ -382,14 +333,13 @@
         .summary-table {
             width: 100%;
             border-collapse: collapse;
-            border: 1px solid var(--border);
+            border: 1px solid #E8DDE3;
             border-radius: 8px;
-            overflow: hidden;
         }
 
         .summary-table td {
             padding: 8px 10px;
-            border-bottom: 1px solid var(--border);
+            border-bottom: 1px solid #E8DDE3;
             font-size: 11.5px;
         }
 
@@ -398,11 +348,11 @@
         }
 
         .summary-label {
-            color: var(--paragraph);
+            color: #5F6673;
         }
 
         .summary-value {
-            color: var(--heading);
+            color: #1E1E1E;
             font-weight: 700;
             text-align: right;
         }
@@ -410,8 +360,8 @@
         .grand-total td {
             padding-top: 10px;
             padding-bottom: 10px;
-            background: var(--primary);
-            color: var(--white) !important;
+            background-color: #B06A8D;
+            color: #FFFFFF !important;
             font-size: 13px !important;
             font-weight: 800 !important;
         }
@@ -427,7 +377,7 @@
             width: 100%;
             height: 1px;
             margin-bottom: 12px;
-            background: var(--border);
+            background-color: #E8DDE3;
         }
 
         .terms-signature-table {
@@ -450,10 +400,9 @@
             text-align: right;
         }
 
-        .terms-title,
-        .signature-title-main {
+        .terms-title {
             margin-bottom: 7px;
-            color: var(--heading);
+            color: #1E1E1E;
             font-size: 11px;
             font-weight: 800;
             text-transform: uppercase;
@@ -463,7 +412,7 @@
         .terms-list {
             margin: 0;
             padding-left: 15px;
-            color: var(--paragraph);
+            color: #5F6673;
             font-size: 10px;
             line-height: 1.5;
         }
@@ -480,24 +429,9 @@
 
         .signature-for {
             margin-bottom: 4px;
-            color: var(--paragraph);
+            color: #5F6673;
             font-size: 11px;
             text-align: center;
-        }
-
-        .signature-image-wrapper {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 42px;
-            margin-bottom: 2px;
-        }
-
-        .signature-image {
-            display: block;
-            max-width: 120px;
-            max-height: 40px;
-            object-fit: contain;
         }
 
         .signature-placeholder {
@@ -508,105 +442,47 @@
             width: 150px;
             height: 1px;
             margin: 0 auto 5px;
-            background: var(--heading);
+            background-color: #1E1E1E;
         }
 
         .signature-name {
-            color: var(--heading);
+            color: #1E1E1E;
             font-size: 11.5px;
             font-weight: 700;
         }
 
         .signature-title {
             margin-top: 2px;
-            color: var(--paragraph);
+            color: #5F6673;
             font-size: 10px;
         }
 
-        .page-footer {
+        .page-footer-table {
             position: absolute;
             right: 10mm;
-            bottom: 0;
+            bottom: 10px;
             left: 10mm;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            border-top: 1px solid var(--border);
-            color: var(--paragraph);
+            width: calc(100% - 20mm);
+            border-collapse: collapse;
+            border-top: 1px solid #E8DDE3;
+            color: #5F6673;
             font-size: 10px;
+        }
+
+        .page-footer-table td {
+            padding-top: 8px;
         }
 
         .footer-left {
-            max-width: 70%;
             text-align: left;
+            width: 70%;
         }
 
         .footer-right {
-            color: var(--primary);
+            color: #B06A8D;
             font-weight: 700;
             text-align: right;
-        }
-
-        @media print {
-
-            @page {
-                size: A4;
-                margin: 0;
-            }
-
-            html,
-            body {
-                width: 210mm;
-                height: 297mm;
-                margin: 0;
-                padding: 0;
-                background: var(--white);
-            }
-
-            body {
-                -webkit-print-color-adjust: exact;
-                print-color-adjust: exact;
-            }
-
-            .invoice-page {
-                width: 210mm;
-                height: 297mm;
-                min-height: 297mm;
-                margin: 0;
-                padding: 0 10mm;
-                overflow: hidden;
-            }
-
-            .top-accent {
-                -webkit-print-color-adjust: exact;
-                print-color-adjust: exact;
-            }
-
-            .party-table > tbody > tr {
-                height: 178px;
-            }
-
-            .party-table > tbody > tr > td {
-                height: 178px;
-            }
-
-            .party-card {
-                height: 178px;
-                min-height: 178px;
-            }
-
-            .items-table {
-                page-break-inside: avoid;
-            }
-
-            .total-section {
-                page-break-inside: avoid;
-            }
-
-            .bottom-section {
-                page-break-inside: avoid;
-            }
+            width: 30%;
         }
     </style>
 </head>
@@ -618,478 +494,178 @@
         <div class="top-accent"></div>
 
         <div class="header">
-
             <div class="header-left">
-
-                <div class="brand-name">
-                    <%= vendor.name %>
-                </div>
-
+                <div class="brand-name"><%= vendor.name %></div>
                 <% if (vendor.subtext) { %>
-                    <div class="brand-subtext">
-                        <%= vendor.subtext %>
-                    </div>
+                    <div class="brand-subtext"><%= vendor.subtext %></div>
                 <% } %>
-
             </div>
-
             <div class="header-right">
-
-                <div class="invoice-heading">
-                    TAX INVOICE
-                </div>
-
-                <div class="invoice-label">
-                    Original for Recipient
-                </div>
-
+                <div class="invoice-heading">TAX INVOICE</div>
+                <div class="invoice-label">Original for Recipient</div>
             </div>
-
         </div>
 
         <div class="invoice-meta">
-
             <table class="invoice-meta-table">
-
                 <tbody>
-
                     <tr>
-
                         <td>
-                            <div class="meta-label">
-                                Invoice Number
-                            </div>
-
-                            <div class="meta-value">
-                                <%= invoice.number %>
-                            </div>
+                            <div class="meta-label">Invoice Number</div>
+                            <div class="meta-value"><%= invoice.number %></div>
                         </td>
-
                         <td>
-                            <div class="meta-label">
-                                Invoice Date
-                            </div>
-
-                            <div class="meta-value">
-                                <%= invoice.date %>
-                            </div>
+                            <div class="meta-label">Invoice Date</div>
+                            <div class="meta-value"><%= invoice.date %></div>
                         </td>
-
                         <td>
-                            <div class="meta-label">
-                                Place of Supply
-                            </div>
-
-                            <div class="meta-value">
-                                <%= invoice.placeOfSupply %>
-                            </div>
+                            <div class="meta-label">Place of Supply</div>
+                            <div class="meta-value"><%= invoice.placeOfSupply %></div>
                         </td>
-
                         <td>
-                            <div class="meta-label">
-                                Payment Terms
-                            </div>
-
-                            <div class="meta-value">
-                                <%= invoice.paymentTerms %>
-                            </div>
+                            <div class="meta-label">Payment Terms</div>
+                            <div class="meta-value"><%= invoice.paymentTerms %></div>
                         </td>
-
                     </tr>
-
                 </tbody>
-
             </table>
-
         </div>
 
         <table class="party-table">
-
             <tbody>
-
                 <tr>
-
                     <td>
-
                         <div class="party-card vendor-card">
-
-                            <div class="party-title">
-                                Billed By / Service Provider
-                            </div>
-
-                            <div class="party-name">
-                                <%= vendor.name %>
-                            </div>
-
-                            <div class="party-line">
-                                <%= vendor.address %>
-                            </div>
-
-                            <div class="party-line">
-
-                                <strong>Email:</strong>
-                                <%= vendor.email %>
-
-                                &nbsp;&nbsp;|&nbsp;&nbsp;
-
-                                <strong>Mob:</strong>
-                                <%= vendor.phone %>
-
-                            </div>
-
-                            <div class="gst-row">
-                                GSTIN: <%= vendor.gstin %>
-                            </div>
-
+                            <table class="party-inner-table">
+                                <tr>
+                                    <td vertical-align="top">
+                                        <div class="party-title">Billed By / Service Provider</div>
+                                        <div class="party-name"><%= vendor.name %></div>
+                                        <div class="party-line"><%= vendor.address %></div>
+                                        <div class="party-line">
+                                            <strong>Email:</strong> <%= vendor.email %> &nbsp;&nbsp;|&nbsp;&nbsp; <strong>Mob:</strong> <%= vendor.phone %>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td vertical-align="bottom">
+                                        <div class="gst-row">GSTIN: <%= vendor.gstin %></div>
+                                    </td>
+                                </tr>
+                            </table>
                         </div>
-
                     </td>
-
                     <td>
-
                         <div class="party-card customer-card">
-
-                            <div class="party-title">
-                                Billed To / Customer Details
-                            </div>
-
-                            <div class="party-name">
-                                <%= customer.name %>
-                            </div>
-
-                            <div class="party-line">
-                                <%= customer.address %>
-                            </div>
-
-                            <div class="party-line">
-
-                                <strong>Contact:</strong>
-                                <%= customer.contactPerson %>
-
-                                &nbsp;(<%= customer.phone %>)
-
-                            </div>
-
-                            <div class="gst-row">
-                                GSTIN: <%= customer.gstin %>
-                            </div>
-
+                            <table class="party-inner-table">
+                                <tr>
+                                    <td vertical-align="top">
+                                        <div class="party-title">Billed To / Customer Details</div>
+                                        <div class="party-name"><%= customer.name %></div>
+                                        <div class="party-line"><%= customer.address %></div>
+                                        <div class="party-line">
+                                            <strong>Contact:</strong> <%= customer.contactPerson %> &nbsp;(<%= customer.phone %>)
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td vertical-align="bottom">
+                                        <div class="gst-row">GSTIN: <%= customer.gstin %></div>
+                                    </td>
+                                </tr>
+                            </table>
                         </div>
-
                     </td>
-
                 </tr>
-
             </tbody>
-
         </table>
 
         <table class="items-table">
-
             <thead>
-
                 <tr>
-
-                    <th class="col-no text-center">
-                        #
-                    </th>
-
-                    <th class="col-item">
-                        Item / Description
-                    </th>
-
-                    <th class="col-hsn text-center">
-                        HSN/SAC
-                    </th>
-
-                    <th class="col-rate text-right">
-                        Rate
-                    </th>
-
-                    <th class="col-qty text-center">
-                        Qty
-                    </th>
-
-                    <th class="col-total text-right">
-                        Amount
-                    </th>
-
+                    <th class="col-no text-center">#</th>
+                    <th class="col-item">Item / Description</th>
+                    <th class="col-hsn text-center">HSN/SAC</th>
+                    <th class="col-rate text-right">Rate</th>
+                    <th class="col-qty text-center">Qty</th>
+                    <th class="col-total text-right">Amount</th>
                 </tr>
-
             </thead>
-
             <tbody>
-
                 <% items.forEach((item, index) => { %>
-
                     <tr>
-
-                        <td class="text-center">
-                            <%= index + 1 %>
-                        </td>
-
+                        <td class="text-center"><%= index + 1 %></td>
                         <td>
-
-                            <div class="item-name">
-                                <%= item.name %>
-                            </div>
-
+                            <div class="item-name"><%= item.name %></div>
                             <% if (item.description) { %>
-
-                                <div class="item-description">
-                                    <%= item.description %>
-                                </div>
-
+                                <div class="item-description"><%= item.description %></div>
                             <% } %>
-
                         </td>
-
-                        <td class="text-center">
-                            <%= item.hsnSac %>
-                        </td>
-
-                        <td class="text-right">
-                            ₹ <%= Number(item.rate || 0).toFixed(2) %>
-                        </td>
-
-                        <td class="text-center">
-                            <%= item.qty %>
-                        </td>
-
-                        <td class="text-right">
-                            ₹ <%= (Number(item.rate || 0) * Number(item.qty || 0)).toFixed(2) %>
-                        </td>
-
+                        <td class="text-center"><%= item.hsnSac %></td>
+                        <td class="text-right"><%= item.rate.toFixed(2) %></td>
+                        <td class="text-center"><%= item.qty %></td>
+                        <td class="text-right"><%= (item.rate * item.qty).toFixed(2) %></td>
                     </tr>
-
-                <% }) %>
-
+                <% }); %>
             </tbody>
-
         </table>
 
         <div class="total-section">
-
-            <!-- <div class="amount-words-wrapper">
-
+            <div class="amount-words-wrapper">
                 <div class="amount-words">
-
-                    <div class="section-label">
-                        Amount in Words
-                    </div>
-
-                    <div class="amount-value">
-                        <%= totals.amountInWords %>
-                    </div>
-
+                    <div class="section-label">Amount in Words</div>
+                    <div class="amount-value"><%= totals.amountInWords %></div>
                 </div>
-
-            </div> --> 
-
-            <div class="summary-wrapper">
-
-                <table class="summary-table">
-
-                    <tbody>
-
-                        <tr>
-
-                            <td class="summary-label">
-                                Taxable Amount
-                            </td>
-
-                            <td class="summary-value">
-                                ₹ <%= Number(totals.taxableAmount || 0).toFixed(2) %>
-                            </td>
-
-                        </tr>
-
-                        <% if (Number(totals.cgstAmount || 0) > 0) { %>
-
-                            <tr>
-
-                                <td class="summary-label">
-                                    CGST (<%= totals.cgstRate %>%)
-                                </td>
-
-                                <td class="summary-value">
-                                    ₹ <%= Number(totals.cgstAmount || 0).toFixed(2) %>
-                                </td>
-
-                            </tr>
-
-                        <% } %>
-
-                        <% if (Number(totals.sgstAmount || 0) > 0) { %>
-
-                            <tr>
-
-                                <td class="summary-label">
-                                    SGST (<%= totals.sgstRate %>%)
-                                </td>
-
-                                <td class="summary-value">
-                                    ₹ <%= Number(totals.sgstAmount || 0).toFixed(2) %>
-                                </td>
-
-                            </tr>
-
-                        <% } %>
-
-                        <% if (Number(totals.igstAmount || 0) > 0) { %>
-
-                            <tr>
-
-                                <td class="summary-label">
-                                    IGST (<%= totals.igstRate %>%)
-                                </td>
-
-                                <td class="summary-value">
-                                    ₹ <%= Number(totals.igstAmount || 0).toFixed(2) %>
-                                </td>
-
-                            </tr>
-
-                        <% } %>
-
-                        <tr class="grand-total">
-
-                            <td>
-                                Grand Total
-                            </td>
-
-                            <td class="text-right">
-                                ₹ <%= Number(totals.grandTotal || 0).toFixed(2) %>
-                            </td>
-
-                        </tr>
-
-                    </tbody>
-
-                </table>
-
             </div>
-
+            <div class="summary-wrapper">
+                <table class="summary-table">
+                    <tbody>
+                        <tr>
+                            <td class="summary-label">Taxable Amount</td>
+                            <td class="summary-value"><%= totals.taxableAmount.toFixed(2) %></td>
+                        </tr>
+                        <% if (totals.cgstAmount > 0) { %>
+                            <tr>
+                                <td class="summary-label">CGST (<%= totals.cgstRate %>%)</td>
+                                <td class="summary-value"><%= totals.cgstAmount.toFixed(2) %></td>
+                            </tr>
+                        <% } %>
+                        <% if (totals.sgstAmount > 0) { %>
+                            <tr>
+                                <td class="summary-label">SGST (<%= totals.sgstRate %>%)</td>
+                                <td class="summary-value"><%= totals.sgstAmount.toFixed(2) %></td>
+                            </tr>
+                        <% } %>
+                        <% if (totals.igstAmount > 0) { %>
+                            <tr>
+                                <td class="summary-label">IGST (<%= totals.igstRate %>%)</td>
+                                <td class="summary-value"><%= totals.igstAmount.toFixed(2) %></td>
+                            </tr>
+                        <% } %>
+                        <tr class="grand-total">
+                            <td>Grand Total</td>
+                            <td class="text-right"><%= totals.grandTotal.toFixed(2) %></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
 
         <div class="bottom-section">
-
             <div class="bottom-divider"></div>
-
             <table class="terms-signature-table">
-
                 <tbody>
-
                     <tr>
-
                         <td class="terms-cell">
-
-                            <div class="terms-title">
-                                Terms & Conditions
-                            </div>
-
-                            <ul class="terms-list">
-
-                                <li>
-                                    Goods/services once sold are not returnable unless otherwise agreed.
-                                </li>
-
-                                <li>
-                                    Payment is due according to the agreed payment terms.
-                                </li>
-
-                                <li>
-                                    Any applicable taxes are included as mentioned in this invoice.
-                                </li>
-
-                                <li>
-                                    Subject to the jurisdiction mentioned on the invoice.
-                                </li>
-
-                            </ul>
-
+                            <div class="terms-title">Terms & Conditions</div>
+                            <ol class="terms-list">
+                                <li>Goods/Services once supplied are non-refundable.</li>
+                                <li>Payment is due according to agreed terms.</li>
+                                <li>Subject to local jurisdiction.</li>
+                            </ol>
                         </td>
-
                         <td class="signature-cell">
-
-                            <div class="signature-title-main">
-                                Authorized Signatory
-                            </div>
-
                             <div class="signature">
-
-                                <div class="signature-for">
-                                    For <%= vendor.name %>
-                                </div>
-
-                                <% if (vendor.signature) { %>
-
-                                    <div class="signature-image-wrapper">
-
-                                        <img
-                                            src="<%= vendor.signature %>"
-                                            alt="Authorized Signature"
-                                            class="signature-image"
-                                        >
-
-                                    </div>
-
-                                <% } else { %>
-
-                                    <div class="signature-placeholder"></div>
-
-                                <% } %>
-
-                                <div class="signature-line"></div>
-
-                                <div class="signature-name">
-                                    <%= vendor.signatoryName %>
-                                </div>
-
-                                <div class="signature-title">
-                                    <%= vendor.signatoryTitle %>
-                                </div>
-
-                            </div>
-
-                        </td>
-
-                    </tr>
-
-                </tbody>
-
-            </table>
-
-        </div>
-
-        <div class="page-footer">
-
-            <div class="footer-left">
-
-                <%= vendor.addressLine1 %>
-
-                <% if (vendor.addressLine2) { %>
-                    , <%= vendor.addressLine2 %>
-                <% } %>
-
-                <% if (vendor.city) { %>
-                    , <%= vendor.city %>
-                <% } %>
-
-                <% if (vendor.state) { %>
-                    , <%= vendor.state %>
-                <% } %>
-
-            </div>
-
-            <div class="footer-right">
-                Thank you for your business
-            </div>
-
-        </div>
-
-    </div>
-
-</body>
-
-</html>
+                                <div class="signature-for">For <%= vendor.name %></div>
+                                <div class="signature-placeholder"></div>
+                                <div class="s
