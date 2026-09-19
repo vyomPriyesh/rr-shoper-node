@@ -139,7 +139,7 @@
         }
 
         .vendor-card { border-top: 3px solid #B06A8D; }
-        .customer-card { border-top: 3px solid #C89AB5; }
+        .customer-card { border-top: 3px solid #B06A8D; }
 
         .party-title {
             color: #B06A8D;
@@ -149,7 +149,7 @@
             padding-bottom: 2px;
         }
 
-        .customer-card .party-title { color: #C89AB5; }
+        .customer-card .party-title { color: #B06A8D; }
 
         .party-name {
             color: #1E1E1E;
@@ -494,43 +494,5 @@
             </table>
         </div>
     </div>
-
-    <!-- html-pdf pageFooter block -->
-    <div id="pageFooter">
-        <table class="terms-signature-table">
-            <tbody>
-                <tr>
-                    <td class="terms-cell">
-                        <div class="terms-title">Terms & Conditions</div>
-                        <ol class="terms-list">
-                            <li>Goods/Services once supplied are non-refundable.</li>
-                            <li>Payment is due according to agreed terms.</li>
-                            <li>Subject to local jurisdiction.</li>
-                        </ol>
-                    </td>
-                    <td class="signature-cell">
-                        <div class="signature">
-                            <div class="signature-for">For <%= vendor.name %></div>
-                            <div class="signature-line"></div>
-                            <div class="signature-name"><%= vendor.signatoryName %></div>
-                            <div class="signature-title"><%= vendor.signatoryTitle %></div>
-                        </div>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-
-        <table class="page-footer-table">
-            <tr>
-                <td class="footer-left">
-                    <%= vendor.address %>
-                </td>
-                <td class="footer-right">
-                    Page 1 of 1
-                </td>
-            </tr>
-        </table>
-    </div>
-
 </body>
 </html>
