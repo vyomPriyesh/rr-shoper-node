@@ -1,5 +1,6 @@
 import { sendResponse } from "../utils/response.js";
 import crypto from 'crypto'
+import "dotenv/config";
 
 const verifyPhonePeWebhook = (req, res, next) => {
 
@@ -9,8 +10,8 @@ const verifyPhonePeWebhook = (req, res, next) => {
         if (!authorization) {
             return sendResponse(res, 401, "Unauthorized", false);
         }
-        const username = 'Pankaj';
-        const password = 'PankajAgravat302302';
+        const username = process.env.PHONE_PAY_WEBHOOK_USERNAME;
+        const password = process.env.PHONE_PAY_WEBHOOK_PASSWORD;
 
         const expectedAuthorization = crypto
             .createHash("sha256")

@@ -168,7 +168,7 @@ api.post('/payment/initiate', verifyToken, PaymentControler.initiatePhonePePayme
 api.get('/payment/status/:id', verifyToken, PaymentControler.paymentStatus)
 api.post('/payment/customer-orders', verifyToken, PaymentControler.customerOrders)
 api.get('/payment/customer-order-counts', verifyToken, PaymentControler.customerOrderCounts)
-api.get('/payment/invoice', PaymentControler.paymentInvoice)
+api.get('/payment/invoice/:invoice', verifyToken, PaymentControler.paymentInvoice)
 api.post('/payment/webhook', verifyPhonePeWebhook, PaymentControler.paymentWebhook)
 
 api.post('/requestDowngrade/add-request', verifyToken, DownGradePackageController.addRequest)

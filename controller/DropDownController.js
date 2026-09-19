@@ -78,6 +78,12 @@ const userAccountStatuses = [
     },
 ]
 
+const validityOptions = [
+    { label: 'Month', value: 'month' },
+    { label: 'Year', value: 'Year' },
+    { label: 'Life Time', value: 'lifeTime' },
+]
+
 const packageOrders = [
     { label: 'Starter', value: '1' },
     { label: 'Hot', value: '2' },
@@ -118,7 +124,8 @@ export const getAdminDropdowns = async () => {
         roles,
         ticketStatuses,
         userAccountStatuses,
-        packageOrders
+        packageOrders,
+        validityOptions
     }
 
     return {
@@ -145,7 +152,8 @@ class DropDownController {
             ticketsTitles: getValusName(allTicketsTitles, 'title', '_id'),
             ticketStatuses,
             userAccountStatuses,
-            packageOrders
+            packageOrders,
+            validityOptions
         }
     }
 

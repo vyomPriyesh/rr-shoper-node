@@ -24,15 +24,6 @@ const paymentDataUpdate = async (payload, phonepeResponse) => {
     if (paymentData) {
         if (paymentData.payment_status == "PENDING" && payload?.state == 'COMPLETED') {
 
-            // const expireDate = Math.floor(
-            //     (Date.now() + 2 * 60 * 1000) / 1000
-            // );
-            const expireDate = Math.floor(
-                new Date(
-                    new Date().setMonth(new Date().getMonth() + 1)
-                ).getTime() / 1000
-            );
-
             const customer = await Customer.findById(paymentData?.customer_id)
                 .populate([
                     {
@@ -53,6 +44,14 @@ const paymentDataUpdate = async (payload, phonepeResponse) => {
                 return sendResponse(res, 500, "Package Not found", false);
             }
 
+            const currentUnix = Math.floor(Date.now() / 1000);
+            const expireDate = Math.floor(
+                (newPackage.validity === 'lifeTime'
+                    ? new Date(new Date().setFullYear(new Date().getFullYear() + 100))
+                    : new Date(new Date().setMonth(new Date().getMonth() + 1))
+                ).getTime() / 1000
+            );
+
             const newPlatformId = newPackage?.platform?._id?.toString();
 
 
@@ -68,15 +67,11 @@ const paymentDataUpdate = async (payload, phonepeResponse) => {
             if (existingPackageIndex !== -1) {
                 const existingPackage = customer.package[existingPackageIndex];
 
-                const currentUnix = Math.floor(Date.now() / 1000);
-
                 // Remaining time of existing package
                 const remainingTime =
                     Number(existingPackage.package_expire) - currentUnix;
 
-                // New package duration (your testing expireDate = now + 10 min)
-                const newPackageDuration =
-                    expireDate - currentUnix;
+                const newPackageDuration = expireDate - currentUnix;
 
                 // Remaining old time + new package duration
                 const newExpireDate =
@@ -170,7 +165,6 @@ class PaymentControler {
     static paymentStatus = catchAsync(async (req, res) => {
 
         const { id } = req.params;
-        console.log('object order')
 
         const paymentStatusData = await phonepeClient.getOrderStatus(id);
         const paymentData = await paymentDataUpdate({ merchantOrderId: id, state: paymentStatusData?.state }, paymentStatusData);
@@ -182,7 +176,6 @@ class PaymentControler {
     static paymentWebhook = catchAsync(async (req, res) => {
 
         const { payload } = req.body || {}
-        console.log('object')
 
         const paymentData = await paymentDataUpdate(payload, req.body);
 
@@ -320,110 +313,110 @@ class PaymentControler {
     });
 
     static paymentInvoice = catchAsync(async (req, res) => {
-    const invoiceData = {
-        vendor: {
-            name: 'R R SHOPER',
-            subtext: 'E-COMMERCE SERVICES',
-            address: '3rd Floor, Shop No. 334, Times Trade Center, Surat, Gujarat, 395010, India',
-            email: 'support@rrshoper.com',
-            phone: '+91 98765 43210',
-            gstin: '24AAAAA0000A1Z5',
-            pan: 'AAAAA0000A',
-            city: 'Surat',
-            state: 'Gujarat',
-            signatoryName: 'PANKAJKUMAR R AGRAVAT',
-            signatoryTitle: 'Partner / Authorized Signatory'
-        },
-        customer: {
-            name: 'APEX E-COMMERCE SOLUTIONS',
-            address: '102, Business Hub, Ring Road, Surat, Gujarat, 395002, India',
-            contactPerson: 'Rajesh Sharma',
-            phone: '+91 91234 56789',
-            gstin: '24ABCDF1234H1ZP',
-            stateCode: '24 (Gujarat)'
-        },
-        invoice: {
-            number: 'RRS/2026-27/0891',
-            date: '06 Aug 2026',
-            placeOfSupply: '24 - Gujarat',
-            paymentTerms: 'Immediate / Prepaid'
-        },
-        items: [
-            {
-                name: 'Starter Package Subscription',
-                description: 'Comprehensive seller onboarding and account management package.',
-                hsnSac: '998314',
-                rate: 1999.00,
-                qty: 1,
-                features: [
-                    'New Account Created',
-                    'Keyword Listing',
-                    'Brand Reg Assistance',
-                    '50 SKU Listing & Training',
-                    'Customer Support'
-                ]
+        const invoiceData = {
+            vendor: {
+                name: 'R R SHOPER',
+                subtext: 'E-COMMERCE SERVICES',
+                address: '3rd Floor, Shop No. 334, Times Trade Center, Surat, Gujarat, 395010, India',
+                email: 'support@rrshoper.com',
+                phone: '+91 98765 43210',
+                gstin: '24AAAAA0000A1Z5',
+                pan: 'AAAAA0000A',
+                city: 'Surat',
+                state: 'Gujarat',
+                signatoryName: 'PANKAJKUMAR R AGRAVAT',
+                signatoryTitle: 'Partner / Authorized Signatory'
+            },
+            customer: {
+                name: 'APEX E-COMMERCE SOLUTIONS',
+                address: '102, Business Hub, Ring Road, Surat, Gujarat, 395002, India',
+                contactPerson: 'Rajesh Sharma',
+                phone: '+91 91234 56789',
+                gstin: '24ABCDF1234H1ZP',
+                stateCode: '24 (Gujarat)'
+            },
+            invoice: {
+                number: 'RRS/2026-27/0891',
+                date: '06 Aug 2026',
+                placeOfSupply: '24 - Gujarat',
+                paymentTerms: 'Immediate / Prepaid'
+            },
+            items: [
+                {
+                    name: 'Starter Package Subscription',
+                    description: 'Comprehensive seller onboarding and account management package.',
+                    hsnSac: '998314',
+                    rate: 1999.00,
+                    qty: 1,
+                    features: [
+                        'New Account Created',
+                        'Keyword Listing',
+                        'Brand Reg Assistance',
+                        '50 SKU Listing & Training',
+                        'Customer Support'
+                    ]
+                }
+            ],
+            bank: {
+                name: 'HDFC Bank Ltd',
+                accountName: 'R R SHOPER',
+                accountNo: '50200012345678',
+                ifsc: 'HDFC0001234',
+                branch: 'Ring Road, Surat'
+            },
+            totals: {
+                taxableAmount: 1999.00,
+                cgstRate: 9,
+                cgstAmount: 179.91,
+                sgstRate: 9,
+                sgstAmount: 179.91,
+                igstRate: 0,
+                igstAmount: 0.00,
+                grandTotal: 2358.82,
+                amountInWords: 'Two Thousand Three Hundred Fifty-Eight Rupees and Eighty-Two Paise Only.'
             }
-        ],
-        bank: {
-            name: 'HDFC Bank Ltd',
-            accountName: 'R R SHOPER',
-            accountNo: '50200012345678',
-            ifsc: 'HDFC0001234',
-            branch: 'Ring Road, Surat'
-        },
-        totals: {
-            taxableAmount: 1999.00,
-            cgstRate: 9,
-            cgstAmount: 179.91,
-            sgstRate: 9,
-            sgstAmount: 179.91,
-            igstRate: 0,
-            igstAmount: 0.00,
-            grandTotal: 2358.82,
-            amountInWords: 'Two Thousand Three Hundred Fifty-Eight Rupees and Eighty-Two Paise Only.'
-        }
-    };
+        };
 
-    // 1. Render EJS template to HTML string
-    const templatePath = path.join(__dirname, '../views/invoice.ejs');
-    const html = await ejs.renderFile(templatePath, invoiceData);
+        // 1. Render EJS template to HTML string
+        const templatePath = path.join(__dirname, '../views/invoice.ejs');
+        const html = await ejs.renderFile(templatePath, invoiceData);
 
-    // 2. Configure html-pdf options
-    const options = {
-    format: 'A4',
-    orientation: 'portrait',
-    border: {
-        top: '8mm',
-        right: '10mm',
-        bottom: '8mm',
-        left: '10mm'
-    },
-    footer: {
-        height: '38mm' // Increased from 28mm to prevent clipping
-    },
-    type: 'pdf'
-};
-    // 3. Create PDF buffer using Promisify to keep async/await flow intact
-    const pdfBuffer = await new Promise((resolve, reject) => {
-        pdf.create(html, options).toBuffer((err, buffer) => {
-            if (err) return reject(err);
-            resolve(buffer);
+        // 2. Configure html-pdf options
+        const options = {
+            format: 'A4',
+            orientation: 'portrait',
+            border: {
+                top: '8mm',
+                right: '10mm',
+                bottom: '8mm',
+                left: '10mm'
+            },
+            footer: {
+                height: '38mm' // Increased from 28mm to prevent clipping
+            },
+            type: 'pdf'
+        };
+        // 3. Create PDF buffer using Promisify to keep async/await flow intact
+        const pdfBuffer = await new Promise((resolve, reject) => {
+            pdf.create(html, options).toBuffer((err, buffer) => {
+                if (err) return reject(err);
+                resolve(buffer);
+            });
         });
+
+        // 4. Send PDF Buffer back to the client
+        // BEFORE (opens in browser preview):
+        // 'Content-Disposition': 'inline; filename=tax-invoice.pdf',
+
+        // AFTER (triggers direct download):
+        res.set({
+            'Content-Type': 'application/pdf',
+            'Content-Disposition': 'attachment; filename="tax-invoice.pdf"',
+            'Content-Length': pdfBuffer.length
+        });
+
+        return res.send(pdfBuffer);
     });
-
-    // 4. Send PDF Buffer back to the client
-    // BEFORE (opens in browser preview):
-// 'Content-Disposition': 'inline; filename=tax-invoice.pdf',
-
-// AFTER (triggers direct download):
-res.set({
-    'Content-Type': 'application/pdf',
-    'Content-Disposition': 'attachment; filename="tax-invoice.pdf"',
-    'Content-Length': pdfBuffer.length
-});
-
-return res.end(pdfBuffer);
-});
 
 }
 

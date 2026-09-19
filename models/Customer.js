@@ -34,6 +34,10 @@ const CustomerSchema = new mongoose.Schema(
             type: String,
             default: null,
         },
+        address: {
+            type: String,
+            default: null,
+        },
         image: {
             type: Schema.Types.ObjectId,
             ref: "Images"

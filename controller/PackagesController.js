@@ -32,7 +32,6 @@ class PackagesController {
 
     static updatePackageStatus = catchAsync(async (req, res) => {
 
-        const data = req.body || {}
         const { id } = req.params
 
         const findPackage = await Packages.findById(id)
@@ -48,7 +47,6 @@ class PackagesController {
 
     static updatePopularPackage = catchAsync(async (req, res) => {
 
-        const data = req.body || {}
         const { id } = req.params
 
         const findPackage = await Packages.findById(id).populate("platform")
@@ -78,9 +76,9 @@ class PackagesController {
             return sendResponse(res, 422, 'Package not Found', false)
         }
 
-        const packageData = await Packages.delete({ _id: id })
+        await Packages.delete({ _id: id })
 
-        return sendResponse(res, 200, 'Package Delete Successfully', true,)
+        return sendResponse(res, 200, 'Package Delete Successfully', true)
     })
 
     static allPackages = catchAsync(async (req, res) => {

@@ -11,6 +11,10 @@ const PackagesSchema = new mongoose.Schema(
             type: String,
             default: null
         },
+        validity: {
+            type: String,
+            default: null
+        },
         price: {
             type: String,
             default: null
