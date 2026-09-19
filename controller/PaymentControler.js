@@ -319,7 +319,7 @@ class PaymentControler {
         return sendResponse(res, 200, "Customer order counts fetched", true, statusCounts);
     });
 
-    const paymentInvoice = catchAsync(async (req, res) => {
+    static paymentInvoice = catchAsync(async (req, res) => {
     const invoiceData = {
         vendor: {
             name: 'R R SHOPER',
