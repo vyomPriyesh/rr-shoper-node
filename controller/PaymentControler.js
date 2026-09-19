@@ -44,13 +44,20 @@ const paymentDataUpdate = async (payload, phonepeResponse) => {
                 return sendResponse(res, 500, "Package Not found", false);
             }
 
-            const currentUnix = Math.floor(Date.now() / 1000);
-            const expireDate = Math.floor(
-                (newPackage.validity === 'lifeTime'
-                    ? new Date(new Date().setFullYear(new Date().getFullYear() + 100))
-                    : new Date(new Date().setMonth(new Date().getMonth() + 1))
-                ).getTime() / 1000
-            );
+            const currentDate = new Date();
+            const currentUnix = Math.floor(currentDate.getTime() / 1000);
+            const validity = String(newPackage.validity || '').toLowerCase();
+            const expireDateValue = new Date(currentDate);
+
+            if (validity === 'lifetime') {
+                expireDateValue.setFullYear(expireDateValue.getFullYear() + 100);
+            } else if (validity === 'year') {
+                expireDateValue.setFullYear(expireDateValue.getFullYear() + 1);
+            } else {
+                expireDateValue.setMonth(expireDateValue.getMonth() + 1);
+            }
+
+            const expireDate = Math.floor(expireDateValue.getTime() / 1000);
 
             const newPlatformId = newPackage?.platform?._id?.toString();
 
