@@ -393,13 +393,13 @@ class PaymentControler {
     format: 'A4',
     orientation: 'portrait',
     border: {
-        top: '10mm',
+        top: '8mm',
         right: '10mm',
-        bottom: '10mm',
+        bottom: '8mm',
         left: '10mm'
     },
     footer: {
-        height: '28mm'
+        height: '38mm' // Increased from 28mm to prevent clipping
     },
     type: 'pdf'
 };
