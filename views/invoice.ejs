@@ -17,12 +17,14 @@
             background: #FFFFFF;
             color: #5F6673;
             font-family: Arial, Helvetica, sans-serif;
-            font-size: 12px;
+            font-size: 11.5px;
         }
 
+        /* Fixed container simulating full printable body area */
         .invoice-page {
+            position: relative;
             width: 100%;
-            padding: 15px 20px;
+            height: 265mm; /* Exact printable height minus 25mm margins */
             background: #FFFFFF;
         }
 
@@ -30,13 +32,13 @@
             width: 100%;
             height: 4px;
             background-color: #B06A8D;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
         }
 
         .header {
             display: table;
             width: 100%;
-            padding-bottom: 10px;
+            padding-bottom: 8px;
             border-bottom: 1px solid #E8DDE3;
             table-layout: fixed;
         }
@@ -63,9 +65,9 @@
         }
 
         .brand-subtext {
-            margin-top: 3px;
+            margin-top: 2px;
             color: #5F6673;
-            font-size: 11px;
+            font-size: 10.5px;
         }
 
         .invoice-heading {
@@ -77,16 +79,16 @@
         }
 
         .invoice-label {
-            margin-top: 3px;
+            margin-top: 2px;
             color: #B06A8D;
-            font-size: 11px;
+            font-size: 10.5px;
             font-weight: 700;
             text-transform: uppercase;
         }
 
         .invoice-meta {
             width: 100%;
-            margin-top: 10px;
+            margin-top: 8px;
             border: 1px solid #E8DDE3;
             border-radius: 6px;
             background-color: #F8F1F5;
@@ -100,7 +102,7 @@
 
         .invoice-meta-table td {
             width: 25%;
-            padding: 8px 10px;
+            padding: 6px 8px;
             border-right: 1px solid #E8DDE3;
             vertical-align: top;
         }
@@ -110,22 +112,22 @@
         }
 
         .meta-label {
-            margin-bottom: 3px;
+            margin-bottom: 2px;
             color: #5F6673;
-            font-size: 9px;
+            font-size: 8.5px;
             font-weight: 700;
             text-transform: uppercase;
         }
 
         .meta-value {
             color: #1E1E1E;
-            font-size: 11px;
+            font-size: 10.5px;
             font-weight: 700;
         }
 
         .party-table {
             width: 100%;
-            margin: 10px 0;
+            margin: 8px 0;
             border-collapse: collapse;
             table-layout: fixed;
         }
@@ -136,16 +138,16 @@
         }
 
         .party-table > tbody > tr > td:first-child {
-            padding-right: 5px;
+            padding-right: 4px;
         }
 
         .party-table > tbody > tr > td:last-child {
-            padding-left: 5px;
+            padding-left: 4px;
         }
 
         .party-card {
             width: 100%;
-            padding: 10px 12px;
+            padding: 8px 10px;
             border: 1px solid #E8DDE3;
             border-radius: 6px;
             background-color: #FFFFFF;
@@ -156,36 +158,36 @@
 
         .party-title {
             color: #B06A8D;
-            font-size: 10px;
+            font-size: 9.5px;
             font-weight: 800;
             text-transform: uppercase;
-            padding-bottom: 4px;
+            padding-bottom: 3px;
         }
 
         .customer-card .party-title { color: #C89AB5; }
 
         .party-name {
             color: #1E1E1E;
-            font-size: 13px;
+            font-size: 12.5px;
             font-weight: 700;
-            padding-bottom: 4px;
+            padding-bottom: 3px;
         }
 
         .party-line {
             color: #5F6673;
-            font-size: 11px;
-            line-height: 1.4;
-            padding-bottom: 3px;
+            font-size: 10.5px;
+            line-height: 1.35;
+            padding-bottom: 2px;
         }
 
         .party-line strong { color: #1E1E1E; }
 
         .gst-row {
-            margin-top: 6px;
-            padding-top: 6px;
+            margin-top: 4px;
+            padding-top: 4px;
             border-top: 1px dashed #E8DDE3;
             color: #B06A8D;
-            font-size: 11px;
+            font-size: 10.5px;
             font-weight: 700;
         }
 
@@ -197,14 +199,14 @@
             table-layout: fixed;
             border: 1px solid #E8DDE3;
             border-radius: 6px;
-            margin-top: 5px;
+            margin-top: 4px;
         }
 
         .items-table thead th {
-            padding: 8px 6px;
+            padding: 6px 5px;
             background-color: #B06A8D;
             color: #FFFFFF;
-            font-size: 10px;
+            font-size: 9.5px;
             font-weight: 700;
             text-align: left;
             text-transform: uppercase;
@@ -214,10 +216,10 @@
         .items-table thead th:last-child { border-right: none; }
 
         .items-table tbody td {
-            padding: 8px 6px;
+            padding: 6px 5px;
             color: #5F6673;
-            font-size: 11px;
-            line-height: 1.4;
+            font-size: 10.5px;
+            line-height: 1.35;
             border-top: 1px solid #E8DDE3;
             border-right: 1px solid #E8DDE3;
             vertical-align: top;
@@ -226,8 +228,8 @@
         .items-table tbody td:last-child { border-right: none; }
         .items-table tbody tr:nth-child(even) td { background-color: #FCF9FB; }
 
-        .item-name { color: #1E1E1E; font-size: 11px; font-weight: 700; }
-        .item-description { margin-top: 2px; color: #5F6673; font-size: 9.5px; }
+        .item-name { color: #1E1E1E; font-size: 10.5px; font-weight: 700; }
+        .item-description { margin-top: 2px; color: #5F6673; font-size: 9px; }
 
         .text-center { text-align: center !important; }
         .text-right { text-align: right !important; }
@@ -242,44 +244,44 @@
         .total-section {
             display: table;
             width: 100%;
-            margin-top: 10px;
+            margin-top: 8px;
             table-layout: fixed;
         }
 
         .amount-words-wrapper {
             display: table-cell;
             width: 50%;
-            padding-right: 5px;
+            padding-right: 4px;
             vertical-align: top;
         }
 
         .summary-wrapper {
             display: table-cell;
             width: 50%;
-            padding-left: 5px;
+            padding-left: 4px;
             vertical-align: top;
         }
 
         .amount-words {
-            padding: 10px;
+            padding: 8px;
             border: 1px solid #E8DDE3;
             border-radius: 6px;
             background-color: #F8F1F5;
         }
 
         .section-label {
-            margin-bottom: 5px;
+            margin-bottom: 4px;
             color: #B06A8D;
-            font-size: 9px;
+            font-size: 8.5px;
             font-weight: 800;
             text-transform: uppercase;
         }
 
         .amount-value {
             color: #1E1E1E;
-            font-size: 11px;
+            font-size: 10.5px;
             font-weight: 600;
-            line-height: 1.4;
+            line-height: 1.35;
         }
 
         .summary-table {
@@ -290,9 +292,9 @@
         }
 
         .summary-table td {
-            padding: 6px 8px;
+            padding: 5px 6px;
             border-bottom: 1px solid #E8DDE3;
-            font-size: 11px;
+            font-size: 10.5px;
         }
 
         .summary-table tr:last-child td { border-bottom: none; }
@@ -300,23 +302,27 @@
         .summary-value { color: #1E1E1E; font-weight: 700; text-align: right; }
 
         .grand-total td {
-            padding-top: 8px;
-            padding-bottom: 8px;
+            padding-top: 6px;
+            padding-bottom: 6px;
             background-color: #B06A8D;
             color: #FFFFFF !important;
-            font-size: 12px !important;
+            font-size: 11.5px !important;
             font-weight: 800 !important;
         }
 
+        /* Pinned bottom signature section */
         .bottom-section {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
             width: 100%;
-            margin-top: 15px;
         }
 
         .bottom-divider {
             width: 100%;
             height: 1px;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             background-color: #E8DDE3;
         }
 
@@ -328,16 +334,16 @@
 
         .terms-signature-table > tbody > tr > td {
             width: 50%;
-            vertical-align: top;
+            vertical-align: bottom;
         }
 
-        .terms-cell { padding-right: 15px; }
-        .signature-cell { padding-left: 15px; text-align: right; }
+        .terms-cell { padding-right: 10px; }
+        .signature-cell { padding-left: 10px; text-align: right; }
 
         .terms-title {
-            margin-bottom: 5px;
+            margin-bottom: 4px;
             color: #1E1E1E;
-            font-size: 10px;
+            font-size: 9.5px;
             font-weight: 800;
             text-transform: uppercase;
         }
@@ -346,8 +352,8 @@
             margin: 0;
             padding-left: 12px;
             color: #5F6673;
-            font-size: 9.5px;
-            line-height: 1.4;
+            font-size: 9px;
+            line-height: 1.35;
         }
 
         .signature {
@@ -359,31 +365,32 @@
         .signature-for {
             margin-bottom: 4px;
             color: #5F6673;
-            font-size: 10px;
+            font-size: 9.5px;
         }
 
-        .signature-placeholder { height: 35px; }
+        .signature-placeholder { height: 30px; }
 
         .signature-line {
             width: 140px;
             height: 1px;
-            margin: 0 auto 4px;
+            margin: 0 auto 3px;
             background-color: #1E1E1E;
         }
 
-        .signature-name { color: #1E1E1E; font-size: 11px; font-weight: 700; }
-        .signature-title { margin-top: 2px; color: #5F6673; font-size: 9.5px; }
+        .signature-name { color: #1E1E1E; font-size: 10.5px; font-weight: 700; }
+        .signature-title { margin-top: 1px; color: #5F6673; font-size: 9px; }
 
+        /* Footer table styled for html-pdf engine */
         .page-footer-table {
             width: 100%;
-            margin-top: 15px;
+            margin-top: 6px;
             border-collapse: collapse;
             border-top: 1px solid #E8DDE3;
             color: #5F6673;
-            font-size: 9.5px;
+            font-size: 9px;
         }
 
-        .page-footer-table td { padding-top: 6px; }
+        .page-footer-table td { padding-top: 4px; }
         .footer-left { text-align: left; width: 70%; }
         .footer-right { color: #B06A8D; font-weight: 700; text-align: right; width: 30%; }
     </style>
@@ -533,6 +540,7 @@
             </div>
         </div>
 
+        <!-- Absolute positioned block forced to bottom of container -->
         <div class="bottom-section">
             <div class="bottom-divider"></div>
             <table class="terms-signature-table">
@@ -558,18 +566,18 @@
                     </tr>
                 </tbody>
             </table>
-        </div>
 
-        <table class="page-footer-table">
-            <tr>
-                <td class="footer-left">
-                    <%= vendor.address %>
-                </td>
-                <td class="footer-right">
-                    Page 1 of 1
-                </td>
-            </tr>
-        </table>
+            <table class="page-footer-table">
+                <tr>
+                    <td class="footer-left">
+                        <%= vendor.address %>
+                    </td>
+                    <td class="footer-right">
+                        Page 1 of 1
+                    </td>
+                </tr>
+            </table>
+        </div>
 
     </div>
 
