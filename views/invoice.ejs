@@ -14,26 +14,22 @@
         html, body {
             margin: 0;
             padding: 0;
-            height: 100%;
+            width: 210mm;
+            height: 297mm; /* Absolute A4 height */
             background: #FFFFFF;
             color: #5F6673;
             font-family: Arial, Helvetica, sans-serif;
             font-size: 11px;
+            overflow: hidden;
         }
 
-        /* Full container using flex to push bottom section without extra pages */
+        /* Fixed single-page container */
         .invoice-page {
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            min-height: 100vh;
+            position: relative;
+            width: 100%;
+            height: 100%;
+            padding: 10mm; /* Internal margins replacement */
             background: #FFFFFF;
-            page-break-inside: avoid;
-            page-break-after: avoid;
-        }
-
-        .content-wrap {
-            flex: 1;
         }
 
         .top-accent {
@@ -317,11 +313,13 @@
             font-weight: 800 !important;
         }
 
-        /* Dynamic bottom alignment section */
+        /* Absolutely pinned bottom signature and footer block */
         .bottom-section {
-            margin-top: auto;
-            padding-top: 10px;
-            page-break-inside: avoid;
+            position: absolute;
+            bottom: 10mm;
+            left: 10mm;
+            right: 10mm;
+            width: calc(100% - 20mm);
         }
 
         .bottom-divider {
@@ -387,7 +385,7 @@
 
         .page-footer-table {
             width: 100%;
-            margin-top: 6px;
+            margin-top: 8px;
             border-collapse: collapse;
             border-top: 1px solid #E8DDE3;
             color: #5F6673;
@@ -403,145 +401,143 @@
 <body>
 
     <div class="invoice-page">
-        <div class="content-wrap">
-            <div class="top-accent"></div>
+        <div class="top-accent"></div>
 
-            <div class="header">
-                <div class="header-left">
-                    <div class="brand-name"><%= vendor.name %></div>
-                    <% if (vendor.subtext) { %>
-                        <div class="brand-subtext"><%= vendor.subtext %></div>
-                    <% } %>
-                </div>
-                <div class="header-right">
-                    <div class="invoice-heading">TAX INVOICE</div>
-                    <div class="invoice-label">Original for Recipient</div>
+        <div class="header">
+            <div class="header-left">
+                <div class="brand-name"><%= vendor.name %></div>
+                <% if (vendor.subtext) { %>
+                    <div class="brand-subtext"><%= vendor.subtext %></div>
+                <% } %>
+            </div>
+            <div class="header-right">
+                <div class="invoice-heading">TAX INVOICE</div>
+                <div class="invoice-label">Original for Recipient</div>
+            </div>
+        </div>
+
+        <div class="invoice-meta">
+            <table class="invoice-meta-table">
+                <tbody>
+                    <tr>
+                        <td>
+                            <div class="meta-label">Invoice Number</div>
+                            <div class="meta-value"><%= invoice.number %></div>
+                        </td>
+                        <td>
+                            <div class="meta-label">Invoice Date</div>
+                            <div class="meta-value"><%= invoice.date %></div>
+                        </td>
+                        <td>
+                            <div class="meta-label">Place of Supply</div>
+                            <div class="meta-value"><%= invoice.placeOfSupply %></div>
+                        </td>
+                        <td>
+                            <div class="meta-label">Payment Terms</div>
+                            <div class="meta-value"><%= invoice.paymentTerms %></div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <table class="party-table">
+            <tbody>
+                <tr>
+                    <td>
+                        <div class="party-card vendor-card">
+                            <div class="party-title">Billed By / Service Provider</div>
+                            <div class="party-name"><%= vendor.name %></div>
+                            <div class="party-line"><%= vendor.address %></div>
+                            <div class="party-line">
+                                <strong>Email:</strong> <%= vendor.email %> &nbsp;|&nbsp; <strong>Mob:</strong> <%= vendor.phone %>
+                            </div>
+                            <div class="gst-row">GSTIN: <%= vendor.gstin %></div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="party-card customer-card">
+                            <div class="party-title">Billed To / Customer Details</div>
+                            <div class="party-name"><%= customer.name %></div>
+                            <div class="party-line"><%= customer.address %></div>
+                            <div class="party-line">
+                                <strong>Contact:</strong> <%= customer.contactPerson %> (<%= customer.phone %>)
+                            </div>
+                            <div class="gst-row">GSTIN: <%= customer.gstin %></div>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <table class="items-table">
+            <thead>
+                <tr>
+                    <th class="col-no text-center">#</th>
+                    <th class="col-item">Item / Description</th>
+                    <th class="col-hsn text-center">HSN/SAC</th>
+                    <th class="col-rate text-right">Rate</th>
+                    <th class="col-qty text-center">Qty</th>
+                    <th class="col-total text-right">Amount</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% items.forEach((item, index) => { %>
+                    <tr>
+                        <td class="text-center"><%= index + 1 %></td>
+                        <td>
+                            <div class="item-name"><%= item.name %></div>
+                            <% if (item.description) { %>
+                                <div class="item-description"><%= item.description %></div>
+                            <% } %>
+                        </td>
+                        <td class="text-center"><%= item.hsnSac %></td>
+                        <td class="text-right"><%= item.rate.toFixed(2) %></td>
+                        <td class="text-center"><%= item.qty %></td>
+                        <td class="text-right"><%= (item.rate * item.qty).toFixed(2) %></td>
+                    </tr>
+                <% }); %>
+            </tbody>
+        </table>
+
+        <div class="total-section">
+            <div class="amount-words-wrapper">
+                <div class="amount-words">
+                    <div class="section-label">Amount in Words</div>
+                    <div class="amount-value"><%= totals.amountInWords %></div>
                 </div>
             </div>
-
-            <div class="invoice-meta">
-                <table class="invoice-meta-table">
+            <div class="summary-wrapper">
+                <table class="summary-table">
                     <tbody>
                         <tr>
-                            <td>
-                                <div class="meta-label">Invoice Number</div>
-                                <div class="meta-value"><%= invoice.number %></div>
-                            </td>
-                            <td>
-                                <div class="meta-label">Invoice Date</div>
-                                <div class="meta-value"><%= invoice.date %></div>
-                            </td>
-                            <td>
-                                <div class="meta-label">Place of Supply</div>
-                                <div class="meta-value"><%= invoice.placeOfSupply %></div>
-                            </td>
-                            <td>
-                                <div class="meta-label">Payment Terms</div>
-                                <div class="meta-value"><%= invoice.paymentTerms %></div>
-                            </td>
+                            <td class="summary-label">Taxable Amount</td>
+                            <td class="summary-value"><%= totals.taxableAmount.toFixed(2) %></td>
+                        </tr>
+                        <% if (totals.cgstAmount > 0) { %>
+                            <tr>
+                                <td class="summary-label">CGST (<%= totals.cgstRate %>%)</td>
+                                <td class="summary-value"><%= totals.cgstAmount.toFixed(2) %></td>
+                            </tr>
+                        <% } %>
+                        <% if (totals.sgstAmount > 0) { %>
+                            <tr>
+                                <td class="summary-label">SGST (<%= totals.sgstRate %>%)</td>
+                                <td class="summary-value"><%= totals.sgstAmount.toFixed(2) %></td>
+                            </tr>
+                        <% } %>
+                        <% if (totals.igstAmount > 0) { %>
+                            <tr>
+                                <td class="summary-label">IGST (<%= totals.igstRate %>%)</td>
+                                <td class="summary-value"><%= totals.igstAmount.toFixed(2) %></td>
+                            </tr>
+                        <% } %>
+                        <tr class="grand-total">
+                            <td>Grand Total</td>
+                            <td class="text-right"><%= totals.grandTotal.toFixed(2) %></td>
                         </tr>
                     </tbody>
                 </table>
-            </div>
-
-            <table class="party-table">
-                <tbody>
-                    <tr>
-                        <td>
-                            <div class="party-card vendor-card">
-                                <div class="party-title">Billed By / Service Provider</div>
-                                <div class="party-name"><%= vendor.name %></div>
-                                <div class="party-line"><%= vendor.address %></div>
-                                <div class="party-line">
-                                    <strong>Email:</strong> <%= vendor.email %> &nbsp;|&nbsp; <strong>Mob:</strong> <%= vendor.phone %>
-                                </div>
-                                <div class="gst-row">GSTIN: <%= vendor.gstin %></div>
-                            </div>
-                        </td>
-                        <td>
-                            <div class="party-card customer-card">
-                                <div class="party-title">Billed To / Customer Details</div>
-                                <div class="party-name"><%= customer.name %></div>
-                                <div class="party-line"><%= customer.address %></div>
-                                <div class="party-line">
-                                    <strong>Contact:</strong> <%= customer.contactPerson %> (<%= customer.phone %>)
-                                </div>
-                                <div class="gst-row">GSTIN: <%= customer.gstin %></div>
-                            </div>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-
-            <table class="items-table">
-                <thead>
-                    <tr>
-                        <th class="col-no text-center">#</th>
-                        <th class="col-item">Item / Description</th>
-                        <th class="col-hsn text-center">HSN/SAC</th>
-                        <th class="col-rate text-right">Rate</th>
-                        <th class="col-qty text-center">Qty</th>
-                        <th class="col-total text-right">Amount</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <% items.forEach((item, index) => { %>
-                        <tr>
-                            <td class="text-center"><%= index + 1 %></td>
-                            <td>
-                                <div class="item-name"><%= item.name %></div>
-                                <% if (item.description) { %>
-                                    <div class="item-description"><%= item.description %></div>
-                                <% } %>
-                            </td>
-                            <td class="text-center"><%= item.hsnSac %></td>
-                            <td class="text-right"><%= item.rate.toFixed(2) %></td>
-                            <td class="text-center"><%= item.qty %></td>
-                            <td class="text-right"><%= (item.rate * item.qty).toFixed(2) %></td>
-                        </tr>
-                    <% }); %>
-                </tbody>
-            </table>
-
-            <div class="total-section">
-                <div class="amount-words-wrapper">
-                    <div class="amount-words">
-                        <div class="section-label">Amount in Words</div>
-                        <div class="amount-value"><%= totals.amountInWords %></div>
-                    </div>
-                </div>
-                <div class="summary-wrapper">
-                    <table class="summary-table">
-                        <tbody>
-                            <tr>
-                                <td class="summary-label">Taxable Amount</td>
-                                <td class="summary-value"><%= totals.taxableAmount.toFixed(2) %></td>
-                            </tr>
-                            <% if (totals.cgstAmount > 0) { %>
-                                <tr>
-                                    <td class="summary-label">CGST (<%= totals.cgstRate %>%)</td>
-                                    <td class="summary-value"><%= totals.cgstAmount.toFixed(2) %></td>
-                                </tr>
-                            <% } %>
-                            <% if (totals.sgstAmount > 0) { %>
-                                <tr>
-                                    <td class="summary-label">SGST (<%= totals.sgstRate %>%)</td>
-                                    <td class="summary-value"><%= totals.sgstAmount.toFixed(2) %></td>
-                                </tr>
-                            <% } %>
-                            <% if (totals.igstAmount > 0) { %>
-                                <tr>
-                                    <td class="summary-label">IGST (<%= totals.igstRate %>%)</td>
-                                    <td class="summary-value"><%= totals.igstAmount.toFixed(2) %></td>
-                                </tr>
-                            <% } %>
-                            <tr class="grand-total">
-                                <td>Grand Total</td>
-                                <td class="text-right"><%= totals.grandTotal.toFixed(2) %></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
             </div>
         </div>
 
