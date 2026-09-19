@@ -404,13 +404,17 @@ class PaymentControler {
     });
 
     // 4. Send PDF Buffer back to the client
-    res.set({
-        'Content-Type': 'application/pdf',
-        'Content-Disposition': 'inline; filename=tax-invoice.pdf',
-        'Content-Length': pdfBuffer.length
-    });
+    // BEFORE (opens in browser preview):
+// 'Content-Disposition': 'inline; filename=tax-invoice.pdf',
 
-    return res.end(pdfBuffer);
+// AFTER (triggers direct download):
+res.set({
+    'Content-Type': 'application/pdf',
+    'Content-Disposition': 'attachment; filename="tax-invoice.pdf"',
+    'Content-Length': pdfBuffer.length
+});
+
+return res.end(pdfBuffer);
 });
 
 }
