@@ -433,9 +433,7 @@
         <thead>
             <tr>
                 <th class="col-no text-center">#</th>
-                <th class="col-item">Item / Description</th>
-                <th class="col-rate text-right">Rate</th>
-                <th class="col-qty text-center">Qty</th>
+                <th class="col-item">Package Name</th>
                 <th class="col-total text-right">Amount</th>
             </tr>
         </thead>
@@ -449,9 +447,7 @@
                             <div class="item-description"><%= item.description %></div>
                         <% } %>
                     </td>
-                    <td class="text-right"><%= item.rate.toFixed(2) %></td>
-                    <td class="text-center"><%= item.qty %></td>
-                    <td class="text-right"><%= (item.rate * item.qty).toFixed(2) %></td>
+                    <td class="text-right"><%= item.rate?.toFixed(2) %></td>
                 </tr>
             <% }); %>
         </tbody>
