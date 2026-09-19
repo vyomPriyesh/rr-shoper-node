@@ -390,11 +390,15 @@ class PaymentControler {
 
     // 2. Configure html-pdf options
     const options = {
-        format: 'A4',
-        border: '0px',
-        type: 'pdf'
-    };
-
+    format: 'A4',
+    border: {
+        top: '10mm',
+        right: '10mm',
+        bottom: '15mm',
+        left: '10mm'
+    },
+    type: 'pdf'
+};
     // 3. Create PDF buffer using Promisify to keep async/await flow intact
     const pdfBuffer = await new Promise((resolve, reject) => {
         pdf.create(html, options).toBuffer((err, buffer) => {
