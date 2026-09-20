@@ -150,7 +150,7 @@ class PaymentControler {
             .build();
 
 
-        const redirectUrl = process.env.FRONTEND_URL; //`${process.env.FRONTEND_URL}/payment/status/${merchantOrderId}`;
+        const redirectUrl =  `${process.env.FRONTEND_URL}/payment/status/${merchantOrderId}`;
 
         const request = StandardCheckoutPayRequest.builder()
             .merchantOrderId(merchantOrderId)
@@ -183,12 +183,12 @@ class PaymentControler {
         const { payload } = req.body || {}
 
         const paymentData = await paymentDataUpdate(payload, req.body);
-        const socket = getConnectedSocket(paymentData?.customer_id);
+        // const socket = getConnectedSocket(paymentData?.customer_id);
         
-        if (socket) {
-            console.log('object paymentStatus')
-            socket.emit("paymentStatus", paymentData);
-        }
+        // if (socket) {
+        //     console.log('object paymentStatus')
+        //     socket.emit("paymentStatus", paymentData);
+        // }
 
         return sendResponse(res, 200, "Payment status fetched", true, paymentData);
     })
