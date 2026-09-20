@@ -160,7 +160,7 @@ class DropDownController {
     static allDropDowns = catchAsync(async (req, res) => {
 
         const data = await DropDownController.getOptions();
-        data.testUser = true
+        data.testUser = false
         return sendResponse(res, 200, 'All Drop Downs Options', true, data, true)
 
     })

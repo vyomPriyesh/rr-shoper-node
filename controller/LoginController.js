@@ -20,7 +20,7 @@ class LoginController {
                 { email: search },
                 { mobile: search }
             ]
-        }).select('name email mobile role status');
+        }).select('name email mobile role status otp_status');
 
 
         if (!customer) {
@@ -77,26 +77,80 @@ class LoginController {
 
     static verifyOtp = catchAsync(async (req, res) => {
 
-        const { mobile, otp } = req.body;
+        const { mobile, otp, password: loginPassword } = req.body;
         const customer = await Customer.findOne({ mobile });
+        const name = customer?.email?.split("@")[0];
 
         if (!customer) {
             return sendResponse(res, 422, "customer not found", false);
         }
-        if (customer.otp !== otp) {
-            return sendResponse(res, 400, "Invalid OTP", false);
+
+        if (customer?.otp_status == 'verified') {
+
+            const isMatch = await bcryptjs.compare(loginPassword, customer.password);
+
+            if (!isMatch) {
+                return sendResponse(res, 403, 'Invalid password', false)
+            }
+
+        } else {
+
+            if (customer.otp !== otp) {
+                return sendResponse(res, 400, "Invalid OTP", false);
+            }
+            const currentTime = Date.now();
+
+            const otpTime = new Date(customer.otp_send_time).getTime();
+
+            const diff = currentTime - otpTime;
+
+            const fiveMinutes = 5 * 60 * 1000;
+
+            if (diff > fiveMinutes) {
+                return sendResponse(res, 400, "OTP expired", false, { currentTime, otpTime });
+            }
+
+            const password = name?.toLowerCase() + '@' + mobile
+            const hashedPassword = await bcryptjs.hash(password, 10);
+
+            emailotpsending.sendMail({
+                from: `"RR Shoper" <${process.env.EMAIL_USER}>`,
+                to: customer?.email,
+                subject: "RR Shoper Account Password",
+                html: `
+                        <div style="
+                            font-family: Arial;
+                            max-width: 500px;
+                            margin: auto;
+                            padding: 20px;
+                            border: 1px solid #ddd;
+                            border-radius: 10px;
+                        ">
+                            <h2>RR Shoper Password</h2>
+        
+                           <p>
+        Your account has been created successfully.
+        <br /><br />
+        Your temporary password is:
+        <h3 style="
+            letter-spacing: 2px;
+            color: #B06A8D;
+        ">
+            ${password}
+        </h3>
+        Please use this password to log in to your account.
+        <br />
+        For security, we recommend changing your password after your first login.
+        <br /><br />
+        If you did not request this account, please contact our support team immediately.
+    </p>
+                        </div>
+                    `
+            }).catch(err => console.log(err));
+
+            await Customer.findByIdAndUpdate({ _id: customer._id, otp_status: "verified", status: "active", password: hashedPassword })
         }
-        const currentTime = Date.now();
 
-        const otpTime = new Date(customer.otp_send_time).getTime();
-
-        const diff = currentTime - otpTime;
-
-        const fiveMinutes = 5 * 60 * 1000;
-
-        if (diff > fiveMinutes) {
-            return sendResponse(res, 400, "OTP expired", false, { currentTime, otpTime });
-        }
 
 
         // OTP is valid, you can generate a token here if needed
@@ -105,7 +159,6 @@ class LoginController {
         const customerData = await Customer.findByIdAndUpdate(
             { _id: customer._id },
             {
-                otp_status: "verified", status: "active",
                 $push: {
                     login_devices: {
                         token,
@@ -120,7 +173,22 @@ class LoginController {
             token,
         }
 
-        return sendResponse(res, 200, "OTP verified successfully", true, data);
+        return sendResponse(res, 200, `${loginPassword ? 'Login successfully' : 'OTP verified successfully'} `, true, data);
+    })
+
+    static updateCustomerPassword = catchAsync(async (req, res) => {
+
+        const { password } = req.params
+        const { _id: id } = req.user || {}
+        const hashedPassword = await bcryptjs.hash(password, 10);
+        const findUser = await Customer.findById(id)
+        if (!findUser) {
+            return sendResponse(res, 422, `Customer Not Found`, false)
+        }
+        await Customer.findByIdAndUpdate(id, { password: hashedPassword, password_update: 0 })
+
+        return sendResponse(res, 200, `Password Update Successfully`, true)
+
     })
 
     static profile = catchAsync(async (req, res) => {

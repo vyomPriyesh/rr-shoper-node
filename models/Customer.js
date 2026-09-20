@@ -42,6 +42,7 @@ const CustomerSchema = new mongoose.Schema(
             type: Schema.Types.ObjectId,
             ref: "Images"
         },
+        password_update: { type: Number, default: 1 },
         password: {
             type: String,
             default: null

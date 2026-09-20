@@ -58,6 +58,7 @@ api.get('/profile', verifyToken, LoginController.profile)
 api.get('/findCustomer/:search', LoginController.findCustomer)
 api.post('/login', LoginController.adminLogin)
 api.post('/profile/update', verifyToken, LoginController.updateProfile);
+api.get('/profile/update-password/:password', verifyToken, LoginController.updateCustomerPassword)
 
 // .............for customer side..................................
 api.post('/customer-all-platforms', PlatformController.customerAllPlatforms)
@@ -82,6 +83,7 @@ api.delete('/users/delete-user/:id', verifyToken, verifyPermission('Users', 'del
 api.post('/allCustomers', verifyToken, verifyPermission('Customers', 'view'), CustomerController.allCustomers)
 api.post('/customers/add-customer', verifyToken, verifyPermission('Customers', 'add'), CustomerController.addCustomer)
 api.post('/customers/update-customer/:id', verifyToken, verifyPermission('Customers', 'update'), CustomerController.updateCustomer)
+api.get('/customers/update-customer/:id/:password', verifyToken, verifyPermission('Customers', 'update'), CustomerController.updateCustomerPassword)
 api.delete('/customers/delete-customer/:id', verifyToken, verifyPermission('Customers', 'delete'), CustomerController.deleteCustomer)
 api.get('/customers/update-status/:id', verifyToken, verifyPermission('Customers', 'update'), CustomerController.updateCustomerStatus)
 // api.get('/customers/detailes/:id', verifyToken, CustomerController.customerDetails)

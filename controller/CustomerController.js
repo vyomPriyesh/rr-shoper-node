@@ -61,6 +61,20 @@ class CustomerController {
 
     })
 
+    static updateCustomerPassword = catchAsync(async (req, res) => {
+
+        const { password, id } = req.params
+        const hashedPassword = await bcryptjs.hash(password, 10);
+        const findUser = await Customer.findById(id)
+        if (!findUser) {
+            return sendResponse(res, 422, `Customer Not Found`, false)
+        }
+        await Customer.findByIdAndUpdate(id, { password: hashedPassword, password_update: 0 })
+
+        return sendResponse(res, 200, `Customer Password Update Successfully`, true)
+
+    })
+
     static updateCustomer = catchAsync(async (req, res) => {
 
         const { id } = req.params
