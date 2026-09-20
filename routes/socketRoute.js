@@ -1,6 +1,6 @@
-import Customer from "../models/Customer.js";
-import User from "../models/User.js";
 import { joinTicket, leaveTicket, addComment, addReplay } from "../socketsController/TicketComments.js";
+
+const connectedSockets = new Map();
 
 const socketRoute = (io) => {
 
@@ -10,20 +10,30 @@ const socketRoute = (io) => {
         console.log("Socket ID:", socket.id);
         console.log("=================================");
 
+        if (socket.authData?._id) {
+            connectedSockets.set(
+                socket.authData._id.toString(),
+                socket
+            );
+        }
+
         socket.on("disconnect", (reason) => {
             console.log(
                 "Socket disconnected:",
                 socket.id,
                 reason
             );
-        });
 
-        // -------- Ticket Comments Socket Events --------
+            if (socket.authData?._id) {
+                connectedSockets.delete(
+                    socket.authData._id.toString()
+                );
+            }
+        });
 
         socket.on("ticket:join", (data) => {
             joinTicket(io, socket, data);
         });
-
 
         socket.on("ticket:leave", (data) => {
             leaveTicket(io, socket, data);
@@ -38,5 +48,11 @@ const socketRoute = (io) => {
         });
     });
 };
+
+const getConnectedSocket = (userId) => {
+    return connectedSockets.get(userId?.toString());
+};
+
+export { getConnectedSocket };
 
 export default socketRoute;

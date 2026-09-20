@@ -6,12 +6,11 @@ import Payment from "../models/Payment.js";
 import Customer from "../models/Customer.js";
 import Packages from "../models/Packages.js";
 import paginate from "../utils/pagination.js";
-import mongoose from "mongoose";
 import ejs from 'ejs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import pdf from 'html-pdf';
-import { promisify } from 'util';
+import { getConnectedSocket } from "../routes/socketRoute.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -151,8 +150,7 @@ class PaymentControler {
             .build();
 
 
-        const redirectUrl =
-            `${process.env.FRONTEND_URL}/payment/status/${merchantOrderId}`;
+        const redirectUrl = process.env.FRONTEND_URL; //`${process.env.FRONTEND_URL}/payment/status/${merchantOrderId}`;
 
         const request = StandardCheckoutPayRequest.builder()
             .merchantOrderId(merchantOrderId)
@@ -174,7 +172,7 @@ class PaymentControler {
         const { id } = req.params;
 
         const paymentStatusData = await phonepeClient.getOrderStatus(id);
-        const paymentData = await paymentDataUpdate({ merchantOrderId: id, state: paymentStatusData?.state }, paymentStatusData);
+        const paymentData = await paymentDataUpdate({ merchantOrderId: id, state: paymentStatusData?.state }, paymentStatusData)
 
         return sendResponse(res, 200, "Payment status fetched", true, paymentData);
 
@@ -185,6 +183,12 @@ class PaymentControler {
         const { payload } = req.body || {}
 
         const paymentData = await paymentDataUpdate(payload, req.body);
+        console.log('object')
+        const socket = getConnectedSocket();
+
+        if (socket) {
+            socket.emit("paymentStatus", paymentData);
+        }
 
         return sendResponse(res, 200, "Payment status fetched", true, paymentData);
     })
