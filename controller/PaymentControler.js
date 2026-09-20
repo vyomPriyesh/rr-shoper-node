@@ -183,10 +183,10 @@ class PaymentControler {
         const { payload } = req.body || {}
 
         const paymentData = await paymentDataUpdate(payload, req.body);
-        console.log('object')
-        const socket = getConnectedSocket();
-
+        const socket = getConnectedSocket(paymentData?.customer_id);
+        
         if (socket) {
+            console.log('object paymentStatus')
             socket.emit("paymentStatus", paymentData);
         }
 
