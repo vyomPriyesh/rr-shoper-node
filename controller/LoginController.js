@@ -148,7 +148,7 @@ class LoginController {
                     `
             }).catch(err => console.log(err));
 
-            await Customer.findByIdAndUpdate({ _id: customer._id, otp_status: "verified", status: "active", password: hashedPassword })
+            await Customer.findByIdAndUpdate({ _id: customer._id }, { otp_status: "verified", status: "active", password: hashedPassword })
         }
 
 
