@@ -11,12 +11,20 @@ const PackagesSchema = new mongoose.Schema(
             type: String,
             default: null
         },
-        validity: {
-            type: String,
-            default: null
+        rank: {
+            type: Number,
+            default: 1,
         },
-        price: {
-            type: String,
+        month_price: {
+            type: Number,
+            default: null,
+        },
+        year_price: {
+            type: Number,
+            default: null,
+        },
+        lifetime_price: {
+            type: Number,
             default: null
         },
         services: {

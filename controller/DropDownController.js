@@ -78,10 +78,10 @@ const userAccountStatuses = [
     },
 ]
 
-const validityOptions = [
+const billingPeriodOptions = [
     { label: 'Month', value: 'month' },
-    { label: 'Year', value: 'Year' },
-    { label: 'Life Time', value: 'lifeTime' },
+    { label: 'Year', value: 'year' },
+    { label: 'Life Time', value: 'lifetime' },
 ]
 
 const packageOrders = [
@@ -125,7 +125,7 @@ export const getAdminDropdowns = async () => {
         ticketStatuses,
         userAccountStatuses,
         packageOrders,
-        validityOptions
+        validityOptions: billingPeriodOptions,
     }
 
     return {
@@ -153,7 +153,7 @@ class DropDownController {
             ticketStatuses,
             userAccountStatuses,
             packageOrders,
-            validityOptions
+            validityOptions: billingPeriodOptions
         }
     }
 

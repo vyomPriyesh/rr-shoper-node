@@ -11,6 +11,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import pdf from 'html-pdf';
 import { getConnectedSocket } from "../routes/socketRoute.js";
+import { createSubscription } from "../utils/subscription.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -43,61 +44,21 @@ const paymentDataUpdate = async (payload, phonepeResponse) => {
                 return sendResponse(res, 500, "Package Not found", false);
             }
 
-            const currentDate = new Date();
-            const currentUnix = Math.floor(currentDate.getTime() / 1000);
-            const validity = String(newPackage.validity || '').toLowerCase();
-            const expireDateValue = new Date(currentDate);
-
-            if (validity === 'lifetime') {
-                expireDateValue.setFullYear(expireDateValue.getFullYear() + 100);
-            } else if (validity === 'year') {
-                expireDateValue.setFullYear(expireDateValue.getFullYear() + 1);
-            } else {
-                expireDateValue.setMonth(expireDateValue.getMonth() + 1);
-            }
-
-            const expireDate = Math.floor(expireDateValue.getTime() / 1000);
-
-            const newPlatformId = newPackage?.platform?._id?.toString();
-
-
-            // Find existing package having the same platform
-            const existingPackageIndex = customer.package.findIndex((item) => {
-                const existingPlatformId =
-                    item?.package_id?.platform?._id?.toString();
-
-                return existingPlatformId === newPlatformId;
+            const subscription = await createSubscription({
+                customerId: paymentData.customer_id,
+                packageData: newPackage,
+                paymentId: paymentData._id,
+                billingPeriod: paymentData.billing_period,
             });
 
-
-            if (existingPackageIndex !== -1) {
-                const existingPackage = customer.package[existingPackageIndex];
-
-                // Remaining time of existing package
-                const remainingTime =
-                    Number(existingPackage.package_expire) - currentUnix;
-
-                const newPackageDuration = expireDate - currentUnix;
-
-                // Remaining old time + new package duration
-                const newExpireDate =
-                    currentUnix +
-                    Math.max(remainingTime, 0) +
-                    newPackageDuration;
-
-                existingPackage.package_id = paymentData.package_id;
-                existingPackage.package_expire = newExpireDate;
-                existingPackage.package_expire_status = false;
-            } else {
-
-                // Different platform → create a new service
-
-                customer.package.push({
-                    package_id: paymentData?.package_id,
-                    package_expire: expireDate,
-                    package_expire_status: false,
-                });
-            }
+            // Keep the old customer.package response field synchronized for existing clients.
+            customer.package.push({
+                package_id: paymentData.package_id,
+                package_expire: subscription.expires_at
+                    ? Math.floor(subscription.expires_at.getTime() / 1000)
+                    : null,
+                package_expire_status: false,
+            });
 
             await customer.save();
 
@@ -119,10 +80,21 @@ class PaymentControler {
 
     static initiatePhonePePayment = catchAsync(async (req, res) => {
 
-        const { phoneNumber, package_id, gst_number, all_policies_checked } = req.body || 0;
+        const { phoneNumber, package_id, billing_period = 'month', gst_number, all_policies_checked } = req.body || 0;
         const { _id: customerId } = req.user || {}
 
         const packageData = await Packages.findById(package_id)
+
+        if (!packageData) {
+            return sendResponse(res, 422, 'Package not found', false)
+        }
+
+        const priceField = `${billing_period}_price`;
+        const selectedPrice = packageData[priceField];
+
+        if (!['month', 'year', 'lifetime'].includes(billing_period) || selectedPrice == null) {
+            return sendResponse(res, 422, 'Selected billing period is not available for this package', false)
+        }
 
         const customer = await Customer.findById(customerId)
 
@@ -130,9 +102,9 @@ class PaymentControler {
             return sendResponse(res, 500, 'Customer Not found', false)
         }
 
-        const amountInPaise = Math.round(Number(packageData?.price) * 100);
+        const amountInPaise = Math.round(Number(selectedPrice) * 100);
 
-        const paymentInitiate = await Payment.create({ customer_id: customerId, package_id, amount: packageData?.price, gst_number, all_policies_checked })
+        const paymentInitiate = await Payment.create({ customer_id: customerId, package_id, billing_period, amount: selectedPrice, gst_number, all_policies_checked })
         await Customer.findByIdAndUpdate(customerId, { gst_number })
 
         const merchantOrderId = paymentInitiate?._id;

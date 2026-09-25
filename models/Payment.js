@@ -13,6 +13,11 @@ const PaymentSchema = new mongoose.Schema(
             ref: "Packages",
             default: null,
         },
+        billing_period: {
+            type: String,
+            enum: ['month', 'year', 'lifetime'],
+            default: 'month',
+        },
         // request_package_id: {
         //     type: Schema.Types.ObjectId,
         //     ref: "Packages",
