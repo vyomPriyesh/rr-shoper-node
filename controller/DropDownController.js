@@ -84,7 +84,7 @@ const billingPeriodOptions = [
     { label: 'One Time', value: 'onetime' },
 ]
 
-const packageOrders = [
+export const packageOrders = [
     { label: 'Starter', value: '1' },
     { label: 'Hot', value: '2' },
     { label: 'Premium', value: '3' },

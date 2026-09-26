@@ -44,6 +44,9 @@ const PaymentSchema = new mongoose.Schema(
             type: Number,
             default: 0
         },
+        invoice_number: {
+            type: String,
+        },
         phonepeResponse: {
             type: mongoose.Schema.Types.Mixed,
             default: null
@@ -54,6 +57,7 @@ const PaymentSchema = new mongoose.Schema(
     }
 );
 
+PaymentSchema.index({ invoice_number: 1 }, { unique: true, sparse: true });
 PaymentSchema.plugin(MongooseDelete, { deletedAt: true, overrideMethods: 'all' });
 const Payment = mongoose.model("Payment", PaymentSchema);
 

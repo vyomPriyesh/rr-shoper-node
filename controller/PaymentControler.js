@@ -10,7 +10,11 @@ import ejs from 'ejs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import pdf from 'html-pdf';
-import { createSubscription, getActiveSubscriptions, getSamePlatformActiveSubscriptions, upgradeSubscription } from "../utils/subscription.js";
+import { createSubscription, getSamePlatformActiveSubscriptions, upgradeSubscription } from "../utils/subscription.js";
+import { generateInvoiceNumber } from "../utils/generateInvoiceNumber.js";
+import { displayDate } from "../utils/dateFormat.js";
+import { packageOrders } from "./DropDownController.js";
+import Subscription from "../models/Subscription.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -120,8 +124,8 @@ class PaymentControler {
         }
 
         const amountInPaise = Math.round(Number(selectedPrice) * 100);
-
-        const paymentInitiate = await Payment.create({ customer_id: customerId, package_id, billing_period, amount: selectedPrice, gst_number, all_policies_checked })
+        const invoice_number = await generateInvoiceNumber()
+        const paymentInitiate = await Payment.create({ customer_id: customerId, package_id, billing_period, amount: selectedPrice, gst_number, all_policies_checked, invoice_number })
         await Customer.findByIdAndUpdate(customerId, { gst_number })
 
         const merchantOrderId = paymentInitiate?._id;
@@ -313,67 +317,57 @@ class PaymentControler {
     });
 
     static paymentInvoice = catchAsync(async (req, res) => {
+
+        const { _id: customerId } = req.user || {};
+        const { invoice } = req.params || {}
+        const data = await Customer.findById(customerId)
+        const paymentData = await Payment.findById(invoice)
+        const subscriptionData = await Subscription.findOne({ payment_id: paymentData?._id })
+        const packageData = await Packages.findById(paymentData.package_id).populate("platform")
+
+        const totalPaise = Math.round(paymentData.amount * 100);
+        const taxablePaise = Math.round(totalPaise / 1.18);
+        const totalGstPaise = totalPaise - taxablePaise;
+        const cgstPaise = Math.round(totalGstPaise / 2);
+        const sgstPaise = totalGstPaise - cgstPaise;
+
         const invoiceData = {
             vendor: {
-                name: 'R R SHOPER',
+                name: 'RR SHOPER',
                 subtext: 'E-COMMERCE SERVICES',
                 address: '3rd Floor, Shop No. 334, Times Trade Center, Surat, Gujarat, 395010, India',
-                email: 'support@rrshoper.com',
-                phone: '+91 98765 43210',
-                gstin: '24AAAAA0000A1Z5',
-                pan: 'AAAAA0000A',
-                city: 'Surat',
-                state: 'Gujarat',
-                signatoryName: 'PANKAJKUMAR R AGRAVAT',
-                signatoryTitle: 'Partner / Authorized Signatory'
+                email: 'sellersupport@rrshoper.in',
+                phone: '+91 9499839239',
+                gstin: ' 24ABIFR7655K1ZN',
             },
             customer: {
-                name: 'APEX E-COMMERCE SOLUTIONS',
+                name: data.name,
                 address: '102, Business Hub, Ring Road, Surat, Gujarat, 395002, India',
-                contactPerson: 'Rajesh Sharma',
-                phone: '+91 91234 56789',
-                gstin: '24ABCDF1234H1ZP',
-                stateCode: '24 (Gujarat)'
+                phone: data.mobile,
+                gstin: data.gst_number,
             },
             invoice: {
-                number: 'RRS/2026-27/0891',
-                date: '06 Aug 2026',
-                placeOfSupply: '24 - Gujarat',
-                paymentTerms: 'Immediate / Prepaid'
+                number: paymentData.invoice_number,
+                date: displayDate(paymentData.createdAt),
             },
             items: [
                 {
-                    name: 'Starter Package Subscription',
-                    description: 'Comprehensive seller onboarding and account management package.',
-                    hsnSac: '998314',
-                    rate: 1999.00,
-                    qty: 1,
-                    features: [
-                        'New Account Created',
-                        'Keyword Listing',
-                        'Brand Reg Assistance',
-                        '50 SKU Listing & Training',
-                        'Customer Support'
-                    ]
+                    name: packageData?.platform?.name + ' ' + packageOrders.find(list => list.value == packageData.name)?.label + ' Package Subscription',
+                    rate: paymentData.amount,
+                    startDate: displayDate(subscriptionData.starts_at),
+                    expiryDate: displayDate(subscriptionData.expires_at),
+                    features: packageData.services
                 }
             ],
-            bank: {
-                name: 'HDFC Bank Ltd',
-                accountName: 'R R SHOPER',
-                accountNo: '50200012345678',
-                ifsc: 'HDFC0001234',
-                branch: 'Ring Road, Surat'
-            },
             totals: {
-                taxableAmount: 1999.00,
+                taxableAmount: taxablePaise / 100,
                 cgstRate: 9,
-                cgstAmount: 179.91,
+                cgstAmount: cgstPaise / 100,
                 sgstRate: 9,
-                sgstAmount: 179.91,
+                sgstAmount: sgstPaise / 100,
                 igstRate: 0,
-                igstAmount: 0.00,
-                grandTotal: 2358.82,
-                amountInWords: 'Two Thousand Three Hundred Fifty-Eight Rupees and Eighty-Two Paise Only.'
+                igstAmount: 0,
+                grandTotal: totalPaise / 100,
             }
         };
 
