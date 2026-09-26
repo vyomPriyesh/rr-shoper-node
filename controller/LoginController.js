@@ -203,25 +203,17 @@ class LoginController {
                 return sendResponse(res, 500, 'Customer not found', false)
             }
 
-            // const currentTime = Math.floor(Date.now() / 1000);
+            const now = new Date();
+            const expiredSubscriptions = await Subscription.find({
+                customer_id: userId,
+                status: 'active',
+                expires_at: { $ne: null, $lt: now },
+            });
 
-            // const updatedPackages = customerData.package.map((item) => {
-
-            //     if (
-            //         item.package_expire &&
-            //         item.package_expire <= currentTime
-            //     ) {
-            //         item.package_expire_status = true;
-            //     } else {
-            //         item.package_expire_status = false;
-            //     }
-
-            //     return item;
-            // });
-
-            // customerData.package = updatedPackages;
-
-            // await customerData.save();
+            for (const subscription of expiredSubscriptions) {
+                subscription.status = 'expired';
+                await subscription.save();
+            }
 
         }
 

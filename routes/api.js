@@ -86,7 +86,7 @@ api.post('/customers/update-customer/:id', verifyToken, verifyPermission('Custom
 api.get('/customers/update-customer/:id/:password', verifyToken, verifyPermission('Customers', 'update'), CustomerController.updateCustomerPassword)
 api.delete('/customers/delete-customer/:id', verifyToken, verifyPermission('Customers', 'delete'), CustomerController.deleteCustomer)
 api.get('/customers/update-status/:id', verifyToken, verifyPermission('Customers', 'update'), CustomerController.updateCustomerStatus)
-// api.get('/customers/detailes/:id', verifyToken, CustomerController.customerDetails)
+api.get('/customers/detailes/:id', verifyToken, CustomerController.customerDetails)
 
 api.post('/allDesignation', verifyToken, verifyPermission('Designation', 'view'), DesignationController.allDesignation)
 api.post('/designation/add-designation', verifyToken, verifyPermission('Designation', 'add'), DesignationController.addDesignation)

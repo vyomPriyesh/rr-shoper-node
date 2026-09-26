@@ -1,5 +1,6 @@
 import Customer from "../models/Customer.js";
 import User from "../models/Customer.js";
+import Subscription from "../models/Subscription.js";
 import { catchAsync } from "../utils/catchAsync.js";
 import paginate from "../utils/pagination.js";
 import { sendResponse } from "../utils/response.js";
@@ -120,10 +121,13 @@ class CustomerController {
 
         const { id } = req.params
 
-        const findCustomer = await Customer.findById(id).select("-password -login_devices")
+        const findCustomer = await Customer.findById(id).select("-password -login_devices").populate("image").lean();
         if (!findCustomer) {
             return sendResponse(res, 422, 'Customer Not Found', false)
         }
+
+        const subscriptions = await Subscription.find({ customer_id: id }).populate("payment_id", "amount").populate([{ path: "package_id", populate: "platform" }])
+        findCustomer.subscriptions = subscriptions
 
         return sendResponse(res, 200, 'Customer Found Successfully', true, findCustomer)
 
