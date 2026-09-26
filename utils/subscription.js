@@ -1,7 +1,7 @@
 import Subscription from "../models/Subscription.js";
 
 const getSubscriptionDates = (billingPeriod, startsAt = new Date()) => {
-    if (billingPeriod === 'lifetime') {
+    if (billingPeriod === 'onetime') {
         return { startsAt, expiresAt: null };
     }
 

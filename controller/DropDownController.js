@@ -81,7 +81,7 @@ const userAccountStatuses = [
 const billingPeriodOptions = [
     { label: 'Month', value: 'month' },
     { label: 'Year', value: 'year' },
-    { label: 'Life Time', value: 'lifetime' },
+    { label: 'One Time', value: 'onetime' },
 ]
 
 const packageOrders = [

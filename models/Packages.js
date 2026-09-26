@@ -23,7 +23,7 @@ const PackagesSchema = new mongoose.Schema(
             type: Number,
             default: null,
         },
-        lifetime_price: {
+        onetime_price: {
             type: Number,
             default: null
         },

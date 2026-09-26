@@ -92,7 +92,7 @@ class PaymentControler {
         const priceField = `${billing_period}_price`;
         const selectedPrice = packageData[priceField];
 
-        if (!['month', 'year', 'lifetime'].includes(billing_period) || selectedPrice == null) {
+        if (!['month', 'year', 'onetime'].includes(billing_period) || selectedPrice == null) {
             return sendResponse(res, 422, 'Selected billing period is not available for this package', false)
         }
 
