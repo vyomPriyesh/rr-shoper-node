@@ -7,7 +7,7 @@ import crypto from 'crypto'
 import emailotpsending from "../utils/emailotpsending.js";
 import "dotenv/config";
 import Customer from "../models/Customer.js";
-// import DownGradePackage from "../models/DownGradePackage.js";
+import Subscription from "../models/Subscription.js";
 
 class LoginController {
 
@@ -197,31 +197,31 @@ class LoginController {
 
         if (role == "customer") {
 
-            const customerData = await Customer.findById(userId)
+            const customerData = await Customer.findById(userId).lean()
 
             if (!customerData) {
                 return sendResponse(res, 500, 'Customer not found', false)
             }
 
-            const currentTime = Math.floor(Date.now() / 1000);
+            // const currentTime = Math.floor(Date.now() / 1000);
 
-            const updatedPackages = customerData.package.map((item) => {
+            // const updatedPackages = customerData.package.map((item) => {
 
-                if (
-                    item.package_expire &&
-                    item.package_expire <= currentTime
-                ) {
-                    item.package_expire_status = true;
-                } else {
-                    item.package_expire_status = false;
-                }
+            //     if (
+            //         item.package_expire &&
+            //         item.package_expire <= currentTime
+            //     ) {
+            //         item.package_expire_status = true;
+            //     } else {
+            //         item.package_expire_status = false;
+            //     }
 
-                return item;
-            });
+            //     return item;
+            // });
 
-            customerData.package = updatedPackages;
+            // customerData.package = updatedPackages;
 
-            await customerData.save();
+            // await customerData.save();
 
         }
 
@@ -234,16 +234,13 @@ class LoginController {
             query = query.populate("designation");
         }
 
+        const profileData = await query.populate("image").lean();
+
         if (role == "customer") {
-            query = query.populate([{ path: "package.package_id", populate: "platform" }]);
+            const subscriptions = await Subscription.find({ customer_id: userId }).populate("payment_id", "amount").populate([{ path: "package_id", populate: "platform" }])
+            profileData.subscriptions = subscriptions
+
         }
-
-        const profileData = await query.populate("image");
-
-        // if (role == "customer") {
-        //     const downgradeRequests = await DownGradePackage.find({ customer_id: profileData?._id, status: 'pending' })
-        //     profileData.downgradeRequests = downgradeRequests
-        // }
         return sendResponse(res, 200, "Profile found successfully", true, profileData);
 
     })

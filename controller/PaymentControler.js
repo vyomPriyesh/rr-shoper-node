@@ -10,8 +10,7 @@ import ejs from 'ejs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import pdf from 'html-pdf';
-import { getConnectedSocket } from "../routes/socketRoute.js";
-import { createSubscription } from "../utils/subscription.js";
+import { createSubscription, getActiveSubscriptions, getSamePlatformActiveSubscriptions, upgradeSubscription } from "../utils/subscription.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -25,12 +24,12 @@ const paymentDataUpdate = async (payload, phonepeResponse) => {
         if (paymentData.payment_status == "PENDING" && payload?.state == 'COMPLETED') {
 
             const customer = await Customer.findById(paymentData?.customer_id)
-                .populate([
-                    {
-                        path: "package.package_id",
-                        populate: "platform",
-                    },
-                ]);
+            // .populate([
+            //     {
+            //         path: "package.package_id",
+            //         populate: "platform",
+            //     },
+            // ]);
 
             if (!customer) {
                 return sendResponse(res, 500, "Customer Not found", false);
@@ -44,23 +43,41 @@ const paymentDataUpdate = async (payload, phonepeResponse) => {
                 return sendResponse(res, 500, "Package Not found", false);
             }
 
-            const subscription = await createSubscription({
-                customerId: paymentData.customer_id,
-                packageData: newPackage,
-                paymentId: paymentData._id,
-                billingPeriod: paymentData.billing_period,
-            });
+            const activeSubscriptions = await getSamePlatformActiveSubscriptions(paymentData?.customer_id, newPackage.platform._id)
+
+            if (activeSubscriptions) {
+
+                await upgradeSubscription({
+                    customerId: paymentData.customer_id,
+                    platform: newPackage.platform._id,
+                    packageData: newPackage,
+                    paymentId: paymentData._id,
+                    billingPeriod: paymentData.billing_period,
+                })
+
+            } else {
+                const subscription = await createSubscription({
+                    customerId: paymentData.customer_id,
+                    packageData: newPackage,
+                    paymentId: paymentData._id,
+                    billingPeriod: paymentData.billing_period,
+                });
+            }
+
+
+
+
 
             // Keep the old customer.package response field synchronized for existing clients.
-            customer.package.push({
-                package_id: paymentData.package_id,
-                package_expire: subscription.expires_at
-                    ? Math.floor(subscription.expires_at.getTime() / 1000)
-                    : null,
-                package_expire_status: false,
-            });
+            // customer.package.push({
+            //     package_id: paymentData.package_id,
+            //     package_expire: subscription.expires_at
+            //         ? Math.floor(subscription.expires_at.getTime() / 1000)
+            //         : null,
+            //     package_expire_status: false,
+            // });
 
-            await customer.save();
+            // await customer.save();
 
             await Payment.findByIdAndUpdate(payload?.merchantOrderId, { payment_status: payload?.state, phonepeResponse })
             return Payment.findById(payload?.merchantOrderId).select('-phonepeResponse')
@@ -122,7 +139,7 @@ class PaymentControler {
             .build();
 
 
-        const redirectUrl =  `${process.env.FRONTEND_URL}/payment/status/${merchantOrderId}`;
+        const redirectUrl = `${process.env.FRONTEND_URL}/payment/status/${merchantOrderId}`;
 
         const request = StandardCheckoutPayRequest.builder()
             .merchantOrderId(merchantOrderId)
@@ -156,7 +173,7 @@ class PaymentControler {
 
         const paymentData = await paymentDataUpdate(payload, req.body);
         // const socket = getConnectedSocket(paymentData?.customer_id);
-        
+
         // if (socket) {
         //     console.log('object paymentStatus')
         //     socket.emit("paymentStatus", paymentData);

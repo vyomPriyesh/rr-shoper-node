@@ -1,28 +1,28 @@
 import mongoose, { Schema } from "mongoose";
 import MongooseDelete from "mongoose-delete";
 
-const PackageSchema = new mongoose.Schema(
-    {
-        package_id: {
-            type: Schema.Types.ObjectId,
-            ref: "Packages",
-            default: null,
-        },
+// const PackageSchema = new mongoose.Schema(
+//     {
+//         package_id: {
+//             type: Schema.Types.ObjectId,
+//             ref: "Packages",
+//             default: null,
+//         },
 
-        package_expire: {
-            type: Number,
-            default: null,
-        },
+//         package_expire: {
+//             type: Number,
+//             default: null,
+//         },
 
-        package_expire_status: {
-            type: Boolean,
-            default: false,
-        },
-    },
-    {
-        timestamps: true,
-    }
-);
+//         package_expire_status: {
+//             type: Boolean,
+//             default: false,
+//         },
+//     },
+//     {
+//         timestamps: true,
+//     }
+// );
 
 const CustomerSchema = new mongoose.Schema(
     {
@@ -47,10 +47,10 @@ const CustomerSchema = new mongoose.Schema(
             type: String,
             default: null
         },
-        package: {
-            type: [PackageSchema],
-            default: [],
-        },
+        // package: {
+        //     type: [PackageSchema],
+        //     default: [],
+        // },
         email: {
             type: String,
             default: null,
