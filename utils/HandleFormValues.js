@@ -1,4 +1,4 @@
-const formInputs = [
+export const formInputs = [
     { type: 'input', label: 'Text' },
     { type: 'number', label: 'Number' },
     { type: 'date', label: 'Date' },

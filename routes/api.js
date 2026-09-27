@@ -21,7 +21,7 @@ import LeadsController from "../controller/LeadsController.js";
 import CustomerController from "../controller/CustomerController.js";
 import verifyAdmin from "../Middleware/verifyAdmin.js";
 import verifyPermission from "../Middleware/verifyPermission.js";
-import ExportController from "../controller/ExportController.js";
+import ExportImportController from "../controller/ExportImportController.js";
 import PaymentControler from "../controller/PaymentControler.js";
 
 import optionalVerifyToken from "../Middleware/optionalVerifyToken.js";
@@ -67,7 +67,8 @@ api.get('/all-options', DropDownController.allDropDowns)
 
 api.post('/raise-inquiry', optionalVerifyToken, InquiryController.raiseIInquiry)
 
-api.post('/export/:name', verifyToken, ExportController.exportExcel)
+api.post('/export/:name', verifyToken, ExportImportController.exportExcel)
+api.post('/import/:name', verifyToken, ExportImportController.importExcel)
 
 api.get('/admin-all-options', verifyToken, DropDownController.adminAllDropDowns)
 
