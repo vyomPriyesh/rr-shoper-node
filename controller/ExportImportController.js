@@ -133,7 +133,7 @@ class ExportImportController {
 
             const otherColumns = leadForm?.fields?.filter(item => item.type !== 'upload')?.map(list => {
                 return {
-                    header: `${keyValue(list.label)}_${list.type === "select" ? `_${list.multipleSelect ? "multiple" : "single"}` : ""}_${list.type}`,
+                    header: `${keyValue(list.label)}${list.type === "select" ? `_${list.multipleSelect ? "multiple" : "single"}` : ""}_${list.type}`,
                     key: keyValue(list.label),
                     width: 40
                 };
