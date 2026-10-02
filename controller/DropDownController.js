@@ -78,6 +78,27 @@ const userAccountStatuses = [
     },
 ]
 
+const packagesStatuses = [
+    {
+        label: "Active",
+        value: "active",
+        color: "#006644",
+        bgColor: "#caf8e1",
+    },
+    {
+        label: "Expired",
+        value: "expired",
+        color: "#f55050",
+        bgColor: "#f8dbdb",
+    },
+    {
+        label: "Cancelled",
+        value: "cancelled",
+        color: "#f55050",
+        bgColor: "#f8dbdb",
+    },
+]
+
 const billingPeriodOptions = [
     { label: 'Month', value: 'month' },
     { label: 'Year', value: 'year' },
@@ -89,6 +110,27 @@ export const packageOrders = [
     { label: 'Hot', value: '2' },
     { label: 'Premium', value: '3' },
     // { label: 'Business', value: '4' },
+]
+
+export const paymentStatuses = [
+    {
+        label: 'Pending',
+        value: 'PENDING',
+        color: '#dda202',
+        bgColor: '#fdf8d6',
+    },
+    {
+        label: 'Completed',
+        value: 'COMPLETED',
+        color: '#006644',
+        bgColor: '#E3FCEF',
+    },
+    {
+        label: 'Failed',
+        value: 'FAILED',
+        color: '#f55050',
+        bgColor: '#f8dbdb',
+    }
 ]
 
 
@@ -124,6 +166,8 @@ export const getAdminDropdowns = async () => {
         roles,
         ticketStatuses,
         userAccountStatuses,
+        packagesStatuses,
+        paymentStatuses,
         packageOrders,
         validityOptions: billingPeriodOptions,
     }
@@ -152,7 +196,9 @@ class DropDownController {
             ticketsTitles: getValusName(allTicketsTitles, 'title', '_id'),
             ticketStatuses,
             userAccountStatuses,
+            packagesStatuses,
             packageOrders,
+            paymentStatuses,
             validityOptions: billingPeriodOptions
         }
     }
