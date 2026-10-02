@@ -88,6 +88,7 @@ api.get('/customers/update-customer/:id/:password', verifyToken, verifyPermissio
 api.delete('/customers/delete-customer/:id', verifyToken, verifyPermission('Customers', 'delete'), CustomerController.deleteCustomer)
 api.get('/customers/update-status/:id', verifyToken, verifyPermission('Customers', 'update'), CustomerController.updateCustomerStatus)
 api.get('/customers/detailes/:id', verifyToken, CustomerController.customerDetails)
+api.post('/customers/payments/:id', verifyToken, CustomerController.customerPayments)
 
 api.post('/allDesignation', verifyToken, verifyPermission('Designation', 'view'), DesignationController.allDesignation)
 api.post('/designation/add-designation', verifyToken, verifyPermission('Designation', 'add'), DesignationController.addDesignation)
@@ -171,7 +172,7 @@ api.post('/payment/initiate', verifyToken, PaymentControler.initiatePhonePePayme
 api.get('/payment/status/:id', verifyToken, PaymentControler.paymentStatus)
 api.post('/payment/customer-orders', verifyToken, PaymentControler.customerOrders)
 api.get('/payment/customer-order-counts', verifyToken, PaymentControler.customerOrderCounts)
-api.get('/payment/invoice/:invoice', verifyToken, PaymentControler.paymentInvoice)
+api.get('/payment/invoice/:paymentId/:customerId', verifyToken, PaymentControler.paymentInvoice)
 api.post('/payment/webhook', verifyPhonePeWebhook, PaymentControler.paymentWebhook)
 
 api.post('/requestDowngrade/add-request', verifyToken, DownGradePackageController.addRequest)

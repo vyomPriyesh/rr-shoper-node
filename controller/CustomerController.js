@@ -1,6 +1,7 @@
 import Customer from "../models/Customer.js";
-import User from "../models/Customer.js";
+import Payment from "../models/Payment.js";
 import Subscription from "../models/Subscription.js";
+import buildFilters from "../utils/buildFilters.js";
 import { catchAsync } from "../utils/catchAsync.js";
 import paginate from "../utils/pagination.js";
 import { sendResponse } from "../utils/response.js";
@@ -126,10 +127,32 @@ class CustomerController {
             return sendResponse(res, 422, 'Customer Not Found', false)
         }
 
-        const subscriptions = await Subscription.find({ customer_id: id }).populate("payment_id", "amount").populate([{ path: "package_id", populate: "platform" }])
+        const subscriptions = await Subscription.find({ customer_id: id }).populate("payment_id", "amount").populate([{ path: "package_id", populate: [{ path: "platform", populate: [{ path: "image" }] }] }])
         findCustomer.subscriptions = subscriptions
 
         return sendResponse(res, 200, 'Customer Found Successfully', true, findCustomer)
+
+    })
+
+    static customerPayments = catchAsync(async (req, res) => {
+
+        const { id } = req.params
+        const { page, limit, status, ...allFilters } = req.body || {}
+
+        const searchKeys = ['invoice_number']
+
+        const query = {
+            ...(await buildFilters(allFilters, searchKeys)),
+            customer_id: id,
+            ...(status !== undefined && status !== null && status !== '' ? { payment_status: status } : {}),
+        }
+
+        const populates = [
+            { path: 'package_id', select: 'name', populate: [{ path: "platform", populate: [{ path: "image" }] }] },
+        ]
+        const payments = await paginate(Payment, query, page, limit, "-phonepeResponse", populates)
+
+        return sendResponse(res, 200, 'Customer Found Successfully', true, payments)
 
     })
 

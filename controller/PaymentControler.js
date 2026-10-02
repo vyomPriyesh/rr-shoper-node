@@ -318,10 +318,9 @@ class PaymentControler {
 
     static paymentInvoice = catchAsync(async (req, res) => {
 
-        const { _id: customerId } = req.user || {};
-        const { invoice } = req.params || {}
+        const { paymentId, customerId } = req.params || {}
         const data = await Customer.findById(customerId)
-        const paymentData = await Payment.findById(invoice)
+        const paymentData = await Payment.findById(paymentId)
         const subscriptionData = await Subscription.findOne({ payment_id: paymentData?._id })
         const packageData = await Packages.findById(paymentData.package_id).populate("platform")
 
