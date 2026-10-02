@@ -29,6 +29,7 @@ import InquiryController from "../controller/InquiryController.js";
 import DownGradePackageController from "../controller/DownGradePackageController.js";
 import verifyPhonePeWebhook from "../Middleware/verifyPhonePeWebhook.js";
 import TicketCommentsController from "../controller/TicketCommentsController.js";
+import SubscriptionController from "../controller/SubscriptionController.js";
 
 const api = express.Router();
 
@@ -176,6 +177,8 @@ api.get('/payment/invoice/:paymentId/:customerId', verifyToken, PaymentControler
 api.post('/payment/webhook', verifyPhonePeWebhook, PaymentControler.paymentWebhook)
 
 api.post('/requestDowngrade/add-request', verifyToken, DownGradePackageController.addRequest)
+
+api.get('/subscription-details/:id', verifyToken, SubscriptionController.subscriptionDetails)
 
 
 
