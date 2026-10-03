@@ -11,7 +11,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import pdf from 'html-pdf';
 import { createSubscription, getSamePlatformActiveSubscriptions, upgradeSubscription } from "../utils/subscription.js";
-import { generateInvoiceNumber } from "../utils/generateInvoiceNumber.js";
+import { generateInvoiceNumber } from "../utils/generateIds.js";
 import { displayDate } from "../utils/dateFormat.js";
 import { packageOrders } from "./DropDownController.js";
 import Subscription from "../models/Subscription.js";
