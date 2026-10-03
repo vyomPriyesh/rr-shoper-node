@@ -133,6 +133,10 @@ export const paymentStatuses = [
     }
 ]
 
+export const getPackageName = (packageName) => {
+
+    return packageOrders.find((item) => item.value == packageName)?.label;
+}
 
 export const getAdminDropdowns = async () => {
     const [

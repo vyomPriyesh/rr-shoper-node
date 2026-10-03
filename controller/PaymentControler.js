@@ -49,26 +49,27 @@ const paymentDataUpdate = async (payload, phonepeResponse) => {
                 return sendResponse(res, 500, "Package Not found", false);
             }
 
-            // const activeSubscriptions = await getSamePlatformActiveSubscriptions(paymentData?.customer_id, newPackage.platform._id)
+            const activeSubscriptions = await getSamePlatformActiveSubscriptions(paymentData?.customer_id, newPackage.platform._id)
+            let subscription
+            if (activeSubscriptions) {
 
-            // if (activeSubscriptions) {
+                subscription = await upgradeSubscription({
+                    customerId: paymentData.customer_id,
+                    platform: newPackage.platform._id,
+                    packageData: newPackage,
+                    paymentId: paymentData._id,
+                    billingPeriod: paymentData.billing_period,
+                })
+            } else {
+                subscription = await createSubscription({
+                    customerId: paymentData.customer_id,
+                    packageData: newPackage,
+                    paymentId: paymentData._id,
+                    billingPeriod: paymentData.billing_period,
+                });
+            }
 
-            //     await upgradeSubscription({
-            //         customerId: paymentData.customer_id,
-            //         platform: newPackage.platform._id,
-            //         packageData: newPackage,
-            //         paymentId: paymentData._id,
-            //         billingPeriod: paymentData.billing_period,
-            //     })
-
-            // } else {
             const platform = await Platforms.findById(newPackage?.platform?._id)
-            const subscription = await createSubscription({
-                customerId: paymentData.customer_id,
-                packageData: newPackage,
-                paymentId: paymentData._id,
-                billingPeriod: paymentData.billing_period,
-            });
             await PackageUpdate.create({
                 subscription_id: subscription._id,
                 customer_id: paymentData.customer_id,
@@ -76,15 +77,6 @@ const paymentDataUpdate = async (payload, phonepeResponse) => {
                 payment_id: paymentData._id,
                 serviceUpdates: newPackage.services.map(list => ({ name: list, update: '' }))
             })
-
-
-            // }
-
-
-
-
-
-
 
             // Keep the old customer.package response field synchronized for existing clients.
             // customer.package.push({

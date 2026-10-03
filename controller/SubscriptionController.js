@@ -19,7 +19,9 @@ class SubscriptionController {
         const response = {
             package_id: { ...packageUpdateData?.package, platform },
             payment_id: findSubscription?.payment_id,
-            serviceUpdates: packageUpdateData?.serviceUpdates
+            serviceUpdates: packageUpdateData?.serviceUpdates,
+            status: findSubscription?.status,
+            cancelledReason: findSubscription?.cancelledReason,
         }
 
         return sendResponse(res, 200, 'Subscription Found Successfully', true, response)

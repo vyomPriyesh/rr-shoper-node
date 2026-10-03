@@ -1,3 +1,4 @@
+import { getPackageName } from "../controller/DropDownController.js";
 import Subscription from "../models/Subscription.js";
 
 const getSubscriptionDates = (billingPeriod, startsAt = new Date()) => {
@@ -72,7 +73,7 @@ export const upgradeSubscription = async ({ customerId, platform, packageData, p
         ? new Date(planExpiresAt.getTime() + remainingMilliseconds)
         : null;
 
-    const upgradedSubscription = await Subscription.findByIdAndUpdate(currentSubscription._id, {
+    const newSubscription = await Subscription.create({
         customer_id: customerId,
         package_id: packageData._id,
         payment_id: paymentId,
@@ -81,7 +82,12 @@ export const upgradeSubscription = async ({ customerId, platform, packageData, p
         expires_at: expiresAt,
     });
 
-    return upgradedSubscription;
+    await Subscription.findByIdAndUpdate(currentSubscription._id, {
+        status: 'cancelled',
+        cancelledReason: `This Package was Upgrade to ${getPackageName(packageData?.name)} plan before it was cancelled.`
+    });
+
+    return newSubscription;
 
 }
 
