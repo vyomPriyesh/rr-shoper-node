@@ -3,6 +3,11 @@ import MongooseDelete from "mongoose-delete";
 
 const LeadSchema = new mongoose.Schema(
     {
+        lead_id: {
+            type: String,
+            unique: true,
+            sparse: true,
+        },
         customer: {
             type: Schema.Types.ObjectId,
             ref: "Customer",

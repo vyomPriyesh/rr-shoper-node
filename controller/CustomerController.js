@@ -37,9 +37,9 @@ class CustomerController {
             { path: 'image' },
         ]
 
-        const searchKEys = ['mobile', 'email', 'gst_number', 'name']
+        const searchKeys = ['mobile', 'email', 'gst_number', 'name']
 
-        const query = await buildFilters(allFilters, searchKEys)
+        const query = await buildFilters(allFilters, searchKeys)
 
         const data = await paginate(Customer, query, page, limit, {}, populates)
 

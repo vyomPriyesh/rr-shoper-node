@@ -1,7 +1,8 @@
 import Customer from "../models/Customer.js";
 import Lead from "../models/Lead.js";
-import User from "../models/User.js";
+import buildFilters from "../utils/buildFilters.js";
 import { catchAsync } from "../utils/catchAsync.js";
+import { generateLeadId } from "../utils/generateIds.js";
 import forManage from "../utils/HandleFormValues.js";
 import paginate from "../utils/pagination.js";
 import { sendResponse } from "../utils/response.js";
@@ -53,7 +54,8 @@ class LeadsController {
             return sendResponse(res, 422, customer.message, false);
         }
         const { id: userId } = req.user || {};
-        const formatedValue = await forManage({ customer: customer?.newCustomer?._id, assign_user: data.assign_user, created_by: userId, values: data?.values })
+        const lead_id = await generateLeadId();
+        const formatedValue = await forManage({ lead_id, customer: customer?.newCustomer?._id, assign_user: data.assign_user, created_by: userId, values: data?.values })
 
         await Lead.create(formatedValue)
 
@@ -80,15 +82,32 @@ class LeadsController {
     static allLeads = catchAsync(async (req, res) => {
 
         const { role, _id: id } = req.user || {};
-        const { page, limit, status } = req.body || {};
+        const { page, limit, status, ...allFilters } = req.body || {};
+        const searchKeys = ['lead_id']
 
-        let query = { status };
+        let query = await buildFilters({ ...allFilters, status }, searchKeys)
+
+        const customerSearchKeys = ['mobile', 'email', 'gst_number', 'name']
+        const customerQuery = await buildFilters(allFilters, customerSearchKeys)
+        const customerData = await Customer.find(customerQuery).lean()
+        const customersIds = customerData.map(list => list._id)
+
+        const customerLeadFilter = { customer: { $in: customersIds } };
+
         if (role !== 'admin') {
             query = {
                 ...query,
                 $or: [
                     { assign_user: id },
                     { created_by: id },
+                    customerLeadFilter,
+                ],
+            }
+        } else {
+            query = {
+                ...query,
+                $or: [
+                    customerLeadFilter,
                 ],
             }
         }
@@ -130,7 +149,6 @@ class LeadsController {
     static deleteLead = catchAsync(async (req, res) => {
 
         const { id } = req.params || {}
-        const data = req.body || {}
 
         const findLead = await Lead.findById(id)
         if (!findLead) {
@@ -142,6 +160,17 @@ class LeadsController {
         return sendResponse(res, 200, "Lead Delete SuccessFully", true);
 
     })
+
+    // static updatesLeadId = catchAsync(async (req, res) => {
+
+    //     const data = await Lead.find()
+
+    //     for (const list of data) {
+    //         const lead_id = await generateLeadId();
+    //         await Lead.findByIdAndUpdate(list._id, { lead_id })
+    //     }
+
+    // })
 
 }
 
