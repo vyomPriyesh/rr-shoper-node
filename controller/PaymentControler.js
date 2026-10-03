@@ -15,6 +15,8 @@ import { generateInvoiceNumber } from "../utils/generateInvoiceNumber.js";
 import { displayDate } from "../utils/dateFormat.js";
 import { packageOrders } from "./DropDownController.js";
 import Subscription from "../models/Subscription.js";
+import PackageUpdate from "../models/PackageUpdate.js";
+import Platforms from "../models/Platforms.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -47,26 +49,38 @@ const paymentDataUpdate = async (payload, phonepeResponse) => {
                 return sendResponse(res, 500, "Package Not found", false);
             }
 
-            const activeSubscriptions = await getSamePlatformActiveSubscriptions(paymentData?.customer_id, newPackage.platform._id)
+            // const activeSubscriptions = await getSamePlatformActiveSubscriptions(paymentData?.customer_id, newPackage.platform._id)
 
-            if (activeSubscriptions) {
+            // if (activeSubscriptions) {
 
-                await upgradeSubscription({
-                    customerId: paymentData.customer_id,
-                    platform: newPackage.platform._id,
-                    packageData: newPackage,
-                    paymentId: paymentData._id,
-                    billingPeriod: paymentData.billing_period,
-                })
+            //     await upgradeSubscription({
+            //         customerId: paymentData.customer_id,
+            //         platform: newPackage.platform._id,
+            //         packageData: newPackage,
+            //         paymentId: paymentData._id,
+            //         billingPeriod: paymentData.billing_period,
+            //     })
 
-            } else {
-                const subscription = await createSubscription({
-                    customerId: paymentData.customer_id,
-                    packageData: newPackage,
-                    paymentId: paymentData._id,
-                    billingPeriod: paymentData.billing_period,
-                });
-            }
+            // } else {
+            const platform = await Platforms.findById(newPackage?.platform?._id)
+            const subscription = await createSubscription({
+                customerId: paymentData.customer_id,
+                packageData: newPackage,
+                paymentId: paymentData._id,
+                billingPeriod: paymentData.billing_period,
+            });
+            await PackageUpdate.create({
+                subscription_id: subscription._id,
+                customer_id: paymentData.customer_id,
+                package: { ...newPackage, platform },
+                payment_id: paymentData._id,
+                serviceUpdates: newPackage.services.map(list => ({ name: list, update: '' }))
+            })
+
+
+            // }
+
+
 
 
 

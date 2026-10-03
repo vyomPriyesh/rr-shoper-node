@@ -179,6 +179,7 @@ api.post('/payment/webhook', verifyPhonePeWebhook, PaymentControler.paymentWebho
 api.post('/requestDowngrade/add-request', verifyToken, DownGradePackageController.addRequest)
 
 api.get('/subscription-details/:id', verifyToken, SubscriptionController.subscriptionDetails)
+api.post('/servicesUpdates/:id', verifyToken, SubscriptionController.servicesUpdates)
 
 
 

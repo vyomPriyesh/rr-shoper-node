@@ -8,6 +8,7 @@ import emailotpsending from "../utils/emailotpsending.js";
 import "dotenv/config";
 import Customer from "../models/Customer.js";
 import Subscription from "../models/Subscription.js";
+import PackageUpdate from "../models/PackageUpdate.js";
 
 class LoginController {
 
@@ -229,8 +230,22 @@ class LoginController {
         const profileData = await query.populate("image").lean();
 
         if (role == "customer") {
-            const subscriptions = await Subscription.find({ customer_id: userId }).populate("payment_id", "amount").populate([{ path: "package_id", populate: "platform" }])
-            profileData.subscriptions = subscriptions
+            // const subscriptions = await Subscription.find({ customer_id: userId }).populate("payment_id", "amount").populate([{ path: "package_id", populate: "platform" }])
+            const PackageUpdateData = await PackageUpdate.find({ customer_id: userId }).populate("subscription_id").populate([{ path: "subscription_id", populate: { path: "payment_id", select: "amount" } }]).lean()
+            const formatedData = PackageUpdateData.map((item) => {
+
+                return {
+                    ...item.subscription_id,
+                    package_id: {
+                        _id: item?.package?._id,
+                        name: item.package.name,
+                        platform: item.package.platform,
+                        services: item.package.services,
+                    },
+                    serviceUpdates: item.serviceUpdates
+                }
+            })
+            profileData.subscriptions = formatedData
 
         }
         return sendResponse(res, 200, "Profile found successfully", true, profileData);
