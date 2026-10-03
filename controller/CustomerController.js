@@ -31,12 +31,17 @@ class CustomerController {
 
     static allCustomers = catchAsync(async (req, res) => {
 
-        const { page, limit } = req.body || {}
+        const { page, limit, ...allFilters } = req.body || {}
 
         const populates = [
             { path: 'image' },
         ]
-        const data = await paginate(Customer, {}, page, limit, {}, populates)
+
+        const searchKEys = ['mobile', 'email', 'gst_number', 'name']
+
+        const query = await buildFilters(allFilters, searchKEys)
+
+        const data = await paginate(Customer, query, page, limit, {}, populates)
 
         return sendResponse(res, 200, "Customer Found Successfully", true, data, true);
 
