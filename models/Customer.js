@@ -71,6 +71,10 @@ const CustomerSchema = new mongoose.Schema(
             type: String,
             default: null,
         },
+        remark: {
+            type: String,
+            default: null,
+        },
 
         otp_send_time: {
             type: Date,
