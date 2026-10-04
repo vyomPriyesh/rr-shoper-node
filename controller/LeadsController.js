@@ -138,7 +138,7 @@ class LeadsController {
     static fetchLeadById = catchAsync(async (req, res) => {
         const { id } = req.params || {}
 
-        const findLead = await Lead.findById(id).populate("customer", "name email mobile createdAt status otp_status image").populate("assign_user", "name email mobile image").populate("created_by", "name email mobile image")
+        const findLead = await Lead.findById(id).populate([{ path: "customer", select: "name email mobile createdAt status otp_status image", populate: [{ path: "image", select: "image" }] }]).populate("assign_user", "name email mobile image").populate("created_by", "name email mobile image")
         if (!findLead) {
             return sendResponse(res, 422, "Lead not found", false);
         }
