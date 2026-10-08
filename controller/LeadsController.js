@@ -106,7 +106,7 @@ class LeadsController {
             ]
         }
         const searchKeys = ['lead_id']
-
+ 
         const query = await buildFilters({ ...allFilters, status }, searchKeys, role !== 'admin' ? userOrQuery : adminOrQuery)
 
         const populate = [
