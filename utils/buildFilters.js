@@ -6,7 +6,7 @@ function parseMMDDYYYY(dateStr) {
     return new Date(Date.UTC(year, month - 1, day));
 }
 
-const buildFilters = async (params, searchFields) => {
+const buildFilters = async (params, searchFields, orQuery = {}) => {
     const {
         search, status
     } = params;
@@ -18,6 +18,11 @@ const buildFilters = async (params, searchFields) => {
         query.$or = searchFields.map((field) => ({
             [field]: { $regex: search, $options: "i" },
         }));
+    }
+
+    if (orQuery && Object.keys(orQuery).length) {
+        const mergedOrQuery = Array.isArray(orQuery) ? orQuery : [orQuery];
+        query.$or = [...(Array.isArray(query.$or) ? query.$or : []), ...mergedOrQuery];
     }
 
     function addArrayOrSingle(key, value) {
