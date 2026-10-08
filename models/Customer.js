@@ -30,6 +30,10 @@ const CustomerSchema = new mongoose.Schema(
             type: String,
             default: null,
         },
+        from: {
+            type: String,
+            default: 'website',
+        },
         gst_number: {
             type: String,
             default: null,
