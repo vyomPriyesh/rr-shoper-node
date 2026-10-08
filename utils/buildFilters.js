@@ -6,7 +6,7 @@ function parseMMDDYYYY(dateStr) {
     return new Date(Date.UTC(year, month - 1, day));
 }
 
-const buildFilters = async (params, searchFields) => {
+const buildFilters = async (params, searchFields, orQuery = {}) => {
     const {
         search, status
     } = params;
@@ -30,7 +30,7 @@ const buildFilters = async (params, searchFields) => {
 
     addArrayOrSingle("status", status);
 
-    return query;
+    return { ...query, ...orQuery };
 };
 
 export default buildFilters;

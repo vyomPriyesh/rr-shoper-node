@@ -84,42 +84,40 @@ class LeadsController {
 
         const { role, _id: id } = req.user || {};
         const { page, limit, status, ...allFilters } = req.body || {};
-        const searchKeys = ['lead_id']
-
-        let query = await buildFilters({ ...allFilters, status }, searchKeys)
 
         const customerSearchKeys = ['mobile', 'email', 'gst_number', 'name']
         const customerQuery = await buildFilters(allFilters, customerSearchKeys)
         const customerData = await Customer.find(customerQuery).lean()
         const customersIds = customerData.map(list => list._id)
 
-        const customerLeadFilter = { customer: { $in: customersIds } };
+        const adminOrQuery = { customer: { $in: customersIds } };
 
-        if (role !== 'admin') {
-            query = {
-                ...query,
-                $or: [
-                    { assign_user: id },
-                    { created_by: id },
-                    customerLeadFilter,
-                ],
-            }
-        } else {
-            query = {
-                ...query,
-                $or: [
-                    customerLeadFilter,
-                ],
-            }
+        const userOrQuery = {
+            $and: [
+                {
+                    $or: [
+                        { assign_user: id },
+                        { created_by: id },
+                    ],
+                },
+            ],
+            $or: [
+                adminOrQuery,
+            ]
         }
+        const searchKeys = ['lead_id']
+
+        const query = await buildFilters({ ...allFilters, status }, searchKeys, role !== 'admin' ? userOrQuery : adminOrQuery)
 
         const populate = [
             { path: 'customer', select: 'name' },
             role === 'admin' && { path: 'created_by', select: 'name' },
             { path: 'assign_user', select: 'name' },
         ].filter(Boolean)
+
         const data = await paginate(Lead, query, page, limit, {}, populate);
         delete query.status
+
         const statusCounts = await Lead.aggregate([
             {
                 $match: query,
@@ -159,6 +157,32 @@ class LeadsController {
         await Lead.delete({ _id: id })
 
         return sendResponse(res, 200, "Lead Delete SuccessFully", true);
+
+    })
+
+    static getLeadsByCustomer = catchAsync(async (req, res) => {
+
+        const { id } = req.params || {}
+        const { page, limit, ...allFilters } = req.body || {};
+        const { role } = req.user || {};
+        const searchKeys = ['lead_id']
+
+
+        const orQuery = {
+            customer: id
+        }
+        const query = await buildFilters(allFilters, searchKeys, orQuery)
+
+        const populate = [
+            { path: 'customer', select: 'name' },
+            role === 'admin' && { path: 'created_by', select: 'name' },
+            { path: 'assign_user', select: 'name' },
+        ].filter(Boolean)
+
+        const data = await paginate(Lead, query, page, limit, {}, populate, orQuery);
+
+        return sendResponse(res, 200, "Leads Found SuccessFully", true, data);
+
 
     })
 
