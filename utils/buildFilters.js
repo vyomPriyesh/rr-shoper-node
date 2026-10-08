@@ -20,6 +20,11 @@ const buildFilters = async (params, searchFields, orQuery = {}) => {
         }));
     }
 
+    if (orQuery && Object.keys(orQuery).length) {
+        const mergedOrQuery = Array.isArray(orQuery) ? orQuery : [orQuery];
+        query.$or = [...(Array.isArray(query.$or) ? query.$or : []), ...mergedOrQuery];
+    }
+
     function addArrayOrSingle(key, value) {
         if (Array.isArray(value)) {
             if (value.length) query[key] = { $in: value };

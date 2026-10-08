@@ -117,7 +117,6 @@ class LeadsController {
 
         const data = await paginate(Lead, query, page, limit, {}, populate);
         delete query.status
-
         const statusCounts = await Lead.aggregate([
             {
                 $match: query,
