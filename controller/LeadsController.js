@@ -121,8 +121,7 @@ class LeadsController {
         const data = await paginate(Lead, query, page, limit, {}, populate);
         const dd = await Lead.find()
         for(const k of dd ){
-            await Customer.findByIdAndUpdate(k.customer, {from: 'lead
-                '})
+            await Customer.findByIdAndUpdate(k.customer, {from: 'lead'})
         }
         delete query.status
         const statusCounts = await Lead.aggregate([
