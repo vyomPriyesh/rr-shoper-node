@@ -15,7 +15,7 @@ const SubscriptionSchema = new mongoose.Schema(
         },
         billing_period: {
             type: String,
-            enum: ['month', 'year', 'onetime'],
+            enum: ['month', '3month', '6month', 'year', 'onetime'],
             required: true,
         },
         payment_id: {

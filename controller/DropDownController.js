@@ -133,6 +133,29 @@ export const paymentStatuses = [
     }
 ]
 
+export const billing_period_options = [
+    {
+        label: 'One time',
+        value: 'onetime',
+    },
+    {
+        label: '1 month',
+        value: 'month',
+    },
+    {
+        label: '3 Months',
+        value: '3month',
+    },
+    {
+        label: '6 Months',
+        value: '6month',
+    },
+    {
+        label: '1 year',
+        value: 'year',
+    },
+];
+
 export const getPackageName = (packageName) => {
 
     return packageOrders.find((item) => item.value == packageName)?.label;
@@ -203,6 +226,7 @@ class DropDownController {
             packagesStatuses,
             packageOrders,
             paymentStatuses,
+            billing_period_options,
             validityOptions: billingPeriodOptions
         }
     }

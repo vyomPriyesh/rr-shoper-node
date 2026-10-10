@@ -15,7 +15,7 @@ const PaymentSchema = new mongoose.Schema(
         },
         billing_period: {
             type: String,
-            enum: ['month', 'year', 'onetime'],
+            enum: ['month', '3month', '6month', 'year', 'onetime'],
             default: 'month',
         },
         // request_package_id: {

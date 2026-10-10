@@ -10,6 +10,10 @@ const getSubscriptionDates = (billingPeriod, startsAt = new Date()) => {
 
     if (billingPeriod === 'year') {
         expiresAt.setFullYear(expiresAt.getFullYear() + 1);
+    } else if (billingPeriod === '6month') {
+        expiresAt.setMonth(expiresAt.getMonth() + 6);
+    } else if (billingPeriod === '3month') {
+        expiresAt.setMonth(expiresAt.getMonth() + 3);
     } else {
         expiresAt.setMonth(expiresAt.getMonth() + 1);
     }

@@ -19,6 +19,14 @@ const PackagesSchema = new mongoose.Schema(
             type: Number,
             default: null,
         },
+        "3month_price": {
+            type: Number,
+            default: null,
+        },
+        "6month_price": {
+            type: Number,
+            default: null,
+        },
         year_price: {
             type: Number,
             default: null,

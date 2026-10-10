@@ -13,7 +13,7 @@ import pdf from 'html-pdf';
 import { createSubscription, getSamePlatformActiveSubscriptions, upgradeSubscription } from "../utils/subscription.js";
 import { generateInvoiceNumber } from "../utils/generateIds.js";
 import { displayDate } from "../utils/dateFormat.js";
-import { packageOrders } from "./DropDownController.js";
+import { billing_period_options, packageOrders } from "./DropDownController.js";
 import Subscription from "../models/Subscription.js";
 import PackageUpdate from "../models/PackageUpdate.js";
 import Platforms from "../models/Platforms.js";
@@ -119,7 +119,7 @@ class PaymentControler {
         const priceField = `${billing_period}_price`;
         const selectedPrice = packageData[priceField];
 
-        if (!['month', 'year', 'onetime'].includes(billing_period) || selectedPrice == null) {
+        if (!billing_period_options.map(item => item.value).includes(billing_period) || selectedPrice == null) {
             return sendResponse(res, 422, 'Selected billing period is not available for this package', false)
         }
 
