@@ -90,24 +90,23 @@ class LeadsController {
         const customerData = await Customer.find(customerQuery).lean()
         const customersIds = customerData.map(list => list._id)
 
-        const adminOrQuery = { customer: { $in: customersIds } };
+        const adminQuery = { customer: { $in: customersIds } }
 
-        const userOrQuery = {
-            $and: [
-                {
-                    $or: [
-                        { assign_user: id },
-                        { created_by: id },
-                    ],
-                },
-            ],
+        const manualQuery = {
             $or: [
-                adminOrQuery,
-            ]
+                { assign_user: id },
+                { created_by: id },
+            ],
         }
         const searchKeys = ['lead_id']
- 
-        const query = await buildFilters({ ...allFilters, status }, searchKeys, role !== 'admin' ? userOrQuery : adminOrQuery)
+        const query = await buildFilters({ ...allFilters, status }, searchKeys, role === 'admin' ? adminQuery : manualQuery)
+
+        if (allFilters?.search) {
+            query.$or = [
+                ...(query.$or || []),
+                adminQuery,
+            ];
+        }
 
         const populate = [
             { path: 'customer', select: 'name' },
