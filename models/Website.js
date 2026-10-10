@@ -23,6 +23,34 @@ const PoliciesSchema = new mongoose.Schema(
     }
 );
 
+const contactDetailsSchema = new mongoose.Schema(
+    {
+        mobile: {
+            type: String,
+            default: null,
+        },
+        wamobile: {
+            type: String,
+            default: null,
+        },
+        email: {
+            type: String,
+            default: null,
+        },
+        businessHours: {
+            type: String,
+            default: null,
+        },
+        officeAddress: {
+            type: String,
+            default: null,
+        },
+    },
+    {
+        timestamps: true,
+    }
+);
+
 const WebsiteSchema = new mongoose.Schema(
     {
         privacyPolicy: {
@@ -37,7 +65,11 @@ const WebsiteSchema = new mongoose.Schema(
             type: [PoliciesSchema],
             default: null,
         },
-        
+        contactDetails: {
+            type: contactDetailsSchema,
+            default: null
+        }
+
     },
     {
         timestamps: true,
