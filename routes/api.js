@@ -30,6 +30,7 @@ import DownGradePackageController from "../controller/DownGradePackageController
 import verifyPhonePeWebhook from "../Middleware/verifyPhonePeWebhook.js";
 import TicketCommentsController from "../controller/TicketCommentsController.js";
 import SubscriptionController from "../controller/SubscriptionController.js";
+import WebsiteControler from "../controller/WebsiteControler.js";
 
 const api = express.Router();
 
@@ -181,6 +182,9 @@ api.post('/requestDowngrade/add-request', verifyToken, DownGradePackageControlle
 
 api.get('/subscription-details/:id', verifyToken, SubscriptionController.subscriptionDetails)
 api.post('/servicesUpdates/:id', verifyToken, SubscriptionController.servicesUpdates)
+
+api.post('/websiteUpdate', verifyToken, verifyAdmin, WebsiteControler.websiteUpdate)
+api.get('/websiteData', WebsiteControler.getWebsiteData)
 
 
 
